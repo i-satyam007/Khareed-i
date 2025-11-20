@@ -11,19 +11,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { captchaToken, ...rest } = req.body || {};
 
-    // 1) Verify CAPTCHA (single argument expected by the current verifyCaptchaToken impl)
+    // 1) Verify CAPTCHA
     const ok = await verifyCaptchaToken(captchaToken, "signup");
     if (!ok) {
-      return res.status(400).json({ error: "Failed bot check. Please refresh and try again." });
+      return res
+        .status(400)
+        .json({ error: "Failed CAPTCHA. Please refresh and try again." });
     }
 
-    // 2) Validate input using zod
+    // 2) Validate input
     const parse = signupSchema.safeParse(rest);
-    if (!parse.success) {
-      // zod exposes issues array; map them to messages
-      const msg = parse.error.issues.map((issue) => issue.message).join(", ");
-      return res.status(400).json({ error: msg });
+         if (!parse.success) {
+            // zod exposes issues array; map them to messages
+            const msg = parse.error.issues.map((issue) => issue.message).join(", ");
+            return res.status(400).json({ error: msg });
     }
+
     const { email, username, password, name } = parse.data;
 
     // 3) Weak/common password check
@@ -38,8 +41,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const existing = await prisma.user.findFirst({
       where: { OR: [{ email }, { username }] },
     });
-    if (existing)
-      return res.status(409).json({ error: "Email or username already exists" });
+    if (existing) {
+      return res
+        .status(409)
+        .json({ error: "Email or username already exists" });
+    }
 
     // 5) Hash + create
     const hashed = await hashPwd(password);
