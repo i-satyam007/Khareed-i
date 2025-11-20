@@ -100,13 +100,22 @@ export default function LoginPage() {
   };
 
   return (
-    // ✅ FIXED LAYOUT: h-screen + center alignment
-    <div className="h-screen w-full flex items-center justify-center bg-kh-light overflow-hidden">
+    <div className="h-screen w-full flex items-center justify-center bg-kh-light overflow-hidden relative">
       
+      {/* ✅ Back to Home Link (Top Left) */}
+      <div className="absolute top-6 left-6">
+        <Link href="/" className="flex items-center gap-2 text-sm font-medium text-kh-gray hover:text-kh-dark transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          Back to Home
+        </Link>
+      </div>
+
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl border border-gray-100 mx-4">
-         {/* Logo */}
+         {/* Logo - Now Clickable */}
          <div className="text-center mb-8">
-           <div className="mx-auto h-12 w-12 bg-gradient-to-br from-kh-purple to-purple-400 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg mb-4">K</div>
+           <Link href="/" className="inline-block mx-auto h-12 w-12 bg-gradient-to-br from-kh-purple to-purple-400 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg mb-4 hover:scale-105 transition-transform">
+             K
+           </Link>
            <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
            <p className="mt-2 text-sm text-gray-500">
              New here? <Link href="/signup" className="font-semibold text-kh-red hover:text-red-600 transition-colors">Create an account</Link>
@@ -139,12 +148,10 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* CAPTCHA - Centered */}
           <div className="flex justify-center">
              <div id="recap-login" className="scale-90 origin-center" />
           </div>
 
-          {/* Error Messages */}
           {loginError && (
             <div className="rounded-lg bg-red-50 p-3 border border-red-100">
               <div className="flex items-center gap-2 text-sm text-red-700">
@@ -161,7 +168,6 @@ export default function LoginPage() {
              </div>
           )}
 
-          {/* Button - Explicitly Styled */}
           <button 
             type="submit" 
             disabled={isSubmitting} 

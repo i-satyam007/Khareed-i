@@ -115,14 +115,21 @@ export default function SignupPage() {
   }
 
   return (
-    // ✅ FIXED LAYOUT: h-screen + overflow-hidden + center alignment
-    <div className="h-screen w-full flex items-center justify-center bg-kh-light overflow-hidden">
+    <div className="h-screen w-full flex items-center justify-center bg-kh-light overflow-hidden relative">
       
+      {/* ✅ Back to Home Link (Top Left) */}
+      <div className="absolute top-6 left-6">
+        <Link href="/" className="flex items-center gap-2 text-sm font-medium text-kh-gray hover:text-kh-dark transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          Back to Home
+        </Link>
+      </div>
+
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl border border-gray-100 max-h-[95vh] overflow-y-auto scrollbar-hide mx-4">
         
-        {/* Header */}
+        {/* Header - Logo is clickable */}
         <div className="text-center mb-6">
-           <div className="mx-auto h-12 w-12 bg-gradient-to-br from-kh-purple to-purple-400 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg mb-4">K</div>
+           <Link href="/" className="inline-block mx-auto h-12 w-12 bg-gradient-to-br from-kh-purple to-purple-400 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg mb-4 hover:scale-105 transition-transform">K</Link>
            <h2 className="text-2xl font-bold text-gray-900">Create your account</h2>
            <p className="mt-2 text-sm text-gray-500">
              Already have an account? <Link href="/login" className="font-semibold text-kh-red hover:text-red-600 transition-colors">Sign in</Link>
@@ -131,7 +138,6 @@ export default function SignupPage() {
 
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           
-          {/* Full Name */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Full Name</label>
             <input
@@ -141,7 +147,6 @@ export default function SignupPage() {
             />
           </div>
 
-          {/* Email */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Email Address</label>
             <input
@@ -152,7 +157,6 @@ export default function SignupPage() {
             {errors.email && <p className="mt-1 text-xs text-red-500 font-medium">{errors.email.message}</p>}
           </div>
 
-          {/* Username */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Username</label>
             <input
@@ -163,7 +167,6 @@ export default function SignupPage() {
             {errors.username && <p className="mt-1 text-xs text-red-500 font-medium">{errors.username.message}</p>}
           </div>
 
-          {/* Password */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Password</label>
             <input
@@ -174,7 +177,6 @@ export default function SignupPage() {
             />
             {errors.password && <p className="mt-1 text-xs text-red-500 font-medium">{errors.password.message}</p>}
             
-            {/* Password Strength Bar */}
             <div className="mt-3">
                <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
                  <div 
@@ -186,12 +188,10 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {/* CAPTCHA - Centered */}
           <div className="flex justify-center py-2">
              <div id="recap-signup" className="scale-90 origin-center" />
           </div>
 
-          {/* Error Messages */}
           {serverError && (
             <div className="rounded-lg bg-red-50 p-3 border border-red-100">
               <div className="flex items-center gap-2 text-sm text-red-700">
@@ -201,7 +201,6 @@ export default function SignupPage() {
             </div>
           )}
 
-          {/* Button - Explicitly Styled */}
           <button 
             type="submit" 
             disabled={isSubmitting} 
