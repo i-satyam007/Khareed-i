@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,21 +10,19 @@
   body {
     @apply bg-kh-light text-kh-dark font-sans antialiased;
   }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
-  }
 }
 
 @layer components {
-  .btn-primary {
-    @apply w-full bg-kh-red text-white py-2.5 px-4 rounded-lg font-medium transition-all duration-200 hover:bg-red-600 focus:ring-2 focus:ring-offset-2 focus:ring-kh-red disabled:opacity-50 disabled:cursor-not-allowed;
+  /* ✅ New Responsive Container Class */
+  .container-responsive {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
-  .input-field {
-    @apply w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm shadow-sm placeholder-gray-400
-    focus:outline-none focus:border-kh-red focus:ring-1 focus:ring-kh-red
-    disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200;
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
-  .auth-card {
-    @apply bg-white p-8 rounded-xl shadow-card max-w-md w-full mx-auto;
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
