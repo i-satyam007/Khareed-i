@@ -8,33 +8,23 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          red: "#EF5350",     // main action color
-          purple: "#B9A7D3",  // logo purple
-        },
-        accent: {
-          red: "#F48FB1",
-          purple: "#C9BCE1",
-        },
-        neutral: {
-          dark: "#2C2E35",
-          gray: "#696C75",
-          light: "#F7F7F9",
-          muted: "#9EA0A6"
-        },
-        ui: {
-          surface: "#ffffff",
-          highlight: "#F3F4F6"
+        kh: {
+          red: "#EF5350",     // Primary Action
+          purple: "#B9A7D3",  // Brand/Logo
+          dark: "#2C2E35",    // Text
+          gray: "#696C75",    // Muted Text
+          light: "#F7F7F9",   // Background
+          surface: "#ffffff", // Card Background
         }
       },
       fontFamily: {
-        inter: ['Inter', 'ui-sans-serif', 'system-ui'],
-      },
-      borderRadius: {
-        'md-lg': '12px'
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 6px 18px rgba(43,47,59,0.06)',
+        'card': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+        'card-hover': '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
+        'input': '0 0 0 1px #e5e7eb', // Subtle border
+        'input-focus': '0 0 0 2px #EF5350', // Focus ring
       }
     },
   },

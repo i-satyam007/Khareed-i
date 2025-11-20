@@ -1,10 +1,8 @@
-// pages/login.tsx
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { mutate } from "swr"; // ✅ Import mutate
+import { mutate } from "swr";
 
 declare global {
   interface Window {
@@ -82,11 +80,9 @@ export default function LoginPage() {
       
       if (!res.ok) {
         setLoginError(j?.error || "Login failed");
-        
         if (res.status === 401 || j?.error?.includes("Invalid")) {
           setShowForgotUser(true);
         }
-
         if ((window as any).grecaptcha) {
           try {
             const wid = widgetRef.current;
@@ -96,9 +92,7 @@ export default function LoginPage() {
         return;
       }
 
-      // ✅ FORCE UPDATE THE HEADER BEFORE REDIRECTING
       await mutate("/api/auth/me");
-
       router.replace("/");
     } catch (err) {
       setLoginError("Network error");
@@ -106,74 +100,73 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 px-4">
-      <h1 className="text-2xl font-semibold mb-4">Login</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center py-12 sm:px-6 lg:px-8 bg-kh-light">
+      
+      <div className="sm:mx-auto sm:w-full sm:max-w-md mb-8 text-center">
+         {/* Logo Placeholder - Replace with <img src="/logo.png" /> if you have one */}
+         <div className="mx-auto h-12 w-12 bg-kh-purple rounded-lg flex items-center justify-center text-white font-bold text-xl mb-4">K</div>
+         <h2 className="text-3xl font-bold text-kh-dark">Sign in to your account</h2>
+         <p className="mt-2 text-sm text-kh-gray">
+           Or <Link href="/signup" className="font-medium text-kh-red hover:text-red-500">create a new account</Link>
+         </p>
+      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* identifier */}
-        <div>
-          <label className="text-sm text-gray-600 mb-1 block">Email or Username</label>
-          <input
-            {...register("identifier", { required: "Enter email or username" })}
-            placeholder="Email or username"
-            className="border border-gray-300 px-3 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-orange-600"
-            autoComplete="username"
-          />
-          {errors.identifier && (
-            <div className="text-sm text-red-600 mt-1">{errors.identifier.message}</div>
+      <div className="auth-card sm:px-10">
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          
+          <div>
+            <label className="block text-sm font-medium text-kh-gray mb-1">Email or Username</label>
+            <input
+              {...register("identifier", { required: "Email or username is required" })}
+              className="input-field"
+              placeholder="you@iimidr.ac.in"
+            />
+            {errors.identifier && <p className="mt-1 text-xs text-red-600">{errors.identifier.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-kh-gray mb-1">Password</label>
+            <input
+              type="password"
+              {...register("password", { required: "Password is required" })}
+              className="input-field"
+              placeholder="••••••••"
+            />
+            {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
+            <div className="flex items-center justify-end mt-1">
+              <Link href="/forgot-password" className="text-xs font-medium text-kh-purple hover:text-purple-600">Forgot password?</Link>
+            </div>
+          </div>
+
+          {/* CAPTCHA */}
+          <div className="flex justify-center">
+             <div id="recap-login" className="scale-90 sm:scale-100 origin-center" />
+          </div>
+
+          {/* Error Messages */}
+          {loginError && (
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="flex">
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">Login Failed</h3>
+                  <div className="mt-2 text-sm text-red-700"><p>{loginError}</p></div>
+                </div>
+              </div>
+            </div>
           )}
-        </div>
 
-        {/* password */}
-        <div>
-          <label className="text-sm text-gray-600 mb-1 block">Password</label>
-          <input
-            {...register("password", { required: "Enter password" })}
-            placeholder="Password"
-            type="password"
-            className="border border-gray-300 px-3 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-orange-600"
-            autoComplete="current-password"
-          />
-          {errors.password && (
-            <div className="text-sm text-red-600 mt-1">{errors.password.message}</div>
+          {showForgotUser && (
+             <div className="text-center text-sm">
+                <span className="text-kh-gray">Forgotten your username? </span>
+                <Link href="/forgot-username" className="font-medium text-kh-red hover:text-red-500">Recover it here</Link>
+             </div>
           )}
-           <div className="text-right mt-1">
-            <Link href="/forgot-password" className="text-xs text-blue-600 hover:underline">
-              Forgot password?
-            </Link>
-          </div>
-        </div>
 
-        {/* reCAPTCHA widget */}
-        <div className="mt-2">
-          <div id="recap-login" />
-        </div>
-
-        {/* Server Error Display */}
-        {loginError && (
-          <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-100">
-            {loginError}
-          </div>
-        )}
-
-        {showForgotUser && (
-          <div className="text-center text-sm">
-             <span className="text-gray-600">Trouble signing in? </span>
-             <Link href="/forgot-username" className="text-orange-600 font-medium hover:underline">
-               Forgot Username?
-             </Link>
-          </div>
-        )}
-
-        {/* submit */}
-        <button
-          className="w-full bg-orange-600 hover:bg-orange-700 text-white p-2 rounded disabled:opacity-60 font-semibold"
-          type="submit"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Signing in..." : "Sign in"}
-        </button>
-      </form>
+          <button type="submit" disabled={isSubmitting} className="btn-primary">
+            {isSubmitting ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
