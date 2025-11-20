@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema, SignupInput } from "../lib/validators";
 import { useRouter } from "next/router";
+//@ts-ignore
 import zxcvbn from "zxcvbn";
 import { useState } from "react";
 
