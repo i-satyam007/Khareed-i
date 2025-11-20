@@ -100,70 +100,79 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center py-12 sm:px-6 lg:px-8 bg-kh-light">
+    // ✅ FIXED LAYOUT: h-screen + center alignment
+    <div className="h-screen w-full flex items-center justify-center bg-kh-light overflow-hidden">
       
-      <div className="sm:mx-auto sm:w-full sm:max-w-md mb-8 text-center">
-         {/* Logo Placeholder - Replace with <img src="/logo.png" /> if you have one */}
-         <div className="mx-auto h-12 w-12 bg-kh-purple rounded-lg flex items-center justify-center text-white font-bold text-xl mb-4">K</div>
-         <h2 className="text-3xl font-bold text-kh-dark">Sign in to your account</h2>
-         <p className="mt-2 text-sm text-kh-gray">
-           Or <Link href="/signup" className="font-medium text-kh-red hover:text-red-500">create a new account</Link>
-         </p>
-      </div>
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl border border-gray-100 mx-4">
+         {/* Logo */}
+         <div className="text-center mb-8">
+           <div className="mx-auto h-12 w-12 bg-gradient-to-br from-kh-purple to-purple-400 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg mb-4">K</div>
+           <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
+           <p className="mt-2 text-sm text-gray-500">
+             New here? <Link href="/signup" className="font-semibold text-kh-red hover:text-red-600 transition-colors">Create an account</Link>
+           </p>
+        </div>
 
-      <div className="auth-card sm:px-10">
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           
           <div>
-            <label className="block text-sm font-medium text-kh-gray mb-1">Email or Username</label>
+            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Email or Username</label>
             <input
               {...register("identifier", { required: "Email or username is required" })}
-              className="input-field"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
               placeholder="you@iimidr.ac.in"
             />
-            {errors.identifier && <p className="mt-1 text-xs text-red-600">{errors.identifier.message}</p>}
+            {errors.identifier && <p className="mt-1 text-xs text-red-500 font-medium">{errors.identifier.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-kh-gray mb-1">Password</label>
+            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Password</label>
             <input
               type="password"
               {...register("password", { required: "Password is required" })}
-              className="input-field"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
               placeholder="••••••••"
             />
-            {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
-            <div className="flex items-center justify-end mt-1">
-              <Link href="/forgot-password" className="text-xs font-medium text-kh-purple hover:text-purple-600">Forgot password?</Link>
+            {errors.password && <p className="mt-1 text-xs text-red-500 font-medium">{errors.password.message}</p>}
+            <div className="flex items-center justify-end mt-2">
+              <Link href="/forgot-password" className="text-xs font-medium text-kh-purple hover:text-purple-600 hover:underline">Forgot password?</Link>
             </div>
           </div>
 
-          {/* CAPTCHA */}
+          {/* CAPTCHA - Centered */}
           <div className="flex justify-center">
-             <div id="recap-login" className="scale-90 sm:scale-100 origin-center" />
+             <div id="recap-login" className="scale-90 origin-center" />
           </div>
 
           {/* Error Messages */}
           {loginError && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">Login Failed</h3>
-                  <div className="mt-2 text-sm text-red-700"><p>{loginError}</p></div>
-                </div>
+            <div className="rounded-lg bg-red-50 p-3 border border-red-100">
+              <div className="flex items-center gap-2 text-sm text-red-700">
+                <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                <p className="font-medium">{loginError}</p>
               </div>
             </div>
           )}
 
           {showForgotUser && (
-             <div className="text-center text-sm">
-                <span className="text-kh-gray">Forgotten your username? </span>
-                <Link href="/forgot-username" className="font-medium text-kh-red hover:text-red-500">Recover it here</Link>
+             <div className="text-center text-sm p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+                <span className="text-gray-600">Forgot username? </span>
+                <Link href="/forgot-username" className="font-semibold text-kh-red hover:text-red-600 hover:underline">Recover it here</Link>
              </div>
           )}
 
-          <button type="submit" disabled={isSubmitting} className="btn-primary">
-            {isSubmitting ? "Signing in..." : "Sign in"}
+          {/* Button - Explicitly Styled */}
+          <button 
+            type="submit" 
+            disabled={isSubmitting} 
+            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-kh-red hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kh-red disabled:opacity-70 disabled:cursor-not-allowed transition-all transform active:scale-[0.98]"
+          >
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                Signing in...
+              </span>
+            ) : "Sign in"}
           </button>
         </form>
       </div>

@@ -64,11 +64,9 @@ export default function SignupPage() {
   const [serverError, setServerError] = useState<string | null>(null);
 
   const password = watch("password") || "";
-  // Calculate password strength
   const strength = (typeof window !== "undefined" && zxcvbn) ? zxcvbn(password) : { score: 0 };
   const score = Math.min(Math.max(strength.score ?? 0, 0), 4);
   
-  // Custom colors for strength bar
   const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-blue-500', 'bg-green-500'];
   const strengthLabel = ["Weak", "Fair", "Good", "Strong", "Excellent"][score];
 
@@ -117,93 +115,104 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center py-12 sm:px-6 lg:px-8 bg-kh-light">
+    // ✅ FIXED LAYOUT: h-screen + overflow-hidden + center alignment
+    <div className="h-screen w-full flex items-center justify-center bg-kh-light overflow-hidden">
       
-      <div className="sm:mx-auto sm:w-full sm:max-w-md mb-8 text-center">
-         <div className="mx-auto h-12 w-12 bg-kh-purple rounded-lg flex items-center justify-center text-white font-bold text-xl mb-4">K</div>
-         <h2 className="text-3xl font-bold text-kh-dark">Create your account</h2>
-         <p className="mt-2 text-sm text-kh-gray">
-           Already have an account? <Link href="/login" className="font-medium text-kh-red hover:text-red-500">Sign in</Link>
-         </p>
-      </div>
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl border border-gray-100 max-h-[95vh] overflow-y-auto scrollbar-hide mx-4">
+        
+        {/* Header */}
+        <div className="text-center mb-6">
+           <div className="mx-auto h-12 w-12 bg-gradient-to-br from-kh-purple to-purple-400 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg mb-4">K</div>
+           <h2 className="text-2xl font-bold text-gray-900">Create your account</h2>
+           <p className="mt-2 text-sm text-gray-500">
+             Already have an account? <Link href="/login" className="font-semibold text-kh-red hover:text-red-600 transition-colors">Sign in</Link>
+           </p>
+        </div>
 
-      <div className="auth-card sm:px-10">
-        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           
           {/* Full Name */}
           <div>
-            <label className="block text-sm font-medium text-kh-gray mb-1">Full Name</label>
+            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Full Name</label>
             <input
               {...register("name")}
-              className="input-field"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
               placeholder="John Doe"
             />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-kh-gray mb-1">Email Address</label>
+            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Email Address</label>
             <input
               {...register("email")}
-              className="input-field"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
               placeholder="you@iimidr.ac.in"
             />
-            {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
+            {errors.email && <p className="mt-1 text-xs text-red-500 font-medium">{errors.email.message}</p>}
           </div>
 
           {/* Username */}
           <div>
-            <label className="block text-sm font-medium text-kh-gray mb-1">Username</label>
+            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Username</label>
             <input
               {...register("username")}
-              className="input-field"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
               placeholder="johndoe123"
             />
-            {errors.username && <p className="mt-1 text-xs text-red-600">{errors.username.message}</p>}
+            {errors.username && <p className="mt-1 text-xs text-red-500 font-medium">{errors.username.message}</p>}
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-kh-gray mb-1">Password</label>
+            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Password</label>
             <input
               {...register("password")}
               type="password"
-              className="input-field"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
               placeholder="••••••••"
             />
-            {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
+            {errors.password && <p className="mt-1 text-xs text-red-500 font-medium">{errors.password.message}</p>}
             
             {/* Password Strength Bar */}
             <div className="mt-3">
-               <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
+               <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
                  <div 
-                    className={`h-full transition-all duration-300 ${strengthColors[score]}`} 
+                    className={`h-full transition-all duration-500 ease-out ${strengthColors[score]}`} 
                     style={{ width: `${(score + 1) * 20}%` }} 
                  />
                </div>
-               <p className="text-xs text-right mt-1 text-gray-500">Strength: <span className="font-medium text-kh-dark">{strengthLabel}</span></p>
+               <p className="text-[10px] text-right mt-1 text-gray-400 uppercase font-medium tracking-wider">Strength: <span className={`text-${strengthColors[score].replace('bg-', '')}`}>{strengthLabel}</span></p>
             </div>
           </div>
 
-          {/* CAPTCHA */}
-          <div className="flex justify-center pt-2">
-             <div id="recap-signup" className="scale-90 sm:scale-100 origin-center" />
+          {/* CAPTCHA - Centered */}
+          <div className="flex justify-center py-2">
+             <div id="recap-signup" className="scale-90 origin-center" />
           </div>
 
           {/* Error Messages */}
           {serverError && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">Signup Failed</h3>
-                  <div className="mt-2 text-sm text-red-700"><p>{serverError}</p></div>
-                </div>
+            <div className="rounded-lg bg-red-50 p-3 border border-red-100">
+              <div className="flex items-center gap-2 text-sm text-red-700">
+                <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg>
+                <p className="font-medium">{serverError}</p>
               </div>
             </div>
           )}
 
-          <button type="submit" disabled={isSubmitting} className="btn-primary">
-            {isSubmitting ? "Creating account..." : "Create account"}
+          {/* Button - Explicitly Styled */}
+          <button 
+            type="submit" 
+            disabled={isSubmitting} 
+            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-kh-red hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kh-red disabled:opacity-70 disabled:cursor-not-allowed transition-all transform active:scale-[0.98]"
+          >
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                Creating account...
+              </span>
+            ) : "Create Account"}
           </button>
         </form>
       </div>
