@@ -1,9 +1,10 @@
 // pages/login.tsx
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { mutate } from "swr"; // ✅ Import mutate
 
 declare global {
   interface Window {
@@ -54,7 +55,7 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>();
   const router = useRouter();
   const [loginError, setLoginError] = useState("");
-  const [showForgotUser, setShowForgotUser] = useState(false); // ✅ State to toggle link
+  const [showForgotUser, setShowForgotUser] = useState(false);
 
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
   const widgetRef = useRenderRecaptcha("recap-login", siteKey);
@@ -82,7 +83,6 @@ export default function LoginPage() {
       if (!res.ok) {
         setLoginError(j?.error || "Login failed");
         
-        // ✅ If credential error, show Forgot Username link
         if (res.status === 401 || j?.error?.includes("Invalid")) {
           setShowForgotUser(true);
         }
@@ -95,6 +95,10 @@ export default function LoginPage() {
         }
         return;
       }
+
+      // ✅ FORCE UPDATE THE HEADER BEFORE REDIRECTING
+      await mutate("/api/auth/me");
+
       router.replace("/");
     } catch (err) {
       setLoginError("Network error");
@@ -152,7 +156,6 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* ✅ Conditional Forgot Username Link */}
         {showForgotUser && (
           <div className="text-center text-sm">
              <span className="text-gray-600">Trouble signing in? </span>
