@@ -1,12 +1,20 @@
-// pages/_app.tsx
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import Script from "next/script";
+import { useRouter } from "next/router"; // ✅ Added useRouter
 import "../styles/globals.css";
 import Header from "../components/Header";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
+  const router = useRouter();
+  
+  // ✅ Define which pages should be full-screen (No Header, No Padding)
+  const isAuthPage = [
+    "/login", 
+    "/signup", 
+    "/forgot-password", 
+    "/forgot-username"
+  ].includes(router.pathname);
 
   return (
     <>
@@ -15,20 +23,27 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      {siteKey && (
-        <Script 
-           src={`https://www.google.com/recaptcha/api.js`} 
-           strategy="afterInteractive" 
-        />
+      {/* Global ReCaptcha Script */}
+      <Script 
+        src="https://www.google.com/recaptcha/api.js" 
+        strategy="afterInteractive" 
+      />
+
+      {isAuthPage ? (
+        // ✅ Auth Layout: Render component directly (Full Screen Control)
+        <Component {...pageProps} />
+      ) : (
+        // ✅ Standard Layout: Header + Padding + Container
+        <>
+          <Header />
+          <main className="py-8">
+            {/* Using container-responsive to match the Header alignment */}
+            <div className="container-responsive">
+              <Component {...pageProps} />
+            </div>
+          </main>
+        </>
       )}
-
-      <Header />
-
-      <main className="py-8">
-        <div className="container">
-          <Component {...pageProps} />
-        </div>
-      </main>
     </>
   );
 }
