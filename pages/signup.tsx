@@ -3,11 +3,60 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema, SignupInput } from "../lib/validators";
 import { useRouter } from "next/router";
-//@ts-ignore
+// @ts-ignore
 import zxcvbn from "zxcvbn";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+
+declare global {
+  interface Window {
+    grecaptcha?: any;
+  }
+}
 
 declare const grecaptcha: any;
+
+function useRenderRecaptcha(elementId: string, siteKey: string | undefined) {
+  const widgetRef = useRef<number | null>(null);
+  const renderedRef = useRef(false);
+
+  useEffect(() => {
+    if (!siteKey) return;
+
+    let cancelled = false;
+
+    const tryRender = () => {
+      if (cancelled) return;
+      const g = (window as any).grecaptcha;
+      const el = document.getElementById(elementId);
+      if (g && el) {
+        try {
+          // if widget already rendered, reset it
+          if (renderedRef.current && typeof g.reset === "function") {
+            g.reset(widgetRef.current);
+          } else {
+            // render and store widget id
+            const wid = g.render(elementId, { sitekey: siteKey });
+            widgetRef.current = wid;
+            renderedRef.current = true;
+          }
+        } catch (err) {
+          // sometimes render can throw if called too early — try again shortly
+          setTimeout(tryRender, 200);
+        }
+        return;
+      }
+      setTimeout(tryRender, 200);
+    };
+
+    tryRender();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [elementId, siteKey]);
+
+  return widgetRef;
+}
 
 export default function SignupPage() {
   const {
@@ -28,12 +77,19 @@ export default function SignupPage() {
   const strengthLabel = ["Very weak", "Weak", "Okay", "Good", "Strong"][score];
   const strengthPercent = (score / 4) * 100;
 
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
+  const widgetRef = useRenderRecaptcha("recap-signup", siteKey);
+
   async function onSubmit(data: SignupInput) {
     setServerError(null);
     try {
       let captchaToken: string | undefined;
       if (typeof window !== "undefined" && (window as any).grecaptcha) {
-        captchaToken = (window as any).grecaptcha.getResponse();
+        // use widgetId if available
+        const wid = widgetRef.current;
+        captchaToken = (window as any).grecaptcha.getResponse(
+          typeof wid === "number" ? wid : undefined
+        );
       }
 
       if (!captchaToken) {
@@ -51,14 +107,21 @@ export default function SignupPage() {
       if (!res.ok) {
         setServerError(j?.error || "Signup failed");
         if ((window as any).grecaptcha) {
-          (window as any).grecaptcha.reset();
+          // reset the widget for retry
+          const wid = widgetRef.current;
+          try {
+            (window as any).grecaptcha.reset(typeof wid === "number" ? wid : undefined);
+          } catch (e) {}
         }
         return;
       }
 
       alert("Account created — please log in.");
       if ((window as any).grecaptcha) {
-        (window as any).grecaptcha.reset();
+        const wid = widgetRef.current;
+        try {
+          (window as any).grecaptcha.reset(typeof wid === "number" ? wid : undefined);
+        } catch (e) {}
       }
       router.push("/login");
     } catch (err) {
@@ -147,12 +210,9 @@ export default function SignupPage() {
           </div>
         </div>
 
-        {/* reCAPTCHA v2 widget */}
+        {/* reCAPTCHA v2 widget - use empty div with id */}
         <div className="mt-2">
-          <div
-            className="g-recaptcha"
-            data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
-          ></div>
+          <div id="recap-signup" />
         </div>
 
         {/* Server error */}
