@@ -1,6 +1,7 @@
+// pages/api/auth/reset-password.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../lib/prisma";
-import { hashPwd } from "../../../lib/hash";
+import { hashPwd, comparePwd } from "../../../lib/hash"; // Ensure comparePwd is imported
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
@@ -15,14 +16,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: "Invalid request" });
     }
 
-    // Check if OTP matches
+    // Check OTP match
     if (user.resetOTP !== otp) {
       return res.status(400).json({ error: "Invalid OTP" });
     }
 
-    // Check if expired
+    // Check expiry
     if (new Date() > user.resetOTPExpiry) {
       return res.status(400).json({ error: "OTP expired" });
+    }
+
+    // ✅ NEW: Check if new password is same as old
+    const isSame = await comparePwd(newPassword, user.password);
+    if (isSame) {
+      return res.status(400).json({ error: "New password cannot be the same as the old password" });
     }
 
     // Hash new password and clear OTP
@@ -39,6 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.json({ success: true });
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: "Server error" });
   }
 }

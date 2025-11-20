@@ -1,3 +1,4 @@
+// pages/api/auth/forgot-username.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../lib/prisma";
 import { sendUsername } from "../../../lib/mail";
@@ -9,11 +10,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (user) {
-      await sendUsername(email, user.username);
+    
+    // ✅ NEW: Specific feedback as requested
+    if (!user) {
+      return res.status(404).json({ success: false, error: "Email not found linked with any account" });
     }
-    // Always return success to prevent email scraping
-    return res.json({ success: true });
+
+    await sendUsername(email, user.username);
+    
+    return res.json({ success: true, message: "An email has been sent to your email address" });
   } catch (error) {
     return res.status(500).json({ error: "Server error" });
   }
