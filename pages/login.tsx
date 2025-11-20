@@ -2,6 +2,7 @@
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 
 declare global {
   interface Window {
@@ -102,6 +103,11 @@ export default function LoginPage() {
         <input {...register("password", { required: "Password required" })} type="password" placeholder="Password" className="w-full p-2 border rounded" />
         {errors.password && <div className="text-sm text-orange-600">{errors.password.message}</div>}
 
+        <div className="text-right mt-1">
+        <Link href="/forgot-password" className="text-xs text-kh-purple hover:underline">
+        Forgot password?
+        </Link>
+        </div>
         {/* reCAPTCHA widget */}
         <div className="mt-2">
           <div id="recap-login" />
