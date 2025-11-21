@@ -1,17 +1,17 @@
 import Head from "next/head";
 import Link from "next/link";
-
 import HeroBanner from "../components/HeroBanner";
 import ListingCard from "../components/ListingCard";
 import GroupOrderCard from "../components/GroupOrderCard";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 
-// Mock Data
+// Mock Data - Sorted by Time (Newest First)
 const TRENDING_LISTINGS = [
-  { id: 1, title: "Scientific Calculator FX-991ES (Barely used)", price: 650, mrp: 950, negotiable: true },
-  { id: 2, title: "IPM Quant Book Bundle (IMS + TIME)", price: 1200, mrp: 2200, negotiable: false },
-  { id: 3, title: "Table Lamp with Study Light", price: 400, mrp: 800, negotiable: true },
-  { id: 4, title: "Basic Dumbbell Set (2 x 5kg)", price: 900, mrp: 1500, negotiable: true },
+  { id: 1, title: "Scientific Calculator FX-991ES (Barely used)", price: 650, mrp: 950, negotiable: true, postedAt: "2 mins ago" },
+  { id: 5, title: "Wireless Mouse Logitech", price: 550, mrp: 999, negotiable: false, isAuction: true, endTime: "22h 15m", postedAt: "10 mins ago" },
+  { id: 3, title: "Table Lamp with Study Light", price: 400, mrp: 800, negotiable: true, postedAt: "45 mins ago" },
+  { id: 2, title: "IPM Quant Book Bundle (IMS + TIME)", price: 1200, mrp: 2200, negotiable: false, postedAt: "2 hours ago" },
+  { id: 4, title: "Basic Dumbbell Set (2 x 5kg)", price: 900, mrp: 1500, negotiable: true, postedAt: "5 hours ago" },
 ];
 
 export default function Home() {
@@ -22,8 +22,6 @@ export default function Home() {
         <meta name="description" content="Buy, Sell, and Group Order with Khareed-i" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-
 
       <main className="container mx-auto px-4 py-6 space-y-10">
 

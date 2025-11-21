@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 
+import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import { Upload, DollarSign, Clock, AlertCircle } from 'lucide-react';
 
@@ -21,6 +22,7 @@ type ListingForm = {
 const CATEGORIES = ["Electronics", "Books", "Hostel Essentials", "Clothing", "Sports Gear", "Stationery"];
 
 export default function CreateListingPage() {
+    const router = useRouter();
     const { register, handleSubmit, watch, formState: { errors } } = useForm<ListingForm>();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -35,6 +37,7 @@ export default function CreateListingPage() {
         console.log(data);
         alert("Listing created successfully! (Simulation)");
         setIsSubmitting(false);
+        router.push('/'); // Redirect to Home Page
     };
 
     return (
@@ -107,15 +110,17 @@ export default function CreateListingPage() {
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price (₹)</label>
-                                    <input
-                                        type="number"
-                                        {...register("price", { required: "Selling Price is required", min: 0 })}
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
-                                        placeholder="Your Price"
-                                    />
-                                </div>
+                                {!isAuction && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price (₹)</label>
+                                        <input
+                                            type="number"
+                                            {...register("price", { required: !isAuction ? "Selling Price is required" : false, min: 0 })}
+                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
+                                            placeholder="Your Price"
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex flex-col gap-3 pt-2">
@@ -154,11 +159,12 @@ export default function CreateListingPage() {
                                         </div>
                                         <div>
                                             <label className="block text-xs font-semibold text-purple-900 mb-1">Duration (Hours)</label>
-                                            <select {...register("auctionDuration")} className="w-full px-3 py-2 bg-white border border-purple-200 rounded-md text-sm focus:outline-none focus:border-purple-400">
-                                                <option value="24">24 Hours</option>
-                                                <option value="48">48 Hours</option>
-                                                <option value="72">3 Days</option>
-                                            </select>
+                                            <input
+                                                type="number"
+                                                {...register("auctionDuration", { required: isAuction ? "Duration is required" : false, min: 1 })}
+                                                className="w-full px-3 py-2 bg-white border border-purple-200 rounded-md text-sm focus:outline-none focus:border-purple-400"
+                                                placeholder="e.g. 24"
+                                            />
                                         </div>
                                     </div>
                                 </div>

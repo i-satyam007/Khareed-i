@@ -11,9 +11,10 @@ type ListingProps = {
     negotiable: boolean;
     isAuction?: boolean;
     endTime?: string;
+    postedAt?: string; // New prop for "Time Ago"
 };
 
-export default function ListingCard({ id, title, price, mrp, image, negotiable, isAuction, endTime }: ListingProps) {
+export default function ListingCard({ id, title, price, mrp, image, negotiable, isAuction, endTime, postedAt }: ListingProps) {
     const discount = Math.round(((mrp - price) / mrp) * 100);
 
     return (
@@ -30,8 +31,15 @@ export default function ListingCard({ id, title, price, mrp, image, negotiable, 
 
                 {/* Badges */}
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
-                    {negotiable && <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-md border border-blue-100">Negotiable</span>}
-                    {isAuction && <span className="px-2 py-0.5 bg-purple-50 text-purple-700 text-[10px] font-bold rounded-md border border-purple-100">Auction</span>}
+                    {isAuction ? (
+                        <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold rounded-md border border-purple-200 shadow-sm">
+                            Auction
+                        </span>
+                    ) : negotiable ? (
+                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-md border border-blue-100">
+                            Negotiable
+                        </span>
+                    ) : null}
                 </div>
 
                 {/* Wishlist Button */}
@@ -55,12 +63,20 @@ export default function ListingCard({ id, title, price, mrp, image, negotiable, 
                         <span className="text-xs font-bold text-green-600">{discount}% OFF</span>
                     </div>
 
-                    {isAuction && endTime && (
-                        <div className="mt-2 flex items-center gap-1.5 text-xs text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded-md w-fit">
-                            <Clock className="h-3 w-3" />
-                            <span>Ends in {endTime}</span>
-                        </div>
-                    )}
+                    {/* Auction Timer or Posted Time */}
+                    <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500">
+                        {isAuction && endTime ? (
+                            <div className="flex items-center gap-1 text-orange-600 font-bold">
+                                <Clock className="h-3 w-3" />
+                                <span>Ends in {endTime}</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                <span>{postedAt || "Recently"}</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
