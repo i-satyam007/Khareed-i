@@ -3,6 +3,7 @@ import Link from "next/link";
 import Header from "../components/Header";
 import HeroBanner from "../components/HeroBanner";
 import ListingCard from "../components/ListingCard";
+import GroupOrderCard from "../components/GroupOrderCard";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 
 // Mock Data
@@ -47,6 +48,28 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {TRENDING_LISTINGS.map((item) => (
               <ListingCard key={item.id} {...item} />
+            ))}
+          </div>
+        </section>
+
+        {/* Active Group Orders */}
+        <section className="bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-2xl p-6 sm:p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Active Group Orders</h2>
+              <p className="text-sm text-gray-500">Join a cart to split fees</p>
+            </div>
+            <Link href="/group-orders" className="text-sm font-medium text-kh-purple hover:text-purple-700 hover:underline">View all →</Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { id: 1, platform: "Blinkit", title: "Midnight snacks run", cutoff: "Today · 11:15 PM", minCart: "₹200 shared", host: "Aman (BH-3)" },
+              { id: 2, platform: "BigBasket", title: "Weekly groceries", cutoff: "Tmrw · 9:00 PM", minCart: "₹1,000 shared", host: "Khushi (GH-2)" },
+              { id: 3, platform: "Swiggy", title: "Biryani from Behrouz", cutoff: "Today · 9:30 PM", minCart: "₹500 shared", host: "Rohan (BH-5)" },
+            ].map((order) => (
+              // @ts-ignore
+              <GroupOrderCard key={order.id} {...order} />
             ))}
           </div>
         </section>

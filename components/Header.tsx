@@ -41,10 +41,10 @@ export default function Header() {
 
         {/* Search Bar - Desktop */}
         <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl items-center bg-gray-100 rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-kh-purple/20 focus-within:border-kh-purple transition-all overflow-hidden">
-          
+
           {/* Category Dropdown */}
           <div className="relative group border-r border-gray-300">
-            <select 
+            <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="appearance-none bg-transparent py-2.5 pl-4 pr-8 text-sm font-medium text-gray-700 focus:outline-none cursor-pointer hover:bg-gray-200 transition-colors"
@@ -57,11 +57,11 @@ export default function Header() {
           </div>
 
           {/* Input */}
-          <input 
+          <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search for products, brands and more..." 
+            placeholder="Search for products, brands and more..."
             className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none"
           />
 
@@ -73,7 +73,7 @@ export default function Header() {
 
         {/* Navigation Icons */}
         <div className="flex items-center gap-6">
-          
+
           {/* Group Order CTA */}
           <Link href="/group-order" className="hidden lg:flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-kh-red transition-colors group">
             <div className="p-2 bg-orange-50 rounded-full group-hover:bg-orange-100 transition-colors">
@@ -90,13 +90,13 @@ export default function Header() {
 
           {/* Profile / Login */}
           <Link href="/login" className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-kh-purple transition-colors">
-             <div className="p-1.5 bg-gray-100 rounded-full">
-                <User className="h-5 w-5 text-gray-600" />
-             </div>
-             <div className="hidden sm:block text-xs">
-                <p className="text-gray-500 leading-none">Hello, Sign in</p>
-                <p className="font-bold leading-none">Account</p>
-             </div>
+            <div className="p-1.5 bg-gray-100 rounded-full">
+              <User className="h-5 w-5 text-gray-600" />
+            </div>
+            <div className="hidden sm:block text-xs">
+              <p className="text-gray-500 leading-none mb-1">Hello, Sign in</p>
+              <p className="font-bold leading-none">Account</p>
+            </div>
           </Link>
         </div>
       </div>
@@ -105,11 +105,11 @@ export default function Header() {
       <div className="md:hidden px-4 pb-3">
         <form onSubmit={handleSearch} className="flex items-center bg-gray-100 rounded-lg border border-gray-200 overflow-hidden">
           <Search className="h-4 w-4 text-gray-500 ml-3" />
-          <input 
+          <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search Khareed-i..." 
+            placeholder="Search Khareed-i..."
             className="flex-1 bg-transparent px-3 py-2 text-sm focus:outline-none"
           />
         </form>
