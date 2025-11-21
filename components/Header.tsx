@@ -1,3 +1,4 @@
+// components/Header.tsx
 import Link from "next/link";
 import useSWR from "swr";
 import { useRouter } from "next/router";
@@ -18,12 +19,11 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b sticky top-0 z-50">
-      {/* ✅ Used container-responsive for alignment */}
       <div className="container-responsive flex items-center gap-4 py-3">
         
-        {/* Logo */}
+        {/* Logo - Increased size from h-10 to h-14 */}
         <Link href="/" className="flex items-center gap-3 shrink-0 group">
-          <Logo className="h-10 w-10 group-hover:scale-105 transition-transform duration-200" showText={true} />
+          <Logo className="h-14 w-14 group-hover:scale-105 transition-transform duration-200" showText={true} />
         </Link>
 
         {/* Search Bar */}
