@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import Header from "../components/Header";
+
 import HeroBanner from "../components/HeroBanner";
 import ListingCard from "../components/ListingCard";
 import GroupOrderCard from "../components/GroupOrderCard";
@@ -23,7 +23,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header />
+
 
       <main className="container mx-auto px-4 py-6 space-y-10">
 

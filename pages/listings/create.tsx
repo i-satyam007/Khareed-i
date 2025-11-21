@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
-import Header from '../../components/Header';
+
 import { useForm } from 'react-hook-form';
 import { Upload, DollarSign, Clock, AlertCircle } from 'lucide-react';
 
@@ -43,7 +43,7 @@ export default function CreateListingPage() {
                 <title>List an Item | Khareed-i</title>
             </Head>
 
-            <Header />
+
 
             <div className="container mx-auto px-4 py-8 max-w-3xl">
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">

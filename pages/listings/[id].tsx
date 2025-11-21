@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import Header from '../../components/Header';
+
 import { Heart, Share2, MapPin, ShieldCheck, Clock, User } from 'lucide-react';
 
 // Mock Data (In real app, fetch based on ID)
@@ -38,7 +38,7 @@ export default function ProductDetailsPage() {
                 <title>{product.title} | Khareed-i</title>
             </Head>
 
-            <Header />
+
 
             <div className="container mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">

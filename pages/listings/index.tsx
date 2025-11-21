@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
-import Header from '../../components/Header';
+
 import ListingCard from '../../components/ListingCard';
 import { Filter, SlidersHorizontal, X } from 'lucide-react';
 
@@ -34,7 +34,7 @@ export default function ListingsPage() {
                 <title>All Listings | Khareed-i</title>
             </Head>
 
-            <Header />
+
 
             <div className="container mx-auto px-4 py-6">
                 <div className="flex flex-col lg:flex-row gap-8">
