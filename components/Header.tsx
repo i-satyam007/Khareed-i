@@ -1,6 +1,7 @@
 import Link from "next/link";
 import useSWR from "swr";
 import { useRouter } from "next/router";
+import Logo from "./Logo";
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
@@ -21,12 +22,8 @@ export default function Header() {
       <div className="container-responsive flex items-center gap-4 py-3">
         
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 shrink-0">
-          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-kh-purple to-purple-400 flex items-center justify-center text-white font-bold text-xl shadow-sm">K</div>
-          <div className="hidden sm:block">
-            <div className="font-bold text-lg text-kh-dark leading-tight">Khareed-i</div>
-            <div className="text-[10px] text-kh-gray uppercase tracking-wide">IPM Marketplace</div>
-          </div>
+        <Link href="/" className="flex items-center gap-3 shrink-0 group">
+          <Logo className="h-10 w-10 group-hover:scale-105 transition-transform duration-200" showText={true} />
         </Link>
 
         {/* Search Bar */}
