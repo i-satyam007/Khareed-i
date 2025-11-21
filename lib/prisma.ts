@@ -1,16 +1,11 @@
-// lib/prisma.ts
-import type { PrismaClient } from "@prisma/client";
-import { PrismaClient as PrismaClientImpl } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
-declare global {
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
-}
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 export const prisma =
-  global.prisma ||
-  new PrismaClientImpl({
-    log: ["query"],
-  }) as unknown as PrismaClient;
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    log: ['query'],
+  });
 
-if (process.env.NODE_ENV !== "production") global.prisma = prisma;
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

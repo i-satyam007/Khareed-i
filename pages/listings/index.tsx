@@ -1,40 +1,42 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
-
+import useSWR from 'swr';
 import ListingCard from '../../components/ListingCard';
-import { Filter, SlidersHorizontal, X } from 'lucide-react';
+import { Filter, SlidersHorizontal, X, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/router';
 
-const MOCK_LISTINGS = [
-    { id: 1, title: "Scientific Calculator FX-991ES (Barely used)", price: 650, mrp: 950, negotiable: true, category: "Stationery" },
-    { id: 2, title: "IPM Quant Book Bundle (IMS + TIME)", price: 1200, mrp: 2200, negotiable: false, category: "Books" },
-    { id: 3, title: "Table Lamp with Study Light", price: 400, mrp: 800, negotiable: true, category: "Hostel Essentials" },
-    { id: 4, title: "Basic Dumbbell Set (2 x 5kg)", price: 900, mrp: 1500, negotiable: true, category: "Sports Gear" },
-    { id: 5, title: "Wireless Mouse Logitech", price: 550, mrp: 999, negotiable: false, category: "Electronics" },
-    { id: 6, title: "Mattress Topper (Single Bed)", price: 800, mrp: 1800, negotiable: true, category: "Hostel Essentials" },
-];
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const CATEGORIES = ["All Categories", "Electronics", "Books", "Hostel Essentials", "Clothing", "Sports Gear", "Stationery"];
 
 export default function ListingsPage() {
+    const router = useRouter();
+    const { search } = router.query;
+
     const [showFilters, setShowFilters] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("All Categories");
-    const [priceRange, setPriceRange] = useState(5000);
+    const [priceRange, setPriceRange] = useState(10000);
     const [onlyNegotiable, setOnlyNegotiable] = useState(false);
 
-    const filteredListings = MOCK_LISTINGS.filter(item => {
-        const catMatch = selectedCategory === "All Categories" || item.category === selectedCategory;
+    // Construct API URL based on category and search
+    // Note: We fetch based on category/search from server, and filter price/negotiable on client for now.
+    let apiUrl = `/api/listings?`;
+    if (search) apiUrl += `search=${encodeURIComponent(search as string)}&`;
+    if (selectedCategory !== "All Categories") apiUrl += `category=${encodeURIComponent(selectedCategory)}&`;
+
+    const { data: listings, error, isLoading } = useSWR(apiUrl, fetcher);
+
+    const filteredListings = listings ? listings.filter((item: any) => {
         const priceMatch = item.price <= priceRange;
         const negMatch = !onlyNegotiable || item.negotiable;
-        return catMatch && priceMatch && negMatch;
-    });
+        return priceMatch && negMatch;
+    }) : [];
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <Head>
                 <title>All Listings | Khareed-i</title>
             </Head>
-
-
 
             <div className="container mx-auto px-4 py-6">
                 <div className="flex flex-col lg:flex-row gap-8">
@@ -118,7 +120,9 @@ export default function ListingsPage() {
                         <div className="flex items-center justify-between mb-6">
                             <h1 className="text-xl font-bold text-gray-900">
                                 {selectedCategory === "All Categories" ? "All Listings" : selectedCategory}
-                                <span className="text-gray-500 text-sm font-normal ml-2">({filteredListings.length} items)</span>
+                                <span className="text-gray-500 text-sm font-normal ml-2">
+                                    ({filteredListings.length} items)
+                                </span>
                             </h1>
 
                             <div className="flex items-center gap-2">
@@ -131,9 +135,17 @@ export default function ListingsPage() {
                             </div>
                         </div>
 
-                        {filteredListings.length > 0 ? (
+                        {isLoading ? (
+                            <div className="flex justify-center py-20">
+                                <Loader2 className="h-10 w-10 text-kh-purple animate-spin" />
+                            </div>
+                        ) : error ? (
+                            <div className="text-center py-20 text-red-500">
+                                Failed to load listings. Please try again.
+                            </div>
+                        ) : filteredListings.length > 0 ? (
                             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {filteredListings.map(item => (
+                                {filteredListings.map((item: any) => (
                                     <ListingCard key={item.id} {...item} />
                                 ))}
                             </div>

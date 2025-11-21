@@ -1,20 +1,20 @@
 import Head from "next/head";
 import Link from "next/link";
+import useSWR from 'swr';
 import HeroBanner from "../components/HeroBanner";
 import ListingCard from "../components/ListingCard";
 import GroupOrderCard from "../components/GroupOrderCard";
-import { ArrowRight, ShoppingBag } from "lucide-react";
+import { ArrowRight, ShoppingBag, Loader2 } from "lucide-react";
 
-// Mock Data - Sorted by Time (Newest First)
-const TRENDING_LISTINGS = [
-  { id: 1, title: "Scientific Calculator FX-991ES (Barely used)", price: 650, mrp: 950, negotiable: true, postedAt: "2 mins ago" },
-  { id: 5, title: "Wireless Mouse Logitech", price: 550, mrp: 999, negotiable: false, isAuction: true, endTime: "22h 15m", postedAt: "10 mins ago" },
-  { id: 3, title: "Table Lamp with Study Light", price: 400, mrp: 800, negotiable: true, postedAt: "45 mins ago" },
-  { id: 2, title: "IPM Quant Book Bundle (IMS + TIME)", price: 1200, mrp: 2200, negotiable: false, postedAt: "2 hours ago" },
-  { id: 4, title: "Basic Dumbbell Set (2 x 5kg)", price: 900, mrp: 1500, negotiable: true, postedAt: "5 hours ago" },
-];
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function Home() {
+  // Fetch latest 4 listings for the homepage
+  const { data: listings, error, isLoading } = useSWR('/api/listings', fetcher);
+
+  // Take top 4
+  const trendingListings = listings ? listings.slice(0, 4) : [];
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       <Head>
@@ -43,14 +43,22 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {TRENDING_LISTINGS.map((item) => (
-              <ListingCard key={item.id} {...item} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-8 w-8 text-kh-purple animate-spin" />
+            </div>
+          ) : error ? (
+            <div className="text-center py-10 text-red-500">Failed to load listings.</div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {trendingListings.map((item: any) => (
+                <ListingCard key={item.id} {...item} />
+              ))}
+            </div>
+          )}
         </section>
 
-        {/* Active Group Orders */}
+        {/* Active Group Orders (Still Mock for now, can be updated later) */}
         <section className="bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-2xl p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -72,12 +80,12 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Categories Grid (Optional) */}
+        {/* Categories Grid */}
         <section>
           <h2 className="text-xl font-bold text-gray-900 mb-4">Browse by Category</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {["Electronics", "Books", "Hostel", "Clothing", "Sports", "Stationery"].map((cat) => (
-              <Link href={`/listings?category=${cat}`} key={cat} className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-kh-purple hover:shadow-md transition-all group">
+            {["Electronics", "Books", "Hostel Essentials", "Clothing", "Sports Gear", "Stationery"].map((cat) => (
+              <Link href={`/listings?category=${encodeURIComponent(cat)}`} key={cat} className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-kh-purple hover:shadow-md transition-all group">
                 <div className="text-sm font-medium text-gray-700 group-hover:text-kh-purple">{cat}</div>
               </Link>
             ))}

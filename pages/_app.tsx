@@ -7,43 +7,31 @@ import Header from "../components/Header";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  
+
   // ✅ Define which pages should be full-screen (No Header, No Padding)
   const isAuthPage = [
-    "/login", 
-    "/signup", 
+    "/login",
+    "/signup",
     "/forgot-password", 
-    "/forgot-username"
-  ].includes(router.pathname);
-
-  return (
-    <>
-      <Head>
-        <title>Khareed-i</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
-
-      {/* Global ReCaptcha Script */}
-      <Script 
-        src="https://www.google.com/recaptcha/api.js" 
-        strategy="afterInteractive" 
       />
 
-      {isAuthPage ? (
+      {
+      isAuthPage?(
         // ✅ Auth Layout: Render component directly (Full Screen Control)
-        <Component {...pageProps} />
+        <Component { ...pageProps } />
       ) : (
-        // ✅ Standard Layout: Header + Padding + Container
-        <>
-          <Header />
-          <main className="py-8">
-            {/* Using container-responsive to match the Header alignment */}
-            <div className="container-responsive">
-              <Component {...pageProps} />
-            </div>
-          </main>
-        </>
-      )}
+    // ✅ Standard Layout: Header + Padding + Container
+    <>
+      <Header />
+      <main className="py-8">
+        {/* Using container-responsive to match the Header alignment */}
+        <div className="container-responsive">
+          <Component {...pageProps} />
+        </div>
+      </main>
+    </>
+  )
+}
     </>
   );
 }
