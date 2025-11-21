@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, ChevronDown, Users } from 'lucide-react';
 import { useRouter } from 'next/router';
 
 const CATEGORIES = [
@@ -34,15 +34,14 @@ export default function Header() {
 
       <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-8">
 
-        {/* Logo Section - Restored with explicit text/icon if Logo component fails */}
-        <Link href="/" className="flex-shrink-0 flex items-center gap-2 hover:opacity-90 transition-opacity">
-          <div className="w-10 h-10 bg-kh-red rounded-lg flex items-center justify-center text-white shadow-md transform -rotate-3">
-            <ShoppingBag className="h-6 w-6" />
-          </div>
-          <div className="hidden sm:block">
-            <h1 className="text-xl font-extrabold text-gray-900 leading-none tracking-tight">Khareed-i</h1>
-            <p className="text-[10px] font-bold text-kh-purple tracking-widest uppercase">IPM Marketplace</p>
-          </div>
+        {/* Logo Section - Using Logo.svg */}
+        <Link href="/" className="flex-shrink-0 hover:opacity-90 transition-opacity">
+          <img
+            src="/Logo.svg"
+            alt="Khareed-i Logo"
+            className="h-14"
+            style={{ height: '56px' }}
+          />
         </Link>
 
         {/* Search Bar - Desktop (Centered) */}

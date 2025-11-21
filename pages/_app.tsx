@@ -1,4 +1,5 @@
 import type { AppProps } from "next/app";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import "../styles/globals.css";
 import Header from "../components/Header";
@@ -15,6 +16,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <>
+      <Head>
+        <link rel="icon" href="/Logo.svg" type="image/svg+xml" />
+        <title>Khareed-i - IPM Marketplace</title>
+      </Head>
+
       {isAuthPage ? (
         // ✅ Auth Layout: Render component directly (Full Screen Control)
         <Component {...pageProps} />
