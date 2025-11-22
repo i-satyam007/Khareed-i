@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 },
                 include: {
                     owner: {
-                        select: { name: true }, // Removed hostel temporarily to fix type error
+                        select: { name: true }, // Explicitly select only name to avoid schema mismatch
                     },
                 },
             });

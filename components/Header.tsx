@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingCart, User, Menu, ChevronDown, Users } from 'lucide-react';
 import { useRouter } from 'next/router';
+import useSWR from 'swr';
 
 const CATEGORIES = [
   "All Categories",
@@ -17,6 +18,11 @@ export default function Header() {
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+
+  // Auth Check
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const { data: authData } = useSWR("/api/auth/me", fetcher);
+  const user = authData?.user;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,18 +100,36 @@ export default function Header() {
               <span>Group Order</span>
             </Link>
 
-            {/* Sell Button */}
-            <Link href="/listings/create" className="hidden sm:flex items-center gap-2 text-sm font-bold text-gray-700 hover:text-kh-purple transition-colors">
-              <span>Sell</span>
-            </Link>
-
-            {/* Auth Buttons (If not logged in - Mock) */}
-            <div className="flex items-center gap-3">
-              <Link href="/login" className="text-sm font-bold text-gray-700 hover:text-kh-purple">Login</Link>
-              <Link href="/signup" className="bg-gray-900 hover:bg-black text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors shadow-lg shadow-gray-900/20">
-                Sign up
-              </Link>
+            {/* Cart Icon (Mock) */}
+            <div className="relative cursor-pointer hover:opacity-80 transition-opacity">
+              <ShoppingCart className="h-6 w-6 text-gray-700" />
+              <span className="absolute -top-1 -right-1 bg-kh-red text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full border-2 border-white">0</span>
             </div>
+
+            {/* User Account Section */}
+            {user ? (
+              <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1.5 rounded-lg transition-colors">
+                <div className="w-8 h-8 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold text-xs">
+                  {user.name ? user.name[0].toUpperCase() : <User className="h-4 w-4" />}
+                </div>
+                <div className="hidden sm:block text-left">
+                  <p className="text-[10px] text-gray-500 font-medium leading-tight">Hello,</p>
+                  <p className="text-xs font-bold text-gray-900 leading-tight">{user.name?.split(' ')[0] || user.username}</p>
+                </div>
+                <ChevronDown className="h-3 w-3 text-gray-400 hidden sm:block" />
+              </div>
+            ) : (
+              <Link href="/login" className="flex items-center gap-2 hover:bg-gray-50 p-1.5 rounded-lg transition-colors">
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                  <User className="h-4 w-4" />
+                </div>
+                <div className="hidden sm:block text-left">
+                  <p className="text-[10px] text-gray-500 font-medium leading-tight">Hello, Sign in</p>
+                  <p className="text-xs font-bold text-gray-900 leading-tight">Account</p>
+                </div>
+                <ChevronDown className="h-3 w-3 text-gray-400 hidden sm:block" />
+              </Link>
+            )}
           </div>
         </div>
       </div>
