@@ -3,6 +3,7 @@ import Head from 'next/head';
 
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
+import useSWR from 'swr';
 import { Upload, DollarSign, Clock, AlertCircle } from 'lucide-react';
 
 type ListingForm = {
@@ -26,27 +27,61 @@ export default function CreateListingPage() {
     const { register, handleSubmit, watch, formState: { errors } } = useForm<ListingForm>();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Auth Check
+    const fetcher = (url: string) => fetch(url).then((res) => res.json());
+    const { data: authData, isLoading: authLoading } = useSWR("/api/auth/me", fetcher);
+
+    React.useEffect(() => {
+        if (!authLoading && !authData?.user) {
+            router.push("/login?redirect=/listings/create");
+        }
+    }, [authData, authLoading, router]);
+
     const isAuction = watch("isAuction");
     const allowNegativeBids = watch("allowNegativeBids");
     const sellingPrice = watch("price");
+    const auctionStartPrice = watch("auctionStartPrice");
+
+    // Calculate base price for negative bid limit
+    const basePrice = isAuction ? auctionStartPrice : sellingPrice;
 
     const onSubmit = async (data: ListingForm) => {
         setIsSubmitting(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log(data);
-        alert("Listing created successfully! (Simulation)");
-        setIsSubmitting(false);
-        router.push('/'); // Redirect to Home Page
+        try {
+            const res = await fetch('/api/listings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Failed to create listing');
+            }
+
+            alert("Listing created successfully!");
+            router.push('/'); // Redirect to Home Page
+        } catch (error: any) {
+            console.error(error);
+            alert(error.message || "Error creating listing");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
+    if (authLoading) {
+        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    }
+
+    if (!authData?.user) {
+        return null; // Will redirect
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <Head>
                 <title>List an Item | Khareed-i</title>
             </Head>
-
-
 
             <div className="container mx-auto px-4 py-8 max-w-3xl">
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
@@ -153,7 +188,7 @@ export default function CreateListingPage() {
                                             <label className="block text-xs font-semibold text-purple-900 mb-1">Start Price (₹)</label>
                                             <input
                                                 type="number"
-                                                {...register("auctionStartPrice")}
+                                                {...register("auctionStartPrice", { required: isAuction ? "Start Price is required" : false, min: 0 })}
                                                 className="w-full px-3 py-2 bg-white border border-purple-200 rounded-md text-sm focus:outline-none focus:border-purple-400"
                                             />
                                         </div>
@@ -180,11 +215,11 @@ export default function CreateListingPage() {
                                     </div>
                                 </label>
 
-                                {allowNegativeBids && sellingPrice && (
+                                {allowNegativeBids && basePrice && (
                                     <div className="mt-2 flex items-start gap-2 text-xs text-orange-700 bg-orange-50 p-3 rounded-md border border-orange-100">
                                         <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                                         <p>
-                                            System Rule: Bids cannot go below <strong>₹{Math.round(sellingPrice * 0.6)}</strong> (60% of Selling Price).
+                                            System Rule: Bids cannot go below <strong>₹{Math.round(basePrice * 0.6)}</strong> (60% of {isAuction ? 'Start Price' : 'Selling Price'}).
                                             This protects you from low-ball offers.
                                         </p>
                                     </div>

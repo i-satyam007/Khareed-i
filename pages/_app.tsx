@@ -19,6 +19,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       <Head>
         <link rel="icon" href="/Logo.svg" type="image/svg+xml" />
         <title>Khareed-i - IPM Marketplace</title>
+        <meta name="description" content="Buy, Sell, and Group Order with Khareed-i - The exclusive marketplace for IPM students." />
       </Head>
 
       {isAuthPage ? (
