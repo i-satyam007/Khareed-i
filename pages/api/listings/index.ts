@@ -61,11 +61,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     title,
                     description,
                     category,
-                    mrp: Number(mrp),
-                    price: isAuction ? Number(auctionStartPrice) : Number(price),
+                    mrp: Math.round(Number(mrp)),
+                    price: isAuction ? Math.round(Number(auctionStartPrice)) : Math.round(Number(price)),
                     negotiable: Boolean(negotiable),
                     isAuction: Boolean(isAuction),
-                    auctionFrom: isAuction ? Number(auctionStartPrice) : null,
+                    auctionFrom: isAuction ? Math.round(Number(auctionStartPrice)) : null,
                     auctionTo: auctionTo,
                     allowNegBid: Boolean(allowNegativeBids),
                     ownerId: user.id,
@@ -73,9 +73,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 },
             });
             return res.status(201).json(listing);
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            return res.status(500).json({ message: 'Failed to create listing' });
+            return res.status(500).json({ message: error.message || 'Failed to create listing' });
         }
     } else {
         return res.status(405).json({ message: 'Method not allowed' });

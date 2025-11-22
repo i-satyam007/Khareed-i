@@ -159,13 +159,15 @@ export default function CreateListingPage() {
                             </div>
 
                             <div className="flex flex-col gap-3 pt-2">
-                                <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" {...register("negotiable")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" />
-                                    <div>
-                                        <span className="block text-sm font-medium text-gray-900">Open to Negotiation</span>
-                                        <span className="block text-xs text-gray-500">Allow buyers to chat and negotiate price</span>
-                                    </div>
-                                </label>
+                                {!isAuction && (
+                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <input type="checkbox" {...register("negotiable")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" />
+                                        <div>
+                                            <span className="block text-sm font-medium text-gray-900">Open to Negotiation</span>
+                                            <span className="block text-xs text-gray-500">Allow buyers to chat and negotiate price</span>
+                                        </div>
+                                    </label>
+                                )}
 
                                 <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                                     <input type="checkbox" {...register("isAuction")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" />
