@@ -32,6 +32,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ message: "You cannot buy your own listing" });
         }
 
+        if (listing.status === "sold") {
+            return res.status(400).json({ message: "This item has already been sold" });
+        }
+
         // Create Order and OrderItem in a transaction
         const order = await prisma.$transaction(async (tx) => {
             const newOrder = await tx.order.create({
@@ -51,6 +55,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     items: true,
                 },
             });
+
+            // Update listing status
+            await tx.listing.update({
+                where: { id: listing.id },
+                data: { status: "sold" },
+            });
+
+            // Create notification for seller
+            await tx.notification.create({
+                data: {
+                    userId: listing.ownerId,
+                    title: "Item Sold!",
+                    body: `Your item "${listing.title}" has been sold to ${user.name || user.username}.`,
+                },
+            });
+
             return newOrder;
         });
 

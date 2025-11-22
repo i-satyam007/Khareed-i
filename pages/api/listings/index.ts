@@ -9,7 +9,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { search, category } = req.query;
 
         try {
-            const where: any = {};
+            const where: any = {
+                status: 'active',
+            };
 
             if (search) {
                 where.OR = [

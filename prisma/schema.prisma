@@ -48,6 +48,7 @@ model Listing {
   allowNegBid  Boolean     @default(false)
   imagePath    String?
   ownerId      Int
+  status       String      @default("active") // active, sold, deleted
   createdAt    DateTime    @default(now())
 
   owner        User        @relation("UserListings", fields: [ownerId], references: [id])

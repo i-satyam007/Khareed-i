@@ -146,10 +146,30 @@ export default function ProductDetailsPage() {
                                 <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-4 text-center">
                                     <p className="text-yellow-800 font-bold text-sm mb-2">This is your listing</p>
                                     <div className="flex gap-3">
-                                        <button className="flex-1 bg-white border border-gray-300 text-gray-700 font-bold py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
+                                        <button
+                                            onClick={() => router.push(`/listings/${id}/edit`)}
+                                            className="flex-1 bg-white border border-gray-300 text-gray-700 font-bold py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                                        >
                                             Edit Listing
                                         </button>
-                                        <button className="flex-1 bg-red-50 border border-red-100 text-red-600 font-bold py-2.5 rounded-lg hover:bg-red-100 transition-colors">
+                                        <button
+                                            onClick={async () => {
+                                                if (confirm("Are you sure you want to delete this listing?")) {
+                                                    try {
+                                                        const res = await fetch(`/api/listings/${id}`, { method: 'DELETE' });
+                                                        if (res.ok) {
+                                                            router.push('/');
+                                                        } else {
+                                                            alert("Failed to delete listing");
+                                                        }
+                                                    } catch (error) {
+                                                        console.error(error);
+                                                        alert("An error occurred");
+                                                    }
+                                                }
+                                            }}
+                                            className="flex-1 bg-red-50 border border-red-100 text-red-600 font-bold py-2.5 rounded-lg hover:bg-red-100 transition-colors"
+                                        >
                                             Delete
                                         </button>
                                     </div>
@@ -157,7 +177,7 @@ export default function ProductDetailsPage() {
                             ) : (
                                 <div className="flex gap-4">
                                     <button
-                                        onClick={() => router.push(`/listings/${id}/buy`)}
+                                        onClick={() => router.push(listing.isAuction ? `/listings/${id}/bid` : `/listings/${id}/buy`)}
                                         className="flex-1 bg-kh-red hover:bg-red-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/20 transition-all transform active:scale-[0.98]"
                                     >
                                         {listing.isAuction ? "Place Bid" : "Buy Now"}
