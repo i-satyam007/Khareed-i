@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import useSWR from 'swr';
 
 import { Heart, Share2, MapPin, ShieldCheck, Clock, User } from 'lucide-react';
 
@@ -28,17 +29,26 @@ export default function ProductDetailsPage() {
     const { id } = router.query;
     const [activeImage, setActiveImage] = useState(0);
 
-    // In a real app, fetch data here
-    const product = MOCK_PRODUCT;
-    const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+    // Fetch Listing Data
+    const fetcher = (url: string) => fetch(url).then((res) => res.json());
+    const { data: listing, isLoading: listingLoading, error: listingError } = useSWR(id ? `/api/listings/${id}` : null, fetcher);
+
+    // Fetch Current User
+    const { data: authData } = useSWR("/api/auth/me", fetcher);
+    const user = authData?.user;
+
+    if (listingLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    if (listingError || !listing) return <div className="min-h-screen flex items-center justify-center">Listing not found</div>;
+
+    const isOwner = user?.id === listing.ownerId;
+    const discount = Math.round(((listing.mrp - listing.price) / listing.mrp) * 100);
+    const images = listing.imagePath ? [listing.imagePath] : []; // Handle single image for now, extendable to array
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <Head>
-                <title>{product.title} | Khareed-i</title>
+                <title>{listing.title} | Khareed-i</title>
             </Head>
-
-
 
             <div className="container mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
@@ -46,23 +56,38 @@ export default function ProductDetailsPage() {
                     {/* Left: Images */}
                     <div className="space-y-4">
                         <div className="aspect-[4/3] bg-white rounded-2xl border border-gray-200 overflow-hidden flex items-center justify-center relative group">
-                            {/* Placeholder for Image */}
-                            <div className="text-gray-300 flex flex-col items-center">
-                                <span className="text-6xl">📷</span>
-                                <span className="text-sm mt-2">No Image Available</span>
-                            </div>
+                            {images.length > 0 ? (
+                                <img
+                                    src={images[activeImage]}
+                                    alt={listing.title}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="text-gray-300 flex flex-col items-center">
+                                    <span className="text-6xl">📷</span>
+                                    <span className="text-sm mt-2">No Image Available</span>
+                                </div>
+                            )}
 
                             <button className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur rounded-full text-gray-500 hover:text-red-500 transition-colors shadow-sm">
                                 <Heart className="h-5 w-5" />
                             </button>
                         </div>
 
-                        {/* Thumbnails (Mock) */}
-                        <div className="flex gap-4 overflow-x-auto pb-2">
-                            {[1, 2, 3].map((i) => (
-                                <div key={i} className="w-20 h-20 bg-white rounded-lg border border-gray-200 shrink-0 cursor-pointer hover:border-kh-purple transition-colors"></div>
-                            ))}
-                        </div>
+                        {/* Thumbnails */}
+                        {images.length > 1 && (
+                            <div className="flex gap-4 overflow-x-auto pb-2">
+                                {images.map((img: string, i: number) => (
+                                    <div
+                                        key={i}
+                                        onClick={() => setActiveImage(i)}
+                                        className={`w-20 h-20 bg-white rounded-lg border shrink-0 cursor-pointer transition-colors overflow-hidden ${activeImage === i ? 'border-kh-purple ring-2 ring-kh-purple/20' : 'border-gray-200 hover:border-kh-purple'}`}
+                                    >
+                                        <img src={img} alt={`Thumbnail ${i}`} className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Right: Details */}
@@ -70,19 +95,22 @@ export default function ProductDetailsPage() {
 
                         {/* Breadcrumb */}
                         <div className="text-xs text-gray-500 mb-4 flex items-center gap-2">
-                            <span>Home</span> / <span>Listings</span> / <span className="text-gray-900 font-medium">{product.category}</span>
+                            <span>Home</span> / <span>Listings</span> / <span className="text-gray-900 font-medium">{listing.category}</span>
                         </div>
 
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{product.title}</h1>
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{listing.title}</h1>
 
                         <div className="flex items-center gap-4 mb-6">
                             <div className="flex items-baseline gap-2">
-                                <span className="text-3xl font-bold text-gray-900">₹{product.price}</span>
-                                <span className="text-lg text-gray-400 line-through">₹{product.mrp}</span>
+                                <span className="text-3xl font-bold text-gray-900">₹{listing.price}</span>
+                                <span className="text-lg text-gray-400 line-through">₹{listing.mrp}</span>
                             </div>
                             <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-md">{discount}% OFF</span>
-                            {product.negotiable && (
+                            {listing.negotiable && (
                                 <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-1 rounded-md border border-blue-100">Negotiable</span>
+                            )}
+                            {listing.isAuction && (
+                                <span className="bg-purple-50 text-purple-700 text-xs font-bold px-2 py-1 rounded-md border border-purple-100">Auction</span>
                             )}
                         </div>
 
@@ -90,12 +118,12 @@ export default function ProductDetailsPage() {
                         <div className="bg-white border border-gray-100 rounded-xl p-4 mb-6 flex items-center justify-between shadow-sm">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold">
-                                    {product.seller.name[0]}
+                                    {listing.owner?.name ? listing.owner.name[0].toUpperCase() : <User className="h-5 w-5" />}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-gray-900">{product.seller.name}</p>
+                                    <p className="text-sm font-bold text-gray-900">{listing.owner?.name || listing.owner?.username || "Unknown Seller"}</p>
                                     <p className="text-xs text-gray-500 flex items-center gap-1">
-                                        <MapPin className="h-3 w-3" /> {product.seller.hostel}
+                                        <MapPin className="h-3 w-3" /> {listing.owner?.hostel || "Campus"}
                                     </p>
                                 </div>
                             </div>
@@ -107,21 +135,38 @@ export default function ProductDetailsPage() {
                         {/* Description */}
                         <div className="mb-8">
                             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-2">Description</h3>
-                            <p className="text-gray-600 text-sm leading-relaxed">
-                                {product.description}
+                            <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">
+                                {listing.description}
                             </p>
                         </div>
 
-                        {/* Actions */}
+                        {/* Actions - Self-Buy Prevention */}
                         <div className="mt-auto space-y-3">
-                            <div className="flex gap-4">
-                                <button className="flex-1 bg-kh-red hover:bg-red-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/20 transition-all transform active:scale-[0.98]">
-                                    Buy Now
-                                </button>
-                                <button className="flex-1 bg-white border-2 border-gray-200 hover:border-kh-purple text-gray-700 font-bold py-3.5 rounded-xl transition-all">
-                                    Make an Offer
-                                </button>
-                            </div>
+                            {isOwner ? (
+                                <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-4 text-center">
+                                    <p className="text-yellow-800 font-bold text-sm mb-2">This is your listing</p>
+                                    <div className="flex gap-3">
+                                        <button className="flex-1 bg-white border border-gray-300 text-gray-700 font-bold py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
+                                            Edit Listing
+                                        </button>
+                                        <button className="flex-1 bg-red-50 border border-red-100 text-red-600 font-bold py-2.5 rounded-lg hover:bg-red-100 transition-colors">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={() => router.push(`/listings/${id}/buy`)}
+                                        className="flex-1 bg-kh-red hover:bg-red-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/20 transition-all transform active:scale-[0.98]"
+                                    >
+                                        {listing.isAuction ? "Place Bid" : "Buy Now"}
+                                    </button>
+                                    <button className="flex-1 bg-white border-2 border-gray-200 hover:border-kh-purple text-gray-700 font-bold py-3.5 rounded-xl transition-all">
+                                        {listing.negotiable ? "Make an Offer" : "Chat with Seller"}
+                                    </button>
+                                </div>
+                            )}
 
                             <button className="w-full flex items-center justify-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 py-2">
                                 <Share2 className="h-4 w-4" /> Share this listing

@@ -176,6 +176,16 @@ export default function CreateListingPage() {
                                 </label>
                             </div>
 
+                            {/* Negotiation Warning */}
+                            {!isAuction && watch("negotiable") && sellingPrice && (
+                                <div className="mt-2 flex items-start gap-2 text-xs text-blue-700 bg-blue-50 p-3 rounded-md border border-blue-100 animate-in fade-in slide-in-from-top-1">
+                                    <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                                    <p>
+                                        System Rule: Negotiation offers cannot go below <strong>₹{Math.round(sellingPrice * 0.6)}</strong> (60% of Selling Price).
+                                    </p>
+                                </div>
+                            )}
+
                             {/* Auction Settings */}
                             {isAuction && (
                                 <div className="bg-purple-50 p-4 rounded-lg border border-purple-100 space-y-4 animate-in fade-in slide-in-from-top-2">
@@ -205,26 +215,28 @@ export default function CreateListingPage() {
                                 </div>
                             )}
 
-                            {/* Negative Bids Logic */}
-                            <div className="pt-2">
-                                <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" {...register("allowNegativeBids")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" />
-                                    <div>
-                                        <span className="block text-sm font-medium text-gray-900">Allow Negative Bids</span>
-                                        <span className="block text-xs text-gray-500">Allow bids lower than selling price (Max 60% limit applies)</span>
-                                    </div>
-                                </label>
+                            {/* Negative Bids Logic - Only for Auctions */}
+                            {isAuction && (
+                                <div className="pt-2">
+                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <input type="checkbox" {...register("allowNegativeBids")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" />
+                                        <div>
+                                            <span className="block text-sm font-medium text-gray-900">Allow Negative Bids</span>
+                                            <span className="block text-xs text-gray-500">Allow bids lower than selling price (Max 60% limit applies)</span>
+                                        </div>
+                                    </label>
 
-                                {allowNegativeBids && basePrice && (
-                                    <div className="mt-2 flex items-start gap-2 text-xs text-orange-700 bg-orange-50 p-3 rounded-md border border-orange-100">
-                                        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                                        <p>
-                                            System Rule: Bids cannot go below <strong>₹{Math.round(basePrice * 0.6)}</strong> (60% of {isAuction ? 'Start Price' : 'Selling Price'}).
-                                            This protects you from low-ball offers.
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
+                                    {allowNegativeBids && basePrice && (
+                                        <div className="mt-2 flex items-start gap-2 text-xs text-orange-700 bg-orange-50 p-3 rounded-md border border-orange-100">
+                                            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                                            <p>
+                                                System Rule: Bids cannot go below <strong>₹{Math.round(basePrice * 0.6)}</strong> (60% of Start Price).
+                                                This protects you from low-ball offers.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </section>
 
                         {/* Image Upload */}
