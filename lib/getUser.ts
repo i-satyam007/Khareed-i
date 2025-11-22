@@ -10,7 +10,8 @@ export async function getUser(req: any) {
 
   if (!tokenCookie) return null;
 
-  const token = tokenCookie.split("=")[1];
+  // Handle potential '=' in the token itself (though JWTs usually don't have them)
+  const token = tokenCookie.split("=").slice(1).join("=");
 
   try {
     const payload: any = verifyToken(token);

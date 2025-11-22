@@ -51,7 +51,7 @@ export default async function handler(
     // Set cookie
     res.setHeader(
       "Set-Cookie",
-      `token=${token}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 7}`
+      `token=${token}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax`
     );
 
     return res.json({ success: true });
