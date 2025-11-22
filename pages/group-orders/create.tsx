@@ -20,10 +20,22 @@ type GroupOrderForm = {
     description?: string;
 };
 
+import useSWR from 'swr';
+
 export default function CreateGroupOrderPage() {
     const router = useRouter();
     const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<GroupOrderForm>();
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Auth Check
+    const fetcher = (url: string) => fetch(url).then((res) => res.json());
+    const { data: authData, isLoading: authLoading } = useSWR("/api/auth/me", fetcher);
+
+    React.useEffect(() => {
+        if (!authLoading && !authData?.user) {
+            router.push("/login?redirect=/group-orders/create");
+        }
+    }, [authData, authLoading, router]);
 
     const selectedPlatform = watch("platform");
 
@@ -35,6 +47,14 @@ export default function CreateGroupOrderPage() {
         // Redirect to the new group order page (mock ID 99)
         router.push('/group-orders/99');
     };
+
+    if (authLoading) {
+        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    }
+
+    if (!authData?.user) {
+        return null; // Will redirect
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans">

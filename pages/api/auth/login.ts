@@ -31,6 +31,12 @@ export default async function handler(
       where: {
         OR: [{ email: identifier }, { username: identifier }],
       },
+      select: {
+        id: true,
+        password: true,
+        email: true,
+        username: true,
+      }
     });
 
     if (!user) return res.status(401).json({ error: "Invalid credentials" });
