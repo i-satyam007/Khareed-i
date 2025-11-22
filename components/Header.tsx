@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu, ChevronDown, Users } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag } from 'lucide-react';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
@@ -17,11 +17,12 @@ const CATEGORIES = [
 export default function Header() {
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
 
   // Auth Check
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data: authData } = useSWR("/api/auth/me", fetcher);
+  const { data: authData, mutate } = useSWR("/api/auth/me", fetcher);
   const user = authData?.user;
 
   const handleSearch = (e: React.FormEvent) => {
@@ -29,6 +30,12 @@ export default function Header() {
     if (searchQuery.trim()) {
       router.push(`/listings?search=${encodeURIComponent(searchQuery)}&category=${encodeURIComponent(category === "All Categories" ? "" : category)}`);
     }
+  };
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout");
+    await mutate(null); // Clear SWR cache
+    router.push("/login");
   };
 
   return (
@@ -108,15 +115,51 @@ export default function Header() {
 
             {/* User Account Section */}
             {user ? (
-              <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1.5 rounded-lg transition-colors">
-                <div className="w-8 h-8 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold text-xs">
-                  {user.name ? user.name[0].toUpperCase() : <User className="h-4 w-4" />}
-                </div>
-                <div className="hidden sm:block text-left">
-                  <p className="text-[10px] text-gray-500 font-medium leading-tight">Hello,</p>
-                  <p className="text-xs font-bold text-gray-900 leading-tight">{user.name?.split(' ')[0] || user.username}</p>
-                </div>
-                <ChevronDown className="h-3 w-3 text-gray-400 hidden sm:block" />
+              <div className="relative">
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1.5 rounded-lg transition-colors outline-none"
+                >
+                  <div className="w-8 h-8 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold text-xs">
+                    {user.name ? user.name[0].toUpperCase() : <User className="h-4 w-4" />}
+                  </div>
+                  <div className="hidden sm:block text-left">
+                    <p className="text-[10px] text-gray-500 font-medium leading-tight">Hello,</p>
+                    <p className="text-xs font-bold text-gray-900 leading-tight">{user.name?.split(' ')[0] || user.username}</p>
+                  </div>
+                  <ChevronDown className={`h-3 w-3 text-gray-400 hidden sm:block transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Dropdown Menu */}
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                    <div className="px-4 py-2 border-b border-gray-50 mb-1">
+                      <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+
+                    <Link href="/profile" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <User className="h-4 w-4 text-gray-400" />
+                      My Profile
+                    </Link>
+                    <Link href="/orders" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <ShoppingBag className="h-4 w-4 text-gray-400" />
+                      My Orders
+                    </Link>
+
+                    <div className="h-px bg-gray-100 my-1" />
+
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-medium transition-colors"
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Sign out
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <Link href="/login" className="flex items-center gap-2 hover:bg-gray-50 p-1.5 rounded-lg transition-colors">
