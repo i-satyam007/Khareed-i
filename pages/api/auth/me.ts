@@ -3,9 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getUser } from "../../../lib/getUser";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log("[DEBUG] /api/auth/me called");
   const user = await getUser(req);
-  console.log("[DEBUG] /api/auth/me user result:", user ? user.id : "null");
 
   if (!user) return res.status(200).json({ user: null });
   // return a safe subset
