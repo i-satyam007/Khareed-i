@@ -35,7 +35,7 @@ export default function Header() {
   const handleLogout = async () => {
     await fetch("/api/auth/logout");
     await mutate(null); // Clear SWR cache
-    router.reload(); // Reload to update UI state
+    window.location.href = "/login"; // Hard redirect to clear client state
   };
 
   return (
