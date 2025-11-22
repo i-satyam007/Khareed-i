@@ -26,7 +26,7 @@ export default function ListingsPage() {
 
     const { data: listings, error, isLoading } = useSWR(apiUrl, fetcher);
 
-    const filteredListings = listings ? listings.filter((item: any) => {
+    const filteredListings = Array.isArray(listings) ? listings.filter((item: any) => {
         const priceMatch = item.price <= priceRange;
         const negMatch = !onlyNegotiable || item.negotiable;
         return priceMatch && negMatch;

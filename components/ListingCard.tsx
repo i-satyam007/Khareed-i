@@ -8,21 +8,25 @@ type ListingProps = {
     price: number;
     mrp: number;
     image?: string;
+    imagePath?: string; // Added imagePath
     negotiable: boolean;
     isAuction?: boolean;
     endTime?: string;
-    postedAt?: string; // New prop for "Time Ago"
+    postedAt?: string;
+    createdAt?: string; // Added createdAt
 };
 
-export default function ListingCard({ id, title, price, mrp, image, negotiable, isAuction, endTime, postedAt }: ListingProps) {
+export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt }: ListingProps) {
     const discount = Math.round(((mrp - price) / mrp) * 100);
+    const displayImage = image || imagePath; // Use imagePath if image is missing
+    const displayTime = postedAt || (createdAt ? new Date(createdAt).toLocaleDateString() : "Recently"); // Format createdAt
 
     return (
         <div className="group bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full relative">
             {/* Image Placeholder */}
             <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
-                {image ? (
-                    <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                {displayImage ? (
+                    <img src={displayImage} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">
                         <span className="text-xs">No Image</span>
@@ -73,7 +77,7 @@ export default function ListingCard({ id, title, price, mrp, image, negotiable, 
                         ) : (
                             <div className="flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
-                                <span>{postedAt || "Recently"}</span>
+                                <span>{displayTime}</span>
                             </div>
                         )}
                     </div>

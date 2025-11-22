@@ -13,7 +13,8 @@ export default function Home() {
   const { data: listings, error, isLoading } = useSWR('/api/listings', fetcher);
 
   // Take top 4
-  const trendingListings = listings ? listings.slice(0, 4) : [];
+  // Take top 4
+  const trendingListings = Array.isArray(listings) ? listings.slice(0, 4) : [];
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
