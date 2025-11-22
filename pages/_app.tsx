@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import Script from "next/script";
 import { useRouter } from "next/router";
 import "../styles/globals.css";
 import Header from "../components/Header";
@@ -21,6 +22,12 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <title>Khareed-i - IPM Marketplace</title>
         <meta name="description" content="Buy, Sell, and Group Order with Khareed-i - The exclusive marketplace for IPM students." />
       </Head>
+
+      {/* ✅ Restore reCAPTCHA Script */}
+      <Script
+        src={`https://www.google.com/recaptcha/api.js?render=explicit`}
+        strategy="lazyOnload"
+      />
 
       {isAuthPage ? (
         // ✅ Auth Layout: Render component directly (Full Screen Control)
