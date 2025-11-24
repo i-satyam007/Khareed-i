@@ -133,6 +133,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         description,
                         price: Number(price),
                         negotiable: Boolean(negotiable),
+                        expiryDate: req.body.expiryDate ? new Date(req.body.expiryDate) : null,
                     },
                 });
 

@@ -4,12 +4,13 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
-import { Upload, DollarSign, Clock, AlertCircle } from 'lucide-react';
+import { Upload, DollarSign, Clock, AlertCircle, Calendar } from 'lucide-react';
 
 type ListingForm = {
     title: string;
     description: string;
     category: string;
+    otherCategory?: string;
     mrp: number;
     price: number;
     negotiable: boolean;
@@ -18,9 +19,20 @@ type ListingForm = {
     auctionDuration?: number;
     allowNegativeBids: boolean;
     minBidAmount?: number;
+    expiryDate?: string;
 };
 
-const CATEGORIES = ["Electronics", "Books", "Hostel Essentials", "Clothing", "Sports Gear", "Stationery"];
+const CATEGORIES = [
+    "Electronics",
+    "Books",
+    "Hostel Essentials",
+    "Clothing",
+    "Sports Gear",
+    "Stationery",
+    "Food",
+    "Grocery",
+    "Other"
+];
 
 export default function CreateListingPage() {
     const router = useRouter();
@@ -41,6 +53,7 @@ export default function CreateListingPage() {
     const allowNegativeBids = watch("allowNegativeBids");
     const sellingPrice = watch("price");
     const auctionStartPrice = watch("auctionStartPrice");
+    const selectedCategory = watch("category");
 
     // Calculate base price for negative bid limit
     const basePrice = isAuction ? auctionStartPrice : sellingPrice;
@@ -48,10 +61,20 @@ export default function CreateListingPage() {
     const onSubmit = async (data: ListingForm) => {
         setIsSubmitting(true);
         try {
+            // Handle "Other" category
+            const finalCategory = data.category === 'Other' ? data.otherCategory : data.category;
+
+            const payload = {
+                ...data,
+                category: finalCategory,
+                // Ensure expiryDate is properly formatted or null if empty
+                expiryDate: data.expiryDate ? new Date(data.expiryDate).toISOString() : null
+            };
+
             const res = await fetch('/api/listings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: JSON.stringify(payload),
             });
 
             if (!res.ok) {
@@ -116,6 +139,32 @@ export default function CreateListingPage() {
                                         {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
                                     {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
+
+                                    {/* Other Category Input */}
+                                    {selectedCategory === 'Other' && (
+                                        <div className="mt-2 animate-in fade-in slide-in-from-top-1">
+                                            <input
+                                                {...register("otherCategory", { required: "Please specify the category" })}
+                                                className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all text-sm"
+                                                placeholder="Specify Category..."
+                                            />
+                                            {errors.otherCategory && <p className="text-red-500 text-xs mt-1">{errors.otherCategory.message}</p>}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date (Optional)</label>
+                                    <div className="relative">
+                                        <input
+                                            type="date"
+                                            {...register("expiryDate")}
+                                            min={new Date().toISOString().split('T')[0]}
+                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
+                                        />
+                                        <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 mt-1">Useful for food, coupons, or time-sensitive items.</p>
                                 </div>
 
                                 <div className="col-span-2">

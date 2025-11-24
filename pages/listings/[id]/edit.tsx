@@ -1,9 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import { useForm } from 'react-hook-form';
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Calendar } from 'lucide-react';
+
+const CATEGORIES = [
+    "Electronics",
+    "Books",
+    "Hostel Essentials",
+    "Clothing",
+    "Sports Gear",
+    "Stationery",
+    "Food",
+    "Grocery",
+    "Other"
+];
 
 export default function EditListingPage() {
     const router = useRouter();
@@ -14,7 +26,10 @@ export default function EditListingPage() {
     const { data: authData } = useSWR("/api/auth/me", fetcher);
     const user = authData?.user;
 
-    const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm();
+    const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm();
+    const [otherCategoryMode, setOtherCategoryMode] = useState(false);
+
+    const selectedCategory = watch('category');
 
     useEffect(() => {
         if (listing) {
@@ -22,6 +37,20 @@ export default function EditListingPage() {
             setValue('description', listing.description);
             setValue('price', listing.price);
             setValue('negotiable', listing.negotiable);
+
+            // Handle Category
+            if (CATEGORIES.includes(listing.category)) {
+                setValue('category', listing.category);
+            } else {
+                setValue('category', 'Other');
+                setValue('otherCategory', listing.category);
+                setOtherCategoryMode(true);
+            }
+
+            // Handle Expiry Date
+            if (listing.expiryDate) {
+                setValue('expiryDate', new Date(listing.expiryDate).toISOString().split('T')[0]);
+            }
         }
     }, [listing, setValue]);
 
@@ -36,10 +65,19 @@ export default function EditListingPage() {
 
     const onSubmit = async (data: any) => {
         try {
+            // Handle "Other" category
+            const finalCategory = data.category === 'Other' ? data.otherCategory : data.category;
+
+            const payload = {
+                ...data,
+                category: finalCategory,
+                expiryDate: data.expiryDate ? new Date(data.expiryDate).toISOString() : null
+            };
+
             const res = await fetch(`/api/listings/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: JSON.stringify(payload),
             });
 
             if (!res.ok) throw new Error('Failed to update listing');
@@ -75,6 +113,41 @@ export default function EditListingPage() {
                                 {...register('title', { required: true })}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-kh-purple"
                             />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
+                            <select
+                                {...register("category", { required: "Category is required" })}
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-kh-purple"
+                            >
+                                <option value="">Select Category</option>
+                                {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                            </select>
+
+                            {/* Other Category Input */}
+                            {selectedCategory === 'Other' && (
+                                <div className="mt-2 animate-in fade-in slide-in-from-top-1">
+                                    <input
+                                        {...register("otherCategory", { required: "Please specify the category" })}
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-kh-purple text-sm"
+                                        placeholder="Specify Category..."
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Expiry Date (Optional)</label>
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    {...register("expiryDate")}
+                                    min={new Date().toISOString().split('T')[0]}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-kh-purple"
+                                />
+                                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                            </div>
                         </div>
 
                         <div>

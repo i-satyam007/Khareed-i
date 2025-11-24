@@ -12,7 +12,10 @@ const CATEGORIES = [
   "Hostel Essentials",
   "Clothing",
   "Sports Gear",
-  "Stationery"
+  "Stationery",
+  "Food",
+  "Grocery",
+  "Other"
 ];
 
 // Toast Component
