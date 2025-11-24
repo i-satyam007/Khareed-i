@@ -59,8 +59,9 @@ export default function CreateListingPage() {
                 throw new Error(errorData.message || 'Failed to create listing');
             }
 
-            alert("Listing created successfully!");
-            router.push('/'); // Redirect to Home Page
+            // Redirect with alert param
+            const responseData = await res.json();
+            router.push(`/listings/${responseData.id}?alert=created`);
         } catch (error: any) {
             console.error(error);
             alert(error.message || "Error creating listing");

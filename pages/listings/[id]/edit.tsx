@@ -44,7 +44,7 @@ export default function EditListingPage() {
 
             if (!res.ok) throw new Error('Failed to update listing');
 
-            router.push(`/listings/${id}`);
+            router.push(`/listings/${id}?alert=updated`);
         } catch (error) {
             console.error(error);
             alert('Failed to update listing');

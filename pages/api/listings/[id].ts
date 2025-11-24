@@ -101,6 +101,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const { title, description, price, negotiable } = req.body;
 
             const updatedListing = await prisma.$transaction(async (tx) => {
+                // 1. Fetch existing bidders to notify them
+                const existingBids = await tx.bid.findMany({
+                    where: { listingId },
+                    select: { bidderId: true },
+                    distinct: ['bidderId'],
+                });
+
+                // 2. Delete all bids
+                if (existingBids.length > 0) {
+                    await tx.bid.deleteMany({
+                        where: { listingId },
+                    });
+
+                    // 3. Notify bidders
+                    await tx.notification.createMany({
+                        data: existingBids.map(bid => ({
+                            userId: bid.bidderId,
+                            title: "Listing Updated & Bids Reset",
+                            body: `The listing "${listing.title}" you bid on has been updated. Your bid has been reset. Please review the changes and bid again.`,
+                            type: 'alert'
+                        })),
+                    });
+                }
+
+                // 4. Update the listing
                 const updated = await tx.listing.update({
                     where: { id: listingId },
                     data: {
@@ -110,24 +135,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         negotiable: Boolean(negotiable),
                     },
                 });
-
-                // Notify bidders
-                const bids = await tx.bid.findMany({
-                    where: { listingId },
-                    select: { bidderId: true },
-                    distinct: ['bidderId'],
-                });
-
-                if (bids.length > 0) {
-                    await tx.notification.createMany({
-                        data: bids.map(bid => ({
-                            userId: bid.bidderId,
-                            title: "Listing Updated",
-                            body: `The listing "${listing.title}" you bid on has been updated by the owner.`,
-                            type: 'alert'
-                        })),
-                    });
-                }
 
                 return updated;
             });

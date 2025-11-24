@@ -61,7 +61,6 @@ export default function Header() {
   // Notifications
   const { data: notifications = [], mutate: mutateNotifications } = useSWR(user ? "/api/notifications" : null, fetcher);
 
-
   // Filter notifications - Ensure it's an array to prevent crashes
   const safeNotifications = Array.isArray(notifications) ? notifications : [];
   const generalNotifications = safeNotifications.filter((n: any) => n.type !== 'alert');
@@ -114,6 +113,35 @@ export default function Header() {
       processAlerts();
     }
   }, [alertNotifications, mutateNotifications]);
+
+  // Handle URL Query Alerts (Created, Updated, Deleted)
+  useEffect(() => {
+    if (router.query.alert) {
+      const alertType = router.query.alert as string;
+      let message = "";
+      let type: 'success' | 'error' | 'info' = 'info';
+
+      if (alertType === 'created') {
+        message = "Listing created successfully!";
+        type = 'success';
+      } else if (alertType === 'updated') {
+        message = "Listing updated successfully!";
+        type = 'info'; // Blue for update
+      } else if (alertType === 'deleted') {
+        message = "Listing deleted successfully!";
+        type = 'error'; // Red for delete
+      }
+
+      if (message) {
+        setToasts(prev => [...prev, { id: Date.now(), message, type }]);
+
+        // Clear query param without reload
+        const newQuery = { ...router.query };
+        delete newQuery.alert;
+        router.replace({ pathname: router.pathname, query: newQuery }, undefined, { shallow: true });
+      }
+    }
+  }, [router.query]);
 
   const markAllRead = async () => {
     await fetch('/api/notifications', { method: 'PUT' });

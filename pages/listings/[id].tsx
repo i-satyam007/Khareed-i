@@ -148,6 +148,37 @@ export default function ProductDetailsPage() {
                             </p>
                         </div>
 
+                        {/* Owner View: Bid History */}
+                        {isOwner && listing.isAuction && (
+                            <div className="mb-8">
+                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Bid History</h3>
+                                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                    {listing.bids && listing.bids.length > 0 ? (
+                                        <div className="divide-y divide-gray-100">
+                                            {listing.bids.map((bid: any) => (
+                                                <div key={bid.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold text-xs">
+                                                            {bid.bidder?.name?.[0] || 'U'}
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-gray-900">{bid.bidder?.name || bid.bidder?.username || 'User'}</p>
+                                                            <p className="text-xs text-gray-500">{new Date(bid.createdAt).toLocaleString()}</p>
+                                                        </div>
+                                                    </div>
+                                                    <span className="font-bold text-gray-900">₹{bid.amount}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="p-8 text-center text-gray-500 text-sm">
+                                            No bids yet.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Actions - Self-Buy Prevention */}
                         <div className="mt-auto space-y-3">
                             {isOwner ? (
@@ -166,7 +197,7 @@ export default function ProductDetailsPage() {
                                                     try {
                                                         const res = await fetch(`/api/listings/${id}`, { method: 'DELETE' });
                                                         if (res.ok) {
-                                                            router.push('/');
+                                                            router.push('/?alert=deleted');
                                                         } else {
                                                             alert("Failed to delete listing");
                                                         }
