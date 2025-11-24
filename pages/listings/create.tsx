@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Head from 'next/head';
-
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
-import { Upload, DollarSign, Clock, AlertCircle, X } from 'lucide-react';
+import { Upload, DollarSign, Clock, AlertCircle, Calendar, X, Check } from 'lucide-react';
+import Cropper from 'react-easy-crop';
+import { Point, Area } from 'react-easy-crop/types';
 
 type ListingForm = {
     title: string;
@@ -42,6 +43,12 @@ export default function CreateListingPage() {
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
 
+    // Cropper State
+    const [cropImage, setCropImage] = useState<string | null>(null);
+    const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
     // Auth Check
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
     const { data: authData, isLoading: authLoading } = useSWR("/api/auth/me", fetcher);
@@ -61,15 +68,74 @@ export default function CreateListingPage() {
     // Calculate base price for negative bid limit
     const basePrice = isAuction ? auctionStartPrice : sellingPrice;
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    }, []);
 
-        setUploading(true);
-        const formData = new FormData();
-        formData.append('file', file);
+    const createImage = (url: string): Promise<HTMLImageElement> =>
+        new Promise((resolve, reject) => {
+            const image = new Image();
+            image.addEventListener('load', () => resolve(image));
+            image.addEventListener('error', (error) => reject(error));
+            image.setAttribute('crossOrigin', 'anonymous');
+            image.src = url;
+        });
+
+    const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<Blob> => {
+        const image = await createImage(imageSrc);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+            throw new Error('No 2d context');
+        }
+
+        canvas.width = pixelCrop.width;
+        canvas.height = pixelCrop.height;
+
+        ctx.drawImage(
+            image,
+            pixelCrop.x,
+            pixelCrop.y,
+            pixelCrop.width,
+            pixelCrop.height,
+            0,
+            0,
+            pixelCrop.width,
+            pixelCrop.height
+        );
+
+        return new Promise((resolve, reject) => {
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    reject(new Error('Canvas is empty'));
+                    return;
+                }
+                resolve(blob);
+            }, 'image/jpeg');
+        });
+    };
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.addEventListener('load', () => setCropImage(reader.result as string));
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleUploadCroppedImage = async () => {
+        if (!cropImage || !croppedAreaPixels) return;
 
         try {
+            setUploading(true);
+            const croppedBlob = await getCroppedImg(cropImage, croppedAreaPixels);
+            const file = new File([croppedBlob], "cropped-image.jpg", { type: "image/jpeg" });
+
+            const formData = new FormData();
+            formData.append('file', file);
+
             const res = await fetch('/api/upload', {
                 method: 'POST',
                 body: formData,
@@ -80,6 +146,7 @@ export default function CreateListingPage() {
             const data = await res.json();
             setValue('imagePath', data.url);
             setPreviewImage(data.url);
+            setCropImage(null); // Close cropper
         } catch (error) {
             console.error(error);
             alert('Failed to upload image');
@@ -197,7 +264,6 @@ export default function CreateListingPage() {
                                             min={new Date().toISOString().split('T')[0]}
                                             className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
                                         />
-                                        {/* Removed custom Calendar icon to fix UI glitch */}
                                     </div>
                                     <p className="text-[10px] text-gray-400 mt-1">Useful for food, coupons, or time-sensitive items.</p>
                                 </div>
@@ -347,7 +413,7 @@ export default function CreateListingPage() {
                                         <input
                                             type="file"
                                             accept="image/*"
-                                            onChange={handleImageUpload}
+                                            onChange={handleFileSelect}
                                             className="hidden"
                                             disabled={uploading}
                                         />
@@ -377,6 +443,68 @@ export default function CreateListingPage() {
                     </form>
                 </div>
             </div>
+
+            {/* Cropper Modal */}
+            {cropImage && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+                    <div className="bg-white rounded-2xl overflow-hidden w-full max-w-lg flex flex-col max-h-[90vh]">
+                        <div className="p-4 border-b flex justify-between items-center">
+                            <h3 className="font-bold text-gray-900">Crop Image</h3>
+                            <button onClick={() => setCropImage(null)} className="text-gray-500 hover:text-gray-700">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        <div className="relative h-64 sm:h-80 bg-gray-900">
+                            <Cropper
+                                image={cropImage}
+                                crop={crop}
+                                zoom={zoom}
+                                aspect={4 / 3}
+                                onCropChange={setCrop}
+                                onCropComplete={onCropComplete}
+                                onZoomChange={setZoom}
+                            />
+                        </div>
+
+                        <div className="p-4 space-y-4">
+                            <div>
+                                <label className="text-xs font-medium text-gray-500 mb-1 block">Zoom</label>
+                                <input
+                                    type="range"
+                                    value={zoom}
+                                    min={1}
+                                    max={3}
+                                    step={0.1}
+                                    aria-labelledby="Zoom"
+                                    onChange={(e) => setZoom(Number(e.target.value))}
+                                    className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                />
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setCropImage(null)}
+                                    className="flex-1 py-2.5 text-gray-700 font-bold border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleUploadCroppedImage}
+                                    disabled={uploading}
+                                    className="flex-1 py-2.5 bg-kh-purple text-white font-bold rounded-xl hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+                                >
+                                    {uploading ? "Uploading..." : (
+                                        <>
+                                            <Check className="h-4 w-4" /> Crop & Upload
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
