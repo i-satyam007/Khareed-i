@@ -22,7 +22,7 @@ export default function BidPage() {
     if (!listing.isAuction) return <div className="min-h-screen flex items-center justify-center">This item is not for auction</div>;
 
     const currentPrice = listing.price; // This should be the highest bid or start price
-    const minBid = currentPrice + 10; // Minimum increment logic
+    const minBid = currentPrice + 1; // Minimum increment logic
 
     const handlePlaceBid = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -162,6 +162,28 @@ export default function BidPage() {
                                 {isProcessing ? "Placing Bid..." : "Place Bid"}
                             </button>
                         </form>
+
+                        {/* Recent Bids (Mock for now, would need API support to fetch real bids) */}
+                        <div className="pt-6 border-t border-gray-100">
+                            <h4 className="text-sm font-bold text-gray-900 mb-3">Recent Bids</h4>
+                            <div className="space-y-3">
+                                {listing.bids && listing.bids.length > 0 ? (
+                                    listing.bids.slice(0, 3).map((bid: any) => (
+                                        <div key={bid.id} className="flex justify-between items-center text-sm">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-500">
+                                                    {bid.bidder?.name?.[0] || 'U'}
+                                                </div>
+                                                <span className="text-gray-700 font-medium">{bid.bidder?.name || 'User'}</span>
+                                            </div>
+                                            <span className="font-bold text-gray-900">₹{bid.amount}</span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-gray-500 italic">No bids yet. Be the first!</p>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

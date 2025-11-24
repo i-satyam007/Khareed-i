@@ -50,6 +50,7 @@ model Listing {
   ownerId      Int
   status       String      @default("active") // active, sold, deleted
   createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @default(now()) @updatedAt
 
   owner        User        @relation("UserListings", fields: [ownerId], references: [id])
   bids         Bid[]       @relation("ListingBids")

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Heart, Clock } from 'lucide-react';
+import { Heart, Clock, Gavel } from 'lucide-react';
 
 type ListingProps = {
     id: number;
@@ -8,18 +8,46 @@ type ListingProps = {
     price: number;
     mrp: number;
     image?: string;
-    imagePath?: string; // Added imagePath
+    imagePath?: string;
     negotiable: boolean;
     isAuction?: boolean;
     endTime?: string;
     postedAt?: string;
-    createdAt?: string; // Added createdAt
+    createdAt?: string;
+    updatedAt?: string;
+    condition?: string;
+    category?: string;
 };
 
-export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt }: ListingProps) {
+export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt, updatedAt, condition, category }: ListingProps) {
     const discount = Math.round(((mrp - price) / mrp) * 100);
-    const displayImage = image || imagePath; // Use imagePath if image is missing
-    const displayTime = postedAt || (createdAt ? new Date(createdAt).toLocaleDateString() : "Recently"); // Format createdAt
+    const displayImage = image || imagePath;
+
+    const timeAgo = (date: string | Date) => {
+        const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + " years ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " months ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " days ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " hours ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " minutes ago";
+        return Math.floor(seconds) + " seconds ago";
+    };
+
+    const displayTime = postedAt ? timeAgo(postedAt) : (createdAt ? timeAgo(createdAt) : 'Recently');
+
+    // Check if edited (if updatedAt exists and is > 1 min after createdAt)
+    const isEdited = () => {
+        if (!updatedAt || !createdAt) return false;
+        const diff = new Date(updatedAt).getTime() - new Date(createdAt).getTime();
+        return diff > 60000; // 1 minute buffer
+    };
+
+    const editedText = isEdited() ? ` • Edited ${timeAgo(updatedAt!)}` : "";
 
     return (
         <div className="group bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full relative">
@@ -35,15 +63,17 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
 
                 {/* Badges */}
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
-                    {isAuction ? (
-                        <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold rounded-md border border-purple-200 shadow-sm">
+                    {isAuction && (
+                        <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold rounded-md border border-purple-200 shadow-sm flex items-center gap-1">
+                            <Gavel className="h-3 w-3" />
                             Auction
                         </span>
-                    ) : negotiable ? (
+                    )}
+                    {negotiable && !isAuction && (
                         <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-md border border-blue-100">
                             Negotiable
                         </span>
-                    ) : null}
+                    )}
                 </div>
 
                 {/* Wishlist Button */}
@@ -77,7 +107,7 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                         ) : (
                             <div className="flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
-                                <span>{displayTime}</span>
+                                <span>{displayTime}{editedText}</span>
                             </div>
                         )}
                     </div>

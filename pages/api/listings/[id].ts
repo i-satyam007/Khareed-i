@@ -50,9 +50,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (listing.ownerId !== user.id) return res.status(403).json({ message: "Forbidden" });
 
             // Soft delete
-            await prisma.listing.update({
-                where: { id: listingId },
-                data: { status: "deleted" },
+            await prisma.$transaction(async (tx) => {
+                await tx.listing.update({
+                    where: { id: listingId },
+                    data: { status: "deleted" },
+                });
+
+                // Notify bidders
+                const bids = await tx.bid.findMany({
+                    where: { listingId },
+                    select: { bidderId: true },
+                    distinct: ['bidderId'],
+                });
+
+                if (bids.length > 0) {
+                    await tx.notification.createMany({
+                        data: bids.map(bid => ({
+                            userId: bid.bidderId,
+                            title: "Listing Deleted",
+                            body: `The listing "${listing.title}" you bid on has been deleted by the owner.`,
+                        })),
+                    });
+                }
             });
 
             return res.status(200).json({ message: "Listing deleted" });
@@ -74,14 +93,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const { title, description, price, negotiable } = req.body;
 
-            const updatedListing = await prisma.listing.update({
-                where: { id: listingId },
-                data: {
-                    title,
-                    description,
-                    price: Number(price),
-                    negotiable: Boolean(negotiable),
-                },
+            const updatedListing = await prisma.$transaction(async (tx) => {
+                const updated = await tx.listing.update({
+                    where: { id: listingId },
+                    data: {
+                        title,
+                        description,
+                        price: Number(price),
+                        negotiable: Boolean(negotiable),
+                    },
+                });
+
+                // Notify bidders
+                const bids = await tx.bid.findMany({
+                    where: { listingId },
+                    select: { bidderId: true },
+                    distinct: ['bidderId'],
+                });
+
+                if (bids.length > 0) {
+                    await tx.notification.createMany({
+                        data: bids.map(bid => ({
+                            userId: bid.bidderId,
+                            title: "Listing Updated",
+                            body: `The listing "${listing.title}" you bid on has been updated by the owner.`,
+                        })),
+                    });
+                }
+
+                return updated;
             });
 
             return res.status(200).json(updatedListing);

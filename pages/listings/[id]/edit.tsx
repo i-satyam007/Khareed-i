@@ -95,14 +95,16 @@ export default function EditListingPage() {
                             />
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                {...register('negotiable')}
-                                className="w-5 h-5 text-kh-purple rounded focus:ring-kh-purple"
-                            />
-                            <label className="text-sm font-medium text-gray-700">Open to Negotiation</label>
-                        </div>
+                        {!listing.isAuction && (
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    {...register('negotiable')}
+                                    className="w-5 h-5 text-kh-purple rounded focus:ring-kh-purple"
+                                />
+                                <label className="text-sm font-medium text-gray-700">Open to Negotiation</label>
+                            </div>
+                        )}
                     </div>
 
                     <button

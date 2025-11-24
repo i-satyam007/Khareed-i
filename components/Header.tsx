@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag, Bell } from 'lucide-react';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
@@ -24,6 +24,15 @@ export default function Header() {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: authData, mutate } = useSWR("/api/auth/me", fetcher);
   const user = authData?.user;
+
+  // Notifications
+  const { data: notifications = [], mutate: mutateNotifications } = useSWR(user ? "/api/notifications" : null, fetcher);
+  const unreadCount = notifications.filter((n: any) => !n.read).length;
+
+  const markAllRead = async () => {
+    await fetch('/api/notifications', { method: 'PUT' });
+    mutateNotifications();
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +115,43 @@ export default function Header() {
               </div>
               <span>Group Order</span>
             </Link>
+
+            {/* Notification Bell */}
+            <div className="relative group">
+              <button className="p-2 hover:bg-gray-100 rounded-full transition-colors relative">
+                <Bell className="h-6 w-6 text-gray-700" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full border-2 border-white">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Notification Dropdown */}
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 hidden group-hover:block animate-in fade-in slide-in-from-top-2">
+                <div className="px-4 py-2 border-b border-gray-50 flex justify-between items-center">
+                  <span className="font-bold text-gray-900 text-sm">Notifications</span>
+                  {unreadCount > 0 && (
+                    <button onClick={markAllRead} className="text-xs text-kh-purple hover:underline">
+                      Mark all read
+                    </button>
+                  )}
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500 text-sm">No notifications</div>
+                  ) : (
+                    notifications.map((n: any) => (
+                      <div key={n.id} className={`px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 ${!n.read ? 'bg-blue-50/50' : ''}`}>
+                        <p className="text-sm font-semibold text-gray-900">{n.title}</p>
+                        <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">{n.body}</p>
+                        <p className="text-[10px] text-gray-400 mt-1">{new Date(n.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
 
             {/* Cart Icon (Mock) */}
             <div className="relative cursor-pointer hover:opacity-80 transition-opacity">
