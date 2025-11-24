@@ -61,41 +61,59 @@ export default function Header() {
   // Notifications
   const { data: notifications = [], mutate: mutateNotifications } = useSWR(user ? "/api/notifications" : null, fetcher);
 
+
   // Filter notifications - Ensure it's an array to prevent crashes
   const safeNotifications = Array.isArray(notifications) ? notifications : [];
   const generalNotifications = safeNotifications.filter((n: any) => n.type !== 'alert');
   const alertNotifications = safeNotifications.filter((n: any) => n.type === 'alert' && !n.read);
   const unreadCount = generalNotifications.filter((n: any) => !n.read).length;
 
-  // Handle Alerts
-  useEffect(() => {
-    if (alertNotifications.length > 0) {
-      alertNotifications.forEach(async (alert: any) => {
-        // Determine type based on content (simple heuristic)
-        let type: 'success' | 'error' | 'info' = 'info';
-        const title = alert.title || "";
-        if (title.toLowerCase().includes('created') || title.toLowerCase().includes('success')) type = 'success';
-        if (title.toLowerCase().includes('deleted') || title.toLowerCase().includes('error')) type = 'error';
-        if (title.toLowerCase().includes('updated') || title.toLowerCase().includes('edited')) type = 'info';
-
-        // Add Toast
-        setToasts(prev => [...prev, { id: Date.now() + Math.random(), message: `${alert.title}: ${alert.body}`, type }]);
-
-        // Mark as read immediately
-        await fetch('/api/notifications', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: alert.id })
-        });
-      });
-      // Refresh to clear them
-      mutateNotifications();
-    }
-  }, [alertNotifications, mutateNotifications]);
-
   const removeToast = (id: number) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
+
+  // Handle Alerts
+  useEffect(() => {
+    if (alertNotifications.length > 0) {
+      const processAlerts = async () => {
+        const newToasts: { id: number, message: string, type: 'success' | 'error' | 'info' }[] = [];
+        const markReadPromises: Promise<any>[] = [];
+
+        alertNotifications.forEach((alert: any) => {
+          // Prevent duplicate toasts if already visible (basic check)
+          if (toasts.some(t => t.message === `${alert.title}: ${alert.body}`)) return;
+
+          // Determine type based on content
+          let type: 'success' | 'error' | 'info' = 'info';
+          const title = alert.title || "";
+          if (title.toLowerCase().includes('created') || title.toLowerCase().includes('success')) type = 'success';
+          if (title.toLowerCase().includes('deleted') || title.toLowerCase().includes('error')) type = 'error';
+          if (title.toLowerCase().includes('updated') || title.toLowerCase().includes('edited')) type = 'info';
+
+          newToasts.push({ id: Date.now() + Math.random(), message: `${alert.title}: ${alert.body}`, type });
+
+          // Queue mark as read
+          markReadPromises.push(
+            fetch('/api/notifications', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: alert.id })
+            })
+          );
+        });
+
+        if (newToasts.length > 0) {
+          setToasts(prev => [...prev, ...newToasts]);
+
+          // Wait for all to be marked as read BEFORE mutating
+          await Promise.all(markReadPromises);
+          mutateNotifications();
+        }
+      };
+
+      processAlerts();
+    }
+  }, [alertNotifications, mutateNotifications]);
 
   const markAllRead = async () => {
     await fetch('/api/notifications', { method: 'PUT' });

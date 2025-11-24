@@ -21,8 +21,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             name: true,
                             username: true,
                             email: true,
-                            // hostel: true, 
-                            // avatar: true,
+                        },
+                    },
+                    bids: {
+                        orderBy: { amount: 'desc' },
+                        include: {
+                            bidder: {
+                                select: { name: true, username: true },
+                            },
                         },
                     },
                 },

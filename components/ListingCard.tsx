@@ -17,9 +17,10 @@ type ListingProps = {
     updatedAt?: string;
     condition?: string;
     category?: string;
+    bids?: any[];
 };
 
-export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt, updatedAt, condition, category }: ListingProps) {
+export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt, updatedAt, condition, category, bids }: ListingProps) {
     const discount = Math.round(((mrp - price) / mrp) * 100);
     const displayImage = image || imagePath;
 
@@ -100,9 +101,16 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                     {/* Auction Timer or Posted Time */}
                     <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500">
                         {isAuction && endTime ? (
-                            <div className="flex items-center gap-1 text-orange-600 font-bold">
-                                <Clock className="h-3 w-3" />
-                                <span>Ends in {endTime}</span>
+                            <div className="flex flex-col items-end">
+                                <div className="flex items-center gap-1 text-orange-600 font-bold">
+                                    <Clock className="h-3 w-3" />
+                                    <span>Ends in {endTime}</span>
+                                </div>
+                                {bids && bids.length > 0 && (
+                                    <div className="text-[10px] text-gray-500 mt-0.5">
+                                        Top Bid by <span className="font-bold text-gray-900">{bids[0].bidder?.name || bids[0].bidder?.username || 'User'}</span>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="flex items-center gap-1">

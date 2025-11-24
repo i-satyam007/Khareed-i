@@ -31,7 +31,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 },
                 include: {
                     owner: {
-                        select: { name: true }, // Explicitly select only name to avoid schema mismatch
+                        select: { name: true },
+                    },
+                    bids: {
+                        orderBy: { amount: 'desc' },
+                        take: 1,
+                        include: {
+                            bidder: {
+                                select: { name: true, username: true },
+                            },
+                        },
                     },
                 },
             });

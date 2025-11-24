@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
-import { Heart, Share2, MapPin, ShieldCheck, Clock, User } from 'lucide-react';
+import { Heart, Share2, MapPin, ShieldCheck, Clock, User, Gavel } from 'lucide-react';
 
 // Mock Data (In real app, fetch based on ID)
 const MOCK_PRODUCT = {
@@ -113,6 +113,14 @@ export default function ProductDetailsPage() {
                                 <span className="bg-purple-50 text-purple-700 text-xs font-bold px-2 py-1 rounded-md border border-purple-100">Auction</span>
                             )}
                         </div>
+                        {listing.isAuction && listing.bids && listing.bids.length > 0 && (
+                            <div className="mb-6 -mt-4 text-sm text-gray-600 flex items-center gap-2 bg-purple-50 p-3 rounded-lg border border-purple-100">
+                                <Gavel className="h-4 w-4 text-purple-600" />
+                                <span>
+                                    Highest Bid by <span className="font-bold text-gray-900">{listing.bids[0].bidder?.name || listing.bids[0].bidder?.username || 'User'}</span>
+                                </span>
+                            </div>
+                        )}
 
                         {/* Seller Info Card */}
                         <div className="bg-white border border-gray-100 rounded-xl p-4 mb-6 flex items-center justify-between shadow-sm">
