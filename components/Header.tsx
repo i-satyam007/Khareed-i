@@ -31,9 +31,10 @@ export default function Header() {
   // Notifications
   const { data: notifications = [], mutate: mutateNotifications } = useSWR(user ? "/api/notifications" : null, fetcher);
 
-  // Filter notifications
-  const generalNotifications = notifications.filter((n: any) => n.type !== 'alert');
-  const alertNotifications = notifications.filter((n: any) => n.type === 'alert' && !n.read);
+  // Filter notifications - Ensure it's an array to prevent crashes
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
+  const generalNotifications = safeNotifications.filter((n: any) => n.type !== 'alert');
+  const alertNotifications = safeNotifications.filter((n: any) => n.type === 'alert' && !n.read);
   const unreadCount = generalNotifications.filter((n: any) => !n.read).length;
 
   // Handle Alerts
