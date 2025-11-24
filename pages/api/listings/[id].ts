@@ -69,6 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             userId: bid.bidderId,
                             title: "Listing Deleted",
                             body: `The listing "${listing.title}" you bid on has been deleted by the owner.`,
+                            type: 'alert'
                         })),
                     });
                 }
@@ -117,6 +118,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             userId: bid.bidderId,
                             title: "Listing Updated",
                             body: `The listing "${listing.title}" you bid on has been updated by the owner.`,
+                            type: 'alert'
                         })),
                     });
                 }
