@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag, Bell } from 'lucide-react';
 import { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
+import { useUser } from '@/lib/hooks/useUser';
 
 const CATEGORIES = [
   "All Categories",
@@ -21,10 +22,11 @@ export default function Header() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const router = useRouter();
 
-  // Auth Check
+  // Auth Check using custom hook
+  const { user } = useUser();
+
+  // Local fetcher for notifications
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data: authData } = useSWR("/api/auth/me", fetcher);
-  const user = authData?.user;
 
   // Notifications
   const { data: notifications = [], mutate: mutateNotifications } = useSWR(user ? "/api/notifications" : null, fetcher);
