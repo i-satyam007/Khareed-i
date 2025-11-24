@@ -78,7 +78,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     auctionTo: auctionTo,
                     allowNegBid: Boolean(allowNegativeBids),
                     ownerId: user.id,
-                    imagePath: null,
+                    imagePath: req.body.imagePath || null,
                     expiryDate: req.body.expiryDate ? new Date(req.body.expiryDate) : null,
                 },
             });

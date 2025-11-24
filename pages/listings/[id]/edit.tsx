@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import { useForm } from 'react-hook-form';
-import { ArrowLeft, Save, Trash2, Calendar } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Calendar, Upload, X } from 'lucide-react';
 
 const CATEGORIES = [
     "Electronics",
@@ -28,6 +28,8 @@ export default function EditListingPage() {
 
     const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm();
     const [otherCategoryMode, setOtherCategoryMode] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
 
     const selectedCategory = watch('category');
 
@@ -51,6 +53,12 @@ export default function EditListingPage() {
             if (listing.expiryDate) {
                 setValue('expiryDate', new Date(listing.expiryDate).toISOString().split('T')[0]);
             }
+
+            // Handle Image
+            if (listing.imagePath) {
+                setValue('imagePath', listing.imagePath);
+                setPreviewImage(listing.imagePath);
+            }
         }
     }, [listing, setValue]);
 
@@ -62,6 +70,38 @@ export default function EditListingPage() {
         router.push(`/listings/${id}`);
         return null;
     }
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!res.ok) throw new Error('Upload failed');
+
+            const data = await res.json();
+            setValue('imagePath', data.url);
+            setPreviewImage(data.url);
+        } catch (error) {
+            console.error(error);
+            alert('Failed to upload image');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const removeImage = () => {
+        setValue('imagePath', null);
+        setPreviewImage(null);
+    };
 
     const onSubmit = async (data: any) => {
         try {
@@ -146,7 +186,7 @@ export default function EditListingPage() {
                                     min={new Date().toISOString().split('T')[0]}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-kh-purple"
                                 />
-                                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                                {/* Removed custom Calendar icon */}
                             </div>
                         </div>
 
@@ -168,6 +208,42 @@ export default function EditListingPage() {
                             />
                         </div>
 
+                        {/* Image Upload */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Photo</label>
+                            <div className="relative">
+                                {previewImage ? (
+                                    <div className="relative w-full h-64 rounded-xl overflow-hidden border border-gray-200 group">
+                                        <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={removeImage}
+                                            className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <label className="block border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer group">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            className="hidden"
+                                            disabled={uploading}
+                                        />
+                                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                            <Upload className="h-6 w-6 text-gray-500" />
+                                        </div>
+                                        <p className="text-sm font-medium text-gray-900">
+                                            {uploading ? "Uploading..." : "Click to upload photos"}
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1">SVG, PNG, JPG or GIF (max. 5MB)</p>
+                                    </label>
+                                )}
+                            </div>
+                        </div>
+
                         {!listing.isAuction && (
                             <div className="flex items-center gap-2">
                                 <input
@@ -182,7 +258,7 @@ export default function EditListingPage() {
 
                     <button
                         type="submit"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || uploading}
                         className="w-full bg-kh-purple hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2"
                     >
                         <Save className="h-5 w-5" />
