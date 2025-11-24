@@ -22,8 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
             return res.status(200).json(notifications);
         } catch (error) {
-            console.error(error);
-            return res.status(500).json({ message: 'Failed to fetch notifications' });
+            console.error("Error fetching notifications:", error);
+            return res.status(500).json({ message: 'Failed to fetch notifications', error: String(error) });
         }
     } else if (req.method === 'PUT') {
         // Mark all as read or specific one
