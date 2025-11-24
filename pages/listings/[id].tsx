@@ -57,11 +57,13 @@ export default function ProductDetailsPage() {
                     <div className="space-y-4">
                         <div className="aspect-[4/3] bg-white rounded-2xl border border-gray-200 overflow-hidden flex items-center justify-center relative group">
                             {images.length > 0 ? (
-                                <img
-                                    src={images[activeImage]}
-                                    alt={listing.title}
-                                    className="w-full h-full object-cover"
-                                />
+                                <a href={images[activeImage]} target="_blank" rel="noopener noreferrer" className="cursor-zoom-in w-full h-full">
+                                    <img
+                                        src={images[activeImage]}
+                                        alt={listing.title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </a>
                             ) : (
                                 <div className="text-gray-300 flex flex-col items-center">
                                     <span className="text-6xl">📷</span>
