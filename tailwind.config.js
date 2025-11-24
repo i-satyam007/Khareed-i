@@ -10,7 +10,7 @@ module.exports = {
       colors: {
         kh: {
           red: "#EF5350",     // Primary Action
-          purple: "#B9A7D3",  // Brand/Logo
+          purple: "#343d43",  // Brand/Logo
           dark: "#2C2E35",    // Text
           gray: "#696C75",    // Muted Text
           light: "#F7F7F9",   // Background

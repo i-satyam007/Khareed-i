@@ -70,6 +70,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(201).json(bid);
     } catch (error) {
         console.error("Error placing bid:", error);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error", error: String(error) });
     }
 }
