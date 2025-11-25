@@ -24,32 +24,6 @@ model User {
   resetOTPExpiry     DateTime?
 
   // Relations
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id                 Int            @id @default(autoincrement())
-  name               String?
-  email              String         @unique
-  username           String         @unique
-  password           String
-  role               String         @default("user")
-  createdAt          DateTime       @default(now())
-  hostel             String?
-  phone              String?
-  avatar             String?
-
-  // ✅ ADDED: OTP Fields for Password Reset
-  resetOTP           String?
-  resetOTPExpiry     DateTime?
-
-  // Relations
   listings           Listing[]      @relation("UserListings")
   orders             Order[]        @relation("UserOrders")
   bids               Bid[]          @relation("UserBids")
