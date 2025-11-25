@@ -3,24 +3,19 @@ import Head from 'next/head';
 import Link from 'next/link';
 import GroupOrderCard from '../../components/GroupOrderCard';
 import { Plus, Search, Filter } from 'lucide-react';
-
-// Mock Data
-const ACTIVE_GROUP_ORDERS = [
-    { id: 1, platform: "Blinkit", title: "Midnight snacks run", cutoff: "Today · 11:15 PM", minCart: "₹200 shared", host: "Aman (BH-3)" },
-    { id: 2, platform: "BigBasket", title: "Weekly groceries", cutoff: "Tmrw · 9:00 PM", minCart: "₹1,000 shared", host: "Khushi (GH-2)" },
-    { id: 3, platform: "Swiggy", title: "Biryani from Behrouz", cutoff: "Today · 9:30 PM", minCart: "₹500 shared", host: "Rohan (BH-5)" },
-    { id: 4, platform: "Zomato", title: "Pizza Party", cutoff: "Today · 8:00 PM", minCart: "₹800 shared", host: "Vikram (BH-1)" },
-    { id: 5, platform: "Eatsure", title: "Healthy Dinner", cutoff: "Today · 7:30 PM", minCart: "₹400 shared", host: "Sneha (GH-1)" },
-];
+import useSWR from 'swr';
 
 export default function GroupOrdersPage() {
     const [searchTerm, setSearchTerm] = useState("");
 
-    const filteredOrders = ACTIVE_GROUP_ORDERS.filter(order =>
+    const fetcher = (url: string) => fetch(url).then((res) => res.json());
+    const { data: groupOrders = [], isLoading } = useSWR('/api/group-orders', fetcher);
+
+    const filteredOrders = Array.isArray(groupOrders) ? groupOrders.filter((order: any) =>
         order.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.platform.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.host.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+        (order.creator?.name || "").toLowerCase().includes(searchTerm.toLowerCase())
+    ) : [];
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
@@ -61,11 +56,20 @@ export default function GroupOrdersPage() {
                 </div>
 
                 {/* Grid */}
-                {filteredOrders.length > 0 ? (
+                {isLoading ? (
+                    <div className="text-center py-20">Loading...</div>
+                ) : filteredOrders.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredOrders.map((order) => (
-                            // @ts-ignore
-                            <GroupOrderCard key={order.id} {...order} />
+                        {filteredOrders.map((order: any) => (
+                            <GroupOrderCard
+                                key={order.id}
+                                id={order.id}
+                                platform={order.platform}
+                                title={order.title}
+                                cutoff={new Date(order.cutoff).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                minCart={order.minOrderValue ? `Min ₹${order.minOrderValue}` : "No min"}
+                                host={`${order.creator?.name} (${order.creator?.hostel || 'Unknown'})`}
+                            />
                         ))}
                     </div>
                 ) : (

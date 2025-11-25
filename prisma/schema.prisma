@@ -118,24 +118,6 @@ model GroupOrderItem {
   userId       Int
   itemName     String
   amount       Int
-  quantity     Int        @default(1)
-
-  user         User       @relation("UserGroupOrderItems", fields: [userId], references: [id])
-  groupOrder   GroupOrder @relation("GroupOrderParticipants", fields: [groupOrderId], references: [id])
-}
-
-  rating    Int
-  comment   String?
-  createdAt DateTime @default(now())
-
-  user      User     @relation("UserReviews", fields: [userId], references: [id])
-  listing   Listing  @relation("ListingReviews", fields: [listingId], references: [id])
-}
-
-model Offer {
-  id        Int      @id @default(autoincrement())
-  listingId Int
-  userId    Int
   amount    Int
   status    String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
   createdAt DateTime @default(now())

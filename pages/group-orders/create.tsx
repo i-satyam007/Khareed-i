@@ -41,11 +41,26 @@ export default function CreateGroupOrderPage() {
 
     const onSubmit = async (data: GroupOrderForm) => {
         setIsSubmitting(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log(data);
-        // Redirect to the new group order page (mock ID 99)
-        router.push('/group-orders/99');
+        try {
+            const res = await fetch('/api/group-orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+                const newOrder = await res.json();
+                router.push(`/group-orders/${newOrder.id}`);
+            } else {
+                const error = await res.json();
+                alert(error.message || 'Failed to create group order');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     if (authLoading) {
