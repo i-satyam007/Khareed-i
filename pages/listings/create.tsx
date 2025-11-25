@@ -133,26 +133,20 @@ export default function CreateListingPage() {
         try {
             setUploading(true);
             const croppedBlob = await getCroppedImg(cropImage, croppedAreaPixels);
-            const file = new File([croppedBlob], "cropped-image.jpg", { type: "image/jpeg" });
 
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!res.ok) throw new Error('Upload failed');
-
-            const data = await res.json();
-            setValue('imagePath', data.url);
-            setPreviewImage(data.url);
-            setCropImage(null); // Close cropper
+            // Convert Blob to Base64
+            const reader = new FileReader();
+            reader.readAsDataURL(croppedBlob);
+            reader.onloadend = () => {
+                const base64data = reader.result as string;
+                setValue('imagePath', base64data);
+                setPreviewImage(base64data);
+                setCropImage(null); // Close cropper
+                setUploading(false);
+            };
         } catch (error) {
             console.error(error);
-            alert('Failed to upload image');
-        } finally {
+            alert('Failed to process image');
             setUploading(false);
         }
     };
