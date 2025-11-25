@@ -3,15 +3,13 @@ import { prisma } from "./prisma";
 
 export async function getUser(req: any) {
   const cookie = req.headers.cookie || "";
-  const tokenCookie = cookie
-    .split(";")
-    .map((x: string) => x.trim())
-    .find((x: string) => x.startsWith("token="));
 
-  if (!tokenCookie) return null;
 
-  // Handle potential '=' in the token itself (though JWTs usually don't have them)
-  const token = tokenCookie.split("=").slice(1).join("=");
+  // Use regex to find the token cookie safely
+  const match = cookie.match(/token=([^;]+)/);
+  const token = match ? match[1] : null;
+
+  if (!token) return null;
 
   try {
     const payload: any = verifyToken(token);

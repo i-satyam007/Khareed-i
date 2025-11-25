@@ -161,7 +161,8 @@ export default function Header() {
   const handleLogout = async () => {
     await fetch("/api/auth/logout");
     await mutate(null); // Clear SWR cache
-    window.location.href = "/login"; // Hard redirect to clear client state
+    router.push("/"); // Redirect to homepage
+    mutateNotifications(); // Clear notifications
   };
 
   // Close dropdown when clicking outside

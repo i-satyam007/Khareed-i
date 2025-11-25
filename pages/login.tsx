@@ -27,14 +27,14 @@ function useRenderRecaptcha(elementId: string, siteKey: string | undefined) {
       if (g && el) {
         try {
           if (renderedRef.current && typeof g.reset === "function") {
-             g.reset(widgetRef.current);
+            g.reset(widgetRef.current);
           } else {
             const wid = g.render(elementId, { sitekey: siteKey });
             widgetRef.current = wid;
             renderedRef.current = true;
           }
         } catch (err) {
-           setTimeout(tryRender, 200);
+          setTimeout(tryRender, 200);
         }
         return;
       }
@@ -78,7 +78,7 @@ export default function LoginPage() {
         body: JSON.stringify({ ...data, captchaToken }),
       });
       const j = await res.json();
-      
+
       if (!res.ok) {
         setLoginError(j?.error || "Login failed");
         if (res.status === 401 || j?.error?.includes("Invalid")) {
@@ -88,13 +88,23 @@ export default function LoginPage() {
           try {
             const wid = widgetRef.current;
             (window as any).grecaptcha.reset(typeof wid === "number" ? wid : undefined);
-          } catch (e) {}
+          } catch (e) { }
         }
         return;
       }
 
-      await mutate("/api/auth/me");
-      router.replace("/");
+      // Force re-fetch user data and wait for it
+      const meRes = await fetch("/api/auth/me");
+      const meData = await meRes.json();
+
+      // Update SWR cache manually
+      await mutate("/api/auth/me", meData, false);
+
+      if (meData?.user) {
+        router.replace("/");
+      } else {
+        setLoginError("Login verified but session not found. Please try again.");
+      }
     } catch (err) {
       setLoginError("Network error");
     }
@@ -102,29 +112,29 @@ export default function LoginPage() {
 
   return (
     <div className="h-screen w-full flex items-center justify-center bg-kh-light overflow-hidden relative">
-      
+
       {/* Back to Home Link */}
       <div className="absolute top-6 left-6">
         <Link href="/" className="flex items-center gap-2 text-sm font-medium text-kh-gray hover:text-kh-dark transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
           Back to Home
         </Link>
       </div>
 
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl border border-gray-100 mx-4">
-         {/* Header - Using New Logo */}
-         <div className="text-center mb-8 flex flex-col items-center">
-           <Link href="/" className="inline-block mb-4 hover:scale-105 transition-transform">
-             <Logo className="h-16 w-16" />
-           </Link>
-           <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
-           <p className="mt-2 text-sm text-gray-500">
-             New here? <Link href="/signup" className="font-semibold text-kh-red hover:text-red-600 transition-colors">Create an account</Link>
-           </p>
+        {/* Header - Using New Logo */}
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Link href="/" className="inline-block mb-4 hover:scale-105 transition-transform">
+            <Logo className="h-16 w-16" />
+          </Link>
+          <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
+          <p className="mt-2 text-sm text-gray-500">
+            New here? <Link href="/signup" className="font-semibold text-kh-red hover:text-red-600 transition-colors">Create an account</Link>
+          </p>
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          
+
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Email or Username</label>
             <input
@@ -151,7 +161,7 @@ export default function LoginPage() {
 
           {/* CAPTCHA */}
           <div className="flex justify-center">
-             <div id="recap-login" className="scale-90 origin-center" />
+            <div id="recap-login" className="scale-90 origin-center" />
           </div>
 
           {loginError && (
@@ -164,15 +174,15 @@ export default function LoginPage() {
           )}
 
           {showForgotUser && (
-             <div className="text-center text-sm p-3 bg-yellow-50 rounded-lg border border-yellow-100">
-                <span className="text-gray-600">Forgot username? </span>
-                <Link href="/forgot-username" className="font-semibold text-kh-red hover:text-red-600 hover:underline">Recover it here</Link>
-             </div>
+            <div className="text-center text-sm p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+              <span className="text-gray-600">Forgot username? </span>
+              <Link href="/forgot-username" className="font-semibold text-kh-red hover:text-red-600 hover:underline">Recover it here</Link>
+            </div>
           )}
 
-          <button 
-            type="submit" 
-            disabled={isSubmitting} 
+          <button
+            type="submit"
+            disabled={isSubmitting}
             className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-kh-red hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kh-red disabled:opacity-70 disabled:cursor-not-allowed transition-all transform active:scale-[0.98]"
           >
             {isSubmitting ? (
