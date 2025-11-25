@@ -48,7 +48,9 @@ export default function EditListingPage() {
             setValue('title', listing.title);
             setValue('description', listing.description);
             setValue('price', listing.price);
+            setValue('price', listing.price);
             setValue('negotiable', listing.negotiable);
+            setValue('autoSell', listing.autoSell);
 
             // Handle Category
             if (CATEGORIES.includes(listing.category)) {
@@ -316,6 +318,17 @@ export default function EditListingPage() {
                                     className="w-5 h-5 text-kh-purple rounded focus:ring-kh-purple"
                                 />
                                 <label className="text-sm font-medium text-gray-700">Open to Negotiation</label>
+                            </div>
+                        )}
+
+                        {listing.isAuction && (
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    {...register('autoSell')}
+                                    className="w-5 h-5 text-kh-purple rounded focus:ring-kh-purple"
+                                />
+                                <label className="text-sm font-medium text-gray-700">Auto-Sell to Highest Bidder</label>
                             </div>
                         )}
                     </div>

@@ -20,6 +20,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === "GET") {
         try {
+            const user = await getUser(req);
+
+            // First fetch the listing to check ownership
+            const listingCheck = await prisma.listing.findUnique({
+                where: { id: listingId },
+                select: { ownerId: true }
+            });
+
+            if (!listingCheck) {
+                return res.status(404).json({ message: "Listing not found" });
+            }
+
+            const isOwner = user?.id === listingCheck.ownerId;
+
             const listing = await prisma.listing.findUnique({
                 where: { id: listingId },
                 include: {
@@ -39,12 +53,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             },
                         },
                     },
+                    offers: isOwner ? {
+                        orderBy: { createdAt: 'desc' },
+                        include: {
+                            bidder: {
+                                select: { name: true, username: true },
+                            },
+                        },
+                    } : false,
                 },
             });
-
-            if (!listing) {
-                return res.status(404).json({ message: "Listing not found" });
-            }
 
             return res.status(200).json(listing);
         } catch (error) {
@@ -141,6 +159,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         description,
                         price: Number(price),
                         negotiable: Boolean(negotiable),
+                        autoSell: Boolean(req.body.autoSell),
                         imagePath: req.body.imagePath || undefined,
                         expiryDate: req.body.expiryDate ? new Date(req.body.expiryDate) : null,
                     },

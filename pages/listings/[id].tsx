@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
+import OfferModal from '../../components/OfferModal';
 
-import { Heart, Share2, MapPin, ShieldCheck, Clock, User, Gavel } from 'lucide-react';
+import { Heart, Share2, MapPin, ShieldCheck, Clock, User, Gavel, Check, X } from 'lucide-react';
 
 // Mock Data (In real app, fetch based on ID)
 const MOCK_PRODUCT = {
@@ -31,16 +32,92 @@ export default function ProductDetailsPage() {
 
     // Fetch Listing Data
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
-    const { data: listing, isLoading: listingLoading, error: listingError } = useSWR(id ? `/api/listings/${id}` : null, fetcher);
+    const { data: listing, isLoading: listingLoading, error: listingError, mutate } = useSWR(id ? `/api/listings/${id}` : null, fetcher);
+    const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
 
-    // Fetch Current User
     const { data: authData } = useSWR("/api/auth/me", fetcher);
     const user = authData?.user;
+    const isOwner = user?.id === listing?.ownerId;
+
+    const { data: myOffer } = useSWR(user && !isOwner && listing ? `/api/listings/${id}/my-offer` : null, fetcher);
+
+    const handleMakeOffer = async (amount: number) => {
+        try {
+            const res = await fetch('/api/offers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ listingId: listing.id, amount }),
+            });
+            if (res.ok) {
+                alert('Offer sent successfully!');
+                setIsOfferModalOpen(false);
+            } else {
+                const data = await res.json();
+                alert(data.message || 'Failed to send offer');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred');
+        }
+    };
+
+    const handleOfferAction = async (offerId: number, status: 'ACCEPTED' | 'REJECTED') => {
+        try {
+            const res = await fetch(`/api/offers/${offerId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status }),
+            });
+            if (res.ok) {
+                alert(`Offer ${status.toLowerCase()}!`);
+                mutate();
+            } else {
+                alert('Failed to update offer');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred');
+        }
+    };
+
+    const handleConfirmOrder = async () => {
+        // Allow if myOffer exists OR if it's an auction win
+        const isAuctionEnded = listing.isAuction && listing.auctionTo && new Date(listing.auctionTo) < new Date();
+        const highestBid = listing.bids && listing.bids[0];
+        // Check username match as fallback if IDs are tricky, but IDs are safer. 
+        // Assuming user.username is available.
+        const isWinner = isAuctionEnded && highestBid && user && (highestBid.bidder?.username === user.username);
+
+        if (!myOffer && !isWinner) return;
+
+        try {
+            const payload: any = { listingId: listing.id };
+            if (myOffer) {
+                payload.offerId = myOffer.id;
+            }
+
+            const res = await fetch('/api/orders/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            if (res.ok) {
+                router.push('/orders?alert=created');
+            } else {
+                const data = await res.json();
+                alert(data.message || 'Failed to create order');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred');
+        }
+    };
+
+
 
     if (listingLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
     if (listingError || !listing) return <div className="min-h-screen flex items-center justify-center">Listing not found</div>;
 
-    const isOwner = user?.id === listing.ownerId;
     const discount = Math.round(((listing.mrp - listing.price) / listing.mrp) * 100);
     const images = listing.imagePath ? [listing.imagePath] : []; // Handle single image for now, extendable to array
 
@@ -124,6 +201,48 @@ export default function ProductDetailsPage() {
                             </div>
                         )}
 
+                        {/* Auction Winner View */}
+                        {listing.isAuction && listing.auctionTo && new Date(listing.auctionTo) < new Date() && listing.bids && listing.bids[0] && user && listing.bids[0].bidder?.username === user.username && (
+                            <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 mb-6 animate-in fade-in slide-in-from-top-2">
+                                <div className="flex items-start gap-3">
+                                    <Gavel className="h-5 w-5 text-purple-600 mt-0.5" />
+                                    <div>
+                                        <p className="text-purple-800 font-bold mb-1">You Won This Auction!</p>
+                                        <p className="text-purple-700 text-sm mb-3">
+                                            Congratulations! You had the highest bid of <strong>₹{listing.bids[0].amount}</strong>.
+                                        </p>
+                                        <button
+                                            onClick={handleConfirmOrder}
+                                            className="bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm shadow-sm"
+                                        >
+                                            Claim & Pay
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Bidder View: Accepted Offer */}
+                        {myOffer && myOffer.status === 'ACCEPTED' && (
+                            <div className="bg-green-50 p-4 rounded-xl border border-green-200 mb-6 animate-in fade-in slide-in-from-top-2">
+                                <div className="flex items-start gap-3">
+                                    <Check className="h-5 w-5 text-green-600 mt-0.5" />
+                                    <div>
+                                        <p className="text-green-800 font-bold mb-1">Offer Accepted!</p>
+                                        <p className="text-green-700 text-sm mb-3">
+                                            The seller accepted your offer of <strong>₹{myOffer.amount}</strong>.
+                                        </p>
+                                        <button
+                                            onClick={handleConfirmOrder}
+                                            className="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm shadow-sm"
+                                        >
+                                            Confirm Order & Pay
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Seller Info Card */}
                         <div className="bg-white border border-gray-100 rounded-xl p-4 mb-6 flex items-center justify-between shadow-sm">
                             <div className="flex items-center gap-3">
@@ -181,6 +300,63 @@ export default function ProductDetailsPage() {
                             </div>
                         )}
 
+                        {/* Owner View: Offers */}
+                        {isOwner && listing.negotiable && (
+                            <div className="mb-8">
+                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Offers</h3>
+                                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                    {listing.offers && listing.offers.length > 0 ? (
+                                        <div className="divide-y divide-gray-100">
+                                            {listing.offers.map((offer: any) => (
+                                                <div key={offer.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs">
+                                                            {offer.bidder?.name?.[0] || 'U'}
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-gray-900">{offer.bidder?.name || offer.bidder?.username || 'User'}</p>
+                                                            <p className="text-xs text-gray-500">{new Date(offer.createdAt).toLocaleString()}</p>
+                                                            <span className={`text-xs font-bold px-2 py-0.5 rounded ${offer.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' :
+                                                                offer.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
+                                                                    'bg-yellow-100 text-yellow-700'
+                                                                }`}>
+                                                                {offer.status}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="font-bold text-gray-900">₹{offer.amount}</span>
+                                                        {offer.status === 'PENDING' && (
+                                                            <div className="flex gap-2">
+                                                                <button
+                                                                    onClick={() => handleOfferAction(offer.id, 'ACCEPTED')}
+                                                                    className="p-1.5 bg-green-50 text-green-600 rounded hover:bg-green-100"
+                                                                    title="Accept"
+                                                                >
+                                                                    <Check className="h-4 w-4" />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleOfferAction(offer.id, 'REJECTED')}
+                                                                    className="p-1.5 bg-red-50 text-red-600 rounded hover:bg-red-100"
+                                                                    title="Reject"
+                                                                >
+                                                                    <X className="h-4 w-4" />
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="p-8 text-center text-gray-500 text-sm">
+                                            No offers yet.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Actions - Self-Buy Prevention */}
                         <div className="mt-auto space-y-3">
                             {isOwner ? (
@@ -223,7 +399,10 @@ export default function ProductDetailsPage() {
                                     >
                                         {listing.isAuction ? "Place Bid" : "Buy Now"}
                                     </button>
-                                    <button className="flex-1 bg-white border-2 border-gray-200 hover:border-kh-purple text-gray-700 font-bold py-3.5 rounded-xl transition-all">
+                                    <button
+                                        onClick={() => listing.negotiable ? setIsOfferModalOpen(true) : null}
+                                        className="flex-1 bg-white border-2 border-gray-200 hover:border-kh-purple text-gray-700 font-bold py-3.5 rounded-xl transition-all"
+                                    >
                                         {listing.negotiable ? "Make an Offer" : "Chat with Seller"}
                                     </button>
                                 </div>
@@ -248,6 +427,15 @@ export default function ProductDetailsPage() {
                     </div>
                 </div>
             </div>
-        </div>
+
+
+            <OfferModal
+                isOpen={isOfferModalOpen}
+                onClose={() => setIsOfferModalOpen(false)}
+                onSubmit={handleMakeOffer}
+                listingTitle={listing.title}
+                price={listing.price}
+            />
+        </div >
     );
 }

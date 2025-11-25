@@ -57,13 +57,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });
+            return res.status(405).json({ message: 'Method not allowed' });
         }
     } else if (req.method === 'POST') {
         if (!user) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        const { title, description, category, mrp, price, negotiable, isAuction, auctionStartPrice, auctionDuration, allowNegativeBids } = req.body;
+        const { title, description, category, mrp, price, negotiable, isAuction, auctionStartPrice, auctionDuration, allowNegativeBids, autoSell } = req.body;
 
         let auctionTo = null;
         if (isAuction && auctionDuration) {
@@ -85,6 +86,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     auctionFrom: isAuction ? Math.round(Number(auctionStartPrice)) : null,
                     auctionTo: auctionTo,
                     allowNegBid: Boolean(allowNegativeBids),
+                    autoSell: Boolean(autoSell),
                     ownerId: user.id,
                     imagePath: req.body.imagePath || null,
                     expiryDate: req.body.expiryDate ? new Date(req.body.expiryDate) : null,

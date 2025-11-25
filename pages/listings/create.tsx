@@ -24,6 +24,7 @@ type ListingForm = {
     minBidAmount?: number;
     expiryDate?: string;
     imagePath?: string;
+    autoSell: boolean;
 };
 
 const CATEGORIES = [
@@ -366,7 +367,7 @@ export default function CreateListingPage() {
 
                             {/* Negative Bids Logic - Only for Auctions */}
                             {isAuction && (
-                                <div className="pt-2">
+                                <div className="pt-2 space-y-3">
                                     <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                                         <input type="checkbox" {...register("allowNegativeBids")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" />
                                         <div>
@@ -384,6 +385,14 @@ export default function CreateListingPage() {
                                             </p>
                                         </div>
                                     )}
+
+                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <input type="checkbox" {...register("autoSell")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" defaultChecked />
+                                        <div>
+                                            <span className="block text-sm font-medium text-gray-900">Auto-Sell to Highest Bidder</span>
+                                            <span className="block text-xs text-gray-500">Automatically accept the highest bid when auction ends</span>
+                                        </div>
+                                    </label>
                                 </div>
                             )}
                         </section>
