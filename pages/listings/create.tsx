@@ -5,7 +5,9 @@ import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
 import { Upload, DollarSign, Clock, AlertCircle, Calendar, X, Check } from 'lucide-react';
 import Cropper from 'react-easy-crop';
-import { Point, Area } from 'react-easy-crop/types';
+// import { Point, Area } from 'react-easy-crop/types';
+type Point = { x: number, y: number };
+type Area = { width: number, height: number, x: number, y: number };
 
 type ListingForm = {
     title: string;
