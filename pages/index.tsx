@@ -12,7 +12,10 @@ export default function Home() {
   // Fetch latest 4 listings for the homepage
   const { data: listings, error, isLoading } = useSWR('/api/listings', fetcher);
 
-  // Take top 4
+  // Fetch active group orders
+  const { data: groupOrders, isLoading: isGroupOrdersLoading } = useSWR('/api/group-orders', fetcher);
+  const activeGroupOrders = Array.isArray(groupOrders) ? groupOrders.slice(0, 3) : [];
+
   // Take top 4
   const trendingListings = Array.isArray(listings) ? listings.slice(0, 4) : [];
 
@@ -59,7 +62,7 @@ export default function Home() {
           )}
         </section>
 
-        {/* Active Group Orders (Still Mock for now, can be updated later) */}
+        {/* Active Group Orders */}
         <section className="bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-2xl p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -69,16 +72,29 @@ export default function Home() {
             <Link href="/group-orders" className="text-sm font-medium text-kh-purple hover:text-purple-700 hover:underline">View all →</Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { id: 1, platform: "Blinkit", title: "Midnight snacks run", cutoff: "Today · 11:15 PM", minCart: "₹200 shared", host: "Aman (BH-3)" },
-              { id: 2, platform: "BigBasket", title: "Weekly groceries", cutoff: "Tmrw · 9:00 PM", minCart: "₹1,000 shared", host: "Khushi (GH-2)" },
-              { id: 3, platform: "Swiggy", title: "Biryani from Behrouz", cutoff: "Today · 9:30 PM", minCart: "₹500 shared", host: "Rohan (BH-5)" },
-            ].map((order) => (
-              // @ts-ignore
-              <GroupOrderCard key={order.id} {...order} />
-            ))}
-          </div>
+          {isGroupOrdersLoading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-8 w-8 text-kh-purple animate-spin" />
+            </div>
+          ) : activeGroupOrders.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {activeGroupOrders.map((order: any) => (
+                <GroupOrderCard
+                  key={order.id}
+                  id={order.id}
+                  platform={order.platform}
+                  title={order.title}
+                  cutoff={new Date(order.cutoff).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  minCart={order.minOrderValue ? `Min ₹${order.minOrderValue}` : "No min"}
+                  host={`${order.creator?.name} (${order.creator?.hostel || 'Unknown'})`}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 text-gray-500">
+              No active group orders. <Link href="/group-orders/create" className="text-kh-purple font-bold hover:underline">Start one?</Link>
+            </div>
+          )}
         </section>
 
         {/* Categories Grid */}
