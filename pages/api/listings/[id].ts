@@ -2,6 +2,14 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../lib/prisma";
 import { getUser } from "../../../lib/getUser";
 
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '5mb',
+        },
+    },
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { id } = req.query;
     const listingId = parseInt(id as string);
