@@ -30,7 +30,7 @@ export default function Home() {
       <main className="container mx-auto px-4 py-6 space-y-10">
 
         {/* Hero Section */}
-        <HeroBanner />
+        <HeroBanner groupOrderCount={activeGroupOrders.length} />
 
         {/* Trending Listings */}
         <section>
@@ -53,11 +53,15 @@ export default function Home() {
             </div>
           ) : error ? (
             <div className="text-center py-10 text-red-500">Failed to load listings.</div>
-          ) : (
+          ) : trendingListings.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {trendingListings.map((item: any) => (
                 <ListingCard key={item.id} {...item} />
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 text-gray-500">
+              No active listings found. <Link href="/listings/create" className="text-kh-purple font-bold hover:underline">Be the first to list!</Link>
             </div>
           )}
         </section>

@@ -23,6 +23,12 @@ model User {
   resetOTP           String?
   resetOTPExpiry     DateTime?
 
+  // ✅ ADDED: Payment & Trust Score Fields
+  upiId              String?
+  qrCode             String?        // Path to QR image
+  failedPaymentCount Int            @default(0)
+  blacklistUntil     DateTime?
+
   // Relations
   listings           Listing[]      @relation("UserListings")
   orders             Order[]        @relation("UserOrders")
@@ -54,6 +60,9 @@ model Listing {
   updatedAt    DateTime    @default(now()) @updatedAt
   expiryDate   DateTime?
   autoSell     Boolean     @default(true)
+  
+  // ✅ ADDED: Payment Methods
+  paymentMethods String[]    @default(["CASH"]) // ["UPI", "CASH"]
 
   owner        User        @relation("UserListings", fields: [ownerId], references: [id])
   bids         Bid[]       @relation("ListingBids")
@@ -81,6 +90,11 @@ model Order {
   createdAt    DateTime    @default(now())
   groupOrderId Int?
 
+  // ✅ ADDED: Payment Verification Fields
+  paymentScreenshot String?
+  paymentStatus     String      @default("PENDING") // PENDING, VERIFICATION_PENDING, VERIFIED, REJECTED
+  rejectionReason   String?
+
   user         User        @relation("UserOrders", fields: [userId], references: [id])
   items        OrderItem[] @relation("OrderItems")
   groupOrder   GroupOrder? @relation("GroupOrderOrders", fields: [groupOrderId], references: [id])
@@ -106,6 +120,9 @@ model GroupOrder {
   creatorId    Int
   status       String           @default("open")
   createdAt    DateTime         @default(now())
+
+  // ✅ ADDED: Payment Methods
+  paymentMethods String[]       @default(["CASH"]) // ["UPI", "CASH"]
 
   creator      User             @relation("CreatorGroupOrders", fields: [creatorId], references: [id])
   participants GroupOrderItem[] @relation("GroupOrderParticipants")

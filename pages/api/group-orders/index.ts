@@ -52,6 +52,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             cutoffDate.setDate(cutoffDate.getDate() + 1);
         }
 
+        // Update user's QR code if provided
+        if (req.body.qrCode) {
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { qrCode: req.body.qrCode },
+            });
+        }
+
         try {
             const groupOrder = await prisma.groupOrder.create({
                 data: {
@@ -61,6 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     cutoff: cutoffDate,
                     creatorId: user.id,
                     status: 'open',
+                    paymentMethods: req.body.paymentMethods || ["CASH"],
                 },
             });
             return res.status(201).json(groupOrder);

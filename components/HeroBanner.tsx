@@ -2,7 +2,11 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-export default function HeroBanner() {
+interface HeroBannerProps {
+    groupOrderCount?: number;
+}
+
+export default function HeroBanner({ groupOrderCount = 0 }: HeroBannerProps) {
     return (
         <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1a1c1e] to-[#2d3033] text-white shadow-xl ring-1 ring-black/5">
             {/* Background Effect */}
@@ -13,7 +17,7 @@ export default function HeroBanner() {
                 <div className="p-8 lg:p-12 flex-1 flex flex-col justify-center z-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-xs font-medium text-gray-300 w-fit mb-6">
                         <span className="w-2 h-2 rounded-full bg-kh-red animate-pulse"></span>
-                        Live: 15+ Group Orders Active
+                        Live: {groupOrderCount > 0 ? `${groupOrderCount} Group Orders Active` : 'Start a Group Order'}
                     </div>
 
                     <h1 className="text-3xl lg:text-5xl font-bold mb-6 leading-tight">

@@ -74,6 +74,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         try {
+            // Update user's QR code if provided
+            if (req.body.qrCode) {
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { qrCode: req.body.qrCode },
+                });
+            }
+
             const listing = await prisma.listing.create({
                 data: {
                     title,
@@ -90,6 +98,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     ownerId: user.id,
                     imagePath: req.body.imagePath || null,
                     expiryDate: req.body.expiryDate ? new Date(req.body.expiryDate) : null,
+                    paymentMethods: req.body.paymentMethods || ["CASH"],
                 },
             });
             return res.status(201).json(listing);

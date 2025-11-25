@@ -25,6 +25,8 @@ type ListingForm = {
     expiryDate?: string;
     imagePath?: string;
     autoSell: boolean;
+    paymentMethods: string[];
+    qrCode?: string;
 };
 
 const CATEGORIES = [
@@ -430,6 +432,63 @@ export default function CreateListingPage() {
                                         </p>
                                         <p className="text-xs text-gray-500 mt-1">SVG, PNG, JPG or GIF (max. 5MB)</p>
                                     </label>
+                                )}
+                            </div>
+                        </section>
+
+                        {/* Payment Preferences */}
+                        <section className="space-y-4">
+                            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Payment Preferences</h2>
+
+                            <div className="space-y-4">
+                                <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        {...register("paymentMethods")}
+                                        value="CASH"
+                                        defaultChecked
+                                        className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple"
+                                    />
+                                    <div>
+                                        <span className="block text-sm font-medium text-gray-900">Cash on Delivery / Pay on Spot</span>
+                                        <span className="block text-xs text-gray-500">Buyer pays when they collect the item</span>
+                                    </div>
+                                </label>
+
+                                <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        {...register("paymentMethods")}
+                                        value="UPI"
+                                        className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple"
+                                    />
+                                    <div>
+                                        <span className="block text-sm font-medium text-gray-900">UPI / QR Code</span>
+                                        <span className="block text-xs text-gray-500">Buyer pays online via UPI</span>
+                                    </div>
+                                </label>
+
+                                {watch("paymentMethods")?.includes("UPI") && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 p-4 bg-purple-50 rounded-xl border border-purple-100">
+                                        <label className="block text-sm font-medium text-purple-900 mb-2">Upload UPI QR Code</label>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                if (e.target.files?.[0]) {
+                                                    const reader = new FileReader();
+                                                    reader.onloadend = () => {
+                                                        setValue('qrCode', reader.result as string);
+                                                    };
+                                                    reader.readAsDataURL(e.target.files[0]);
+                                                }
+                                            }}
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-2">
+                                            Upload a screenshot of your UPI QR code. This will be shown to buyers at checkout.
+                                        </p>
+                                    </div>
                                 )}
                             </div>
                         </section>

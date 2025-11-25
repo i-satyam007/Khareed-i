@@ -35,7 +35,8 @@ export default function BuyPage() {
                 throw new Error(data.message || 'Failed to place order');
             }
 
-            setOrderPlaced(true);
+            const newOrder = await res.json();
+            router.push(`/orders/${newOrder.id}?alert=created`);
         } catch (error: any) {
             console.error("Order failed", error);
             alert(error.message || "Failed to place order. Please try again.");

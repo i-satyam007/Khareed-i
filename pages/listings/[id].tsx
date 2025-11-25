@@ -102,7 +102,8 @@ export default function ProductDetailsPage() {
                 body: JSON.stringify(payload),
             });
             if (res.ok) {
-                router.push('/orders?alert=created');
+                const newOrder = await res.json();
+                router.push(`/orders/${newOrder.id}?alert=created`);
             } else {
                 const data = await res.json();
                 alert(data.message || 'Failed to create order');
