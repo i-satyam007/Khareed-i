@@ -155,9 +155,8 @@ export default function Header() {
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout");
-    await mutate("/api/auth/me", { user: null }, false);
-    router.push("/");
-    mutateNotifications();
+    // Force full reload to clear all states and cache
+    window.location.href = "/";
   };
 
   // Close dropdown when clicking outside
