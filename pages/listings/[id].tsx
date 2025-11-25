@@ -400,7 +400,14 @@ export default function ProductDetailsPage() {
                                         {listing.isAuction ? "Place Bid" : "Buy Now"}
                                     </button>
                                     <button
-                                        onClick={() => listing.negotiable ? setIsOfferModalOpen(true) : null}
+                                        onClick={() => {
+                                            console.log('Make Offer clicked', listing.negotiable);
+                                            if (listing.negotiable) {
+                                                setIsOfferModalOpen(true);
+                                            } else {
+                                                alert("Chat feature coming soon!");
+                                            }
+                                        }}
                                         className="flex-1 bg-white border-2 border-gray-200 hover:border-kh-purple text-gray-700 font-bold py-3.5 rounded-xl transition-all"
                                     >
                                         {listing.negotiable ? "Make an Offer" : "Chat with Seller"}
