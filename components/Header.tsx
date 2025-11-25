@@ -146,11 +146,6 @@ export default function Header() {
     }
   }, [router.query]);
 
-  const markAllRead = async () => {
-    await fetch('/api/notifications', { method: 'PUT' });
-    mutateNotifications();
-  };
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -160,9 +155,9 @@ export default function Header() {
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout");
-    await mutate(null); // Clear SWR cache
-    router.push("/"); // Redirect to homepage
-    mutateNotifications(); // Clear notifications
+    await mutate("/api/auth/me", { user: null }, false);
+    router.push("/");
+    mutateNotifications();
   };
 
   // Close dropdown when clicking outside
@@ -179,6 +174,11 @@ export default function Header() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const markAllRead = async () => {
+    await fetch('/api/notifications', { method: 'PUT' });
+    mutateNotifications();
+  };
 
   return (
     <>
