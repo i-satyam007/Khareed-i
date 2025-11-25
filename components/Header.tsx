@@ -154,7 +154,11 @@ export default function Header() {
   };
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout");
+    try {
+      await fetch("/api/auth/logout", { method: "POST", cache: "no-store" });
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
     // Force full reload to clear all states and cache
     window.location.href = "/";
   };
