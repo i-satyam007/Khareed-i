@@ -21,6 +21,7 @@ export default async function handler(
     // CAPTCHA verification
     const ok = await verifyCaptchaToken(captchaToken);
     if (!ok) {
+      console.error("Captcha verification failed for token:", captchaToken);
       return res.status(400).json({
         error: "Failed CAPTCHA. Please refresh and try again.",
       });
@@ -49,9 +50,10 @@ export default async function handler(
     const token = signToken({ userId: user.id });
 
     // Set cookie
+    const isProduction = process.env.NODE_ENV === "production";
     res.setHeader(
       "Set-Cookie",
-      `token=${token}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax`
+      `token=${token}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax${isProduction ? "; Secure" : ""}`
     );
 
     return res.json({ success: true });
