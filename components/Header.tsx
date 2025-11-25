@@ -288,7 +288,16 @@ export default function Header() {
                         <div className="p-4 text-center text-gray-500 text-sm">No notifications</div>
                       ) : (
                         generalNotifications.map((n: any) => (
-                          <div key={n.id} className={`px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 ${!n.read ? 'bg-blue-50/50' : ''}`}>
+                          <div
+                            key={n.id}
+                            onClick={() => {
+                              if (n.link) {
+                                router.push(n.link);
+                                setIsNotifOpen(false);
+                              }
+                            }}
+                            className={`px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 cursor-pointer ${!n.read ? 'bg-blue-50/50' : ''}`}
+                          >
                             <p className="text-sm font-semibold text-gray-900">{n.title}</p>
                             <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">{n.body}</p>
                             <p className="text-[10px] text-gray-400 mt-1">{new Date(n.createdAt).toLocaleDateString()}</p>

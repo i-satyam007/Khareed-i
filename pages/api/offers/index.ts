@@ -31,6 +31,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ message: 'Cannot offer on your own listing' });
         }
 
+        if (Number(amount) > listing.price) {
+            return res.status(400).json({ message: 'Offer amount cannot be greater than the listing price' });
+        }
+
+        // Check daily limit (3 offers per day)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const dailyOfferCount = await prisma.offer.count({
+            where: {
+                userId: user.id,
+                createdAt: { gte: today },
+            },
+        });
+
+        if (dailyOfferCount >= 3) {
+            return res.status(429).json({ message: 'Daily offer limit reached (3/3). Try again tomorrow.' });
+        }
+
         const offer = await prisma.offer.create({
             data: {
                 listingId,
@@ -46,6 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 title: 'New Offer Received',
                 body: `You received an offer of ₹${amount} for "${listing.title}"`,
                 type: 'general',
+                link: `/listings/${listingId}`,
             },
         });
 

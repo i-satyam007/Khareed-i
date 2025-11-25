@@ -37,9 +37,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(403).json({ message: 'Forbidden' });
             }
 
-            const updatedOffer = await prisma.offer.update({
-                where: { id: offerId },
-                data: { status },
+            const updatedOffer = await prisma.$transaction(async (tx) => {
+                const updated = await tx.offer.update({
+                    where: { id: offerId },
+                    data: { status },
+                });
+
+                // If accepted, reject all other pending offers for this listing
+                if (status === 'ACCEPTED') {
+                    const otherOffers = await tx.offer.findMany({
+                        where: {
+                            listingId: offer.listingId,
+                            id: { not: offerId },
+                            status: 'PENDING',
+                        },
+                    });
+
+                    if (otherOffers.length > 0) {
+                        await tx.offer.updateMany({
+                            where: {
+                                listingId: offer.listingId,
+                                id: { not: offerId },
+                                status: 'PENDING',
+                            },
+                            data: { status: 'REJECTED' },
+                        });
+
+                        // Notify rejected bidders
+                        await tx.notification.createMany({
+                            data: otherOffers.map((o) => ({
+                                userId: o.userId,
+                                title: 'Offer Rejected',
+                                body: `Your offer for "${offer.listing.title}" was rejected because another offer was accepted.`,
+                                type: 'general',
+                                link: `/listings/${offer.listingId}`,
+                            })),
+                        });
+                    }
+                }
+
+                return updated;
             });
 
             // Notify bidder
@@ -49,6 +86,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     title: `Offer ${status === 'ACCEPTED' ? 'Accepted' : 'Rejected'}`,
                     body: `Your offer of ₹${offer.amount} for "${offer.listing.title}" was ${status.toLowerCase()}. ${status === 'ACCEPTED' ? 'Please confirm your order.' : ''}`,
                     type: status === 'ACCEPTED' ? 'alert' : 'general',
+                    link: `/listings/${offer.listingId}`,
                 },
             });
 
