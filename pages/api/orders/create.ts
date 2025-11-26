@@ -75,7 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const order = await prisma.order.create({
             data: {
                 userId: user.id,
-                amount: price,
+                totalAmount: price,
                 status: 'completed', // Assuming instant completion for now
                 items: {
                     create: {
