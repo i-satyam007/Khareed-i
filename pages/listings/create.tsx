@@ -117,7 +117,45 @@ export default function CreateListingPage() {
                     return;
                 }
                 resolve(blob);
-            }, 'image/jpeg');
+            }, 'image/jpeg', 0.7); // Reduce quality to 0.7
+        });
+    };
+
+    const resizeImage = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target?.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx?.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+                img.onerror = (error) => reject(error);
+            };
+            reader.onerror = (error) => reject(error);
         });
     };
 
@@ -475,13 +513,15 @@ export default function CreateListingPage() {
                                         <input
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) => {
+                                            onChange={async (e) => {
                                                 if (e.target.files?.[0]) {
-                                                    const reader = new FileReader();
-                                                    reader.onloadend = () => {
-                                                        setValue('qrCode', reader.result as string, { shouldValidate: true });
-                                                    };
-                                                    reader.readAsDataURL(e.target.files[0]);
+                                                    try {
+                                                        const compressedBase64 = await resizeImage(e.target.files[0]);
+                                                        setValue('qrCode', compressedBase64, { shouldValidate: true });
+                                                    } catch (error) {
+                                                        console.error("Error compressing image", error);
+                                                        alert("Failed to process QR code image");
+                                                    }
                                                 }
                                             }}
                                             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200"
