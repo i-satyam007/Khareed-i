@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, AlertCircle } from 'lucide-react';
 
 interface OfferModalProps {
     isOpen: boolean;
@@ -48,15 +48,18 @@ export default function OfferModal({ isOpen, onClose, onSubmit, listingTitle, pr
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition-all ${Number(amount) > price
-                                    ? 'border-red-500 focus:ring-red-200 focus:border-red-500'
-                                    : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                                ? 'border-red-500 focus:ring-red-200 focus:border-red-500'
+                                : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                 }`}
                             placeholder="e.g. 500"
                         />
                         {Number(amount) > price && (
-                            <p className="text-red-500 text-xs mt-1 font-medium">
-                                Offer amount cannot be greater than the listed price (₹{price}).
-                            </p>
+                            <div className="flex items-center gap-2 mt-2 text-red-600 bg-red-50 p-2 rounded-lg animate-in slide-in-from-top-1">
+                                <AlertCircle className="h-4 w-4 shrink-0" />
+                                <p className="text-xs font-bold">
+                                    Offer cannot be greater than the listed price (₹{price}).
+                                </p>
+                            </div>
                         )}
                     </div>
 

@@ -43,7 +43,11 @@ export default function BuyPage() {
             }
 
             const newOrder = await res.json();
+            console.log("Order created:", newOrder);
+            console.log("Selected Payment Method:", selectedPaymentMethod);
+
             if (selectedPaymentMethod === 'UPI') {
+                console.log("Redirecting to UPI payment page...");
                 router.push(`/orders/${newOrder.id}/pay`);
             } else {
                 router.push(`/orders/${newOrder.id}?alert=order_placed`);

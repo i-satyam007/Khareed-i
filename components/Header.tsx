@@ -129,10 +129,16 @@ export default function Header() {
         type = 'success';
       } else if (alertType === 'updated') {
         message = "Listing updated successfully!";
-        type = 'info'; // Blue for update
+        type = 'info';
       } else if (alertType === 'deleted') {
         message = "Listing deleted successfully!";
-        type = 'error'; // Red for delete
+        type = 'error';
+      } else if (alertType === 'order_placed') {
+        message = "Order placed successfully!";
+        type = 'success';
+      } else if (alertType === 'payment_submitted') {
+        message = "Payment screenshot submitted!";
+        type = 'success';
       }
 
       if (message) {
