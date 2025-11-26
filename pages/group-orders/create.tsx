@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 import { Clock, ShoppingBag, AlertCircle } from 'lucide-react';
+import useSWR from 'swr';
 
 const PLATFORMS = [
     { id: 'blinkit', name: 'Blinkit', color: 'bg-yellow-400 text-black' },
@@ -21,8 +22,6 @@ type GroupOrderForm = {
     paymentMethods: string[];
     qrCode?: string;
 };
-
-import useSWR from 'swr';
 
 export default function CreateGroupOrderPage() {
     const router = useRouter();
@@ -217,13 +216,26 @@ export default function CreateGroupOrderPage() {
                                                 if (e.target.files?.[0]) {
                                                     const reader = new FileReader();
                                                     reader.onloadend = () => {
-                                                        setValue('qrCode', reader.result as string);
+                                                        setValue('qrCode', reader.result as string, { shouldValidate: true });
                                                     };
                                                     reader.readAsDataURL(e.target.files[0]);
                                                 }
                                             }}
                                             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200"
                                         />
+                                        <input
+                                            type="hidden"
+                                            {...register("qrCode", {
+                                                validate: (value) => {
+                                                    const methods = watch("paymentMethods");
+                                                    if (methods?.includes("UPI") && !value) {
+                                                        return "QR Code is required for UPI payments";
+                                                    }
+                                                    return true;
+                                                }
+                                            })}
+                                        />
+                                        {errors.qrCode && <p className="text-red-500 text-xs mt-1">{errors.qrCode.message}</p>}
                                         <p className="text-xs text-gray-500 mt-2">
                                             Upload a screenshot of your UPI QR code. This will be shown to participants when they join.
                                         </p>

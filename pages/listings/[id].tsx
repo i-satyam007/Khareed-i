@@ -80,6 +80,8 @@ export default function ProductDetailsPage() {
         }
     };
 
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+
     const handleConfirmOrder = async () => {
         // Allow if myOffer exists OR if it's an auction win
         const isAuctionEnded = listing.isAuction && listing.auctionTo && new Date(listing.auctionTo) < new Date();
@@ -90,8 +92,13 @@ export default function ProductDetailsPage() {
 
         if (!myOffer && !isWinner) return;
 
+        if (!selectedPaymentMethod) {
+            alert("Please select a payment method");
+            return;
+        }
+
         try {
-            const payload: any = { listingId: listing.id };
+            const payload: any = { listingId: listing.id, paymentMethod: selectedPaymentMethod };
             if (myOffer) {
                 payload.offerId = myOffer.id;
             }
@@ -207,14 +214,39 @@ export default function ProductDetailsPage() {
                             <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 mb-6 animate-in fade-in slide-in-from-top-2">
                                 <div className="flex items-start gap-3">
                                     <Gavel className="h-5 w-5 text-purple-600 mt-0.5" />
-                                    <div>
+                                    <div className="w-full">
                                         <p className="text-purple-800 font-bold mb-1">You Won This Auction!</p>
                                         <p className="text-purple-700 text-sm mb-3">
                                             Congratulations! You had the highest bid of <strong>₹{listing.bids[0].amount}</strong>.
                                         </p>
+
+                                        {/* Payment Method Selection */}
+                                        <div className="mb-4">
+                                            <p className="text-xs font-bold text-purple-800 mb-2 uppercase">Select Payment Method</p>
+                                            <div className="flex gap-2">
+                                                {listing.paymentMethods?.includes('CASH') && (
+                                                    <button
+                                                        onClick={() => setSelectedPaymentMethod('CASH')}
+                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'CASH' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-purple-200 hover:border-purple-400'}`}
+                                                    >
+                                                        Cash on Delivery
+                                                    </button>
+                                                )}
+                                                {listing.paymentMethods?.includes('UPI') && (
+                                                    <button
+                                                        onClick={() => setSelectedPaymentMethod('UPI')}
+                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'UPI' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-purple-200 hover:border-purple-400'}`}
+                                                    >
+                                                        UPI / QR Code
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+
                                         <button
                                             onClick={handleConfirmOrder}
-                                            className="bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm shadow-sm"
+                                            disabled={!selectedPaymentMethod}
+                                            className="w-full bg-purple-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             Claim & Pay
                                         </button>
@@ -228,14 +260,39 @@ export default function ProductDetailsPage() {
                             <div className="bg-green-50 p-4 rounded-xl border border-green-200 mb-6 animate-in fade-in slide-in-from-top-2">
                                 <div className="flex items-start gap-3">
                                     <Check className="h-5 w-5 text-green-600 mt-0.5" />
-                                    <div>
+                                    <div className="w-full">
                                         <p className="text-green-800 font-bold mb-1">Offer Accepted!</p>
                                         <p className="text-green-700 text-sm mb-3">
                                             The seller accepted your offer of <strong>₹{myOffer.amount}</strong>.
                                         </p>
+
+                                        {/* Payment Method Selection */}
+                                        <div className="mb-4">
+                                            <p className="text-xs font-bold text-green-800 mb-2 uppercase">Select Payment Method</p>
+                                            <div className="flex gap-2">
+                                                {listing.paymentMethods?.includes('CASH') && (
+                                                    <button
+                                                        onClick={() => setSelectedPaymentMethod('CASH')}
+                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'CASH' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-green-200 hover:border-green-400'}`}
+                                                    >
+                                                        Cash on Delivery
+                                                    </button>
+                                                )}
+                                                {listing.paymentMethods?.includes('UPI') && (
+                                                    <button
+                                                        onClick={() => setSelectedPaymentMethod('UPI')}
+                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'UPI' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-green-200 hover:border-green-400'}`}
+                                                    >
+                                                        UPI / QR Code
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+
                                         <button
                                             onClick={handleConfirmOrder}
-                                            className="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm shadow-sm"
+                                            disabled={!selectedPaymentMethod}
+                                            className="w-full bg-green-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             Confirm Order & Pay
                                         </button>

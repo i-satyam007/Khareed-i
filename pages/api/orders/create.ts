@@ -12,10 +12,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const { listingId, offerId } = req.body;
+    const { listingId, offerId, paymentMethod } = req.body;
 
     if (!listingId) {
         return res.status(400).json({ message: 'Missing listing ID' });
+    }
+
+    if (!paymentMethod) {
+        return res.status(400).json({ message: 'Missing payment method' });
     }
 
     try {
@@ -29,6 +33,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (listing.status !== 'active') {
             return res.status(400).json({ message: 'Listing is not active' });
+        }
+
+        // Validate payment method
+        const availableMethods = (listing as any).paymentMethods || ["CASH"];
+        if (availableMethods && !availableMethods.includes(paymentMethod)) {
+            return res.status(400).json({ message: 'Invalid payment method for this listing' });
         }
 
         let price = listing.price;

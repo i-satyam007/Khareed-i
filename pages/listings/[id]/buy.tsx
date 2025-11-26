@@ -21,13 +21,20 @@ export default function BuyPage() {
     if (isLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
     if (!listing) return <div className="min-h-screen flex items-center justify-center">Listing not found</div>;
 
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+
     const handleConfirmOrder = async () => {
+        if (!selectedPaymentMethod) {
+            alert("Please select a payment method");
+            return;
+        }
+
         setIsProcessing(true);
         try {
-            const res = await fetch('/api/orders', {
+            const res = await fetch('/api/orders/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ listingId: listing.id }),
+                body: JSON.stringify({ listingId: listing.id, paymentMethod: selectedPaymentMethod }),
             });
 
             if (!res.ok) {
@@ -120,18 +127,40 @@ export default function BuyPage() {
                             </div>
                         </div>
 
-                        {/* Payment Info */}
+                        {/* Payment Method */}
                         <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
                             <h3 className="font-bold text-gray-900 flex items-center gap-2">
                                 <CreditCard className="h-5 w-5 text-gray-500" /> Payment Method
                             </h3>
-                            <div className="pl-7">
-                                <div className="flex items-center gap-3 p-3 border border-kh-purple bg-purple-50 rounded-lg">
-                                    <div className="w-4 h-4 rounded-full border-[5px] border-kh-purple bg-white"></div>
-                                    <span className="text-sm font-bold text-purple-900">Pay on Delivery (Cash / UPI)</span>
-                                </div>
+                            <div className="pl-7 space-y-3">
+                                {listing.paymentMethods?.includes('CASH') && (
+                                    <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${selectedPaymentMethod === 'CASH' ? 'border-kh-purple bg-purple-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                                        <input
+                                            type="radio"
+                                            name="paymentMethod"
+                                            value="CASH"
+                                            checked={selectedPaymentMethod === 'CASH'}
+                                            onChange={() => setSelectedPaymentMethod('CASH')}
+                                            className="w-4 h-4 text-kh-purple focus:ring-kh-purple"
+                                        />
+                                        <span className={`text-sm font-bold ${selectedPaymentMethod === 'CASH' ? 'text-purple-900' : 'text-gray-700'}`}>Cash on Delivery</span>
+                                    </label>
+                                )}
+                                {listing.paymentMethods?.includes('UPI') && (
+                                    <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all ${selectedPaymentMethod === 'UPI' ? 'border-kh-purple bg-purple-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                                        <input
+                                            type="radio"
+                                            name="paymentMethod"
+                                            value="UPI"
+                                            checked={selectedPaymentMethod === 'UPI'}
+                                            onChange={() => setSelectedPaymentMethod('UPI')}
+                                            className="w-4 h-4 text-kh-purple focus:ring-kh-purple"
+                                        />
+                                        <span className={`text-sm font-bold ${selectedPaymentMethod === 'UPI' ? 'text-purple-900' : 'text-gray-700'}`}>UPI / QR Code</span>
+                                    </label>
+                                )}
                                 <p className="text-xs text-gray-500 mt-2">
-                                    You will pay the seller directly via Cash or UPI when you meet them.
+                                    You will pay the seller directly via the selected method when you meet them.
                                 </p>
                             </div>
                         </div>

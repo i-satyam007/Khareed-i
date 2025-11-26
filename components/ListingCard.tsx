@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Heart, Clock, Gavel } from 'lucide-react';
+import { Heart, Clock, Gavel, Banknote, QrCode } from 'lucide-react';
 
 type ListingProps = {
     id: number;
@@ -18,9 +18,10 @@ type ListingProps = {
     condition?: string;
     category?: string;
     bids?: any[];
+    paymentMethods?: string[];
 };
 
-export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt, updatedAt, condition, category, bids }: ListingProps) {
+export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt, updatedAt, condition, category, bids, paymentMethods }: ListingProps) {
     const discount = Math.round(((mrp - price) / mrp) * 100);
     const displayImage = image || imagePath;
 
@@ -113,9 +114,23 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                <span>{displayTime}{editedText}</span>
+                            <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    <span>{displayTime}{editedText}</span>
+                                </div>
+                                <div className="flex gap-1">
+                                    {paymentMethods?.includes('CASH') && (
+                                        <div className="p-1 bg-green-50 rounded text-green-700" title="Cash on Delivery">
+                                            <Banknote className="h-3 w-3" />
+                                        </div>
+                                    )}
+                                    {paymentMethods?.includes('UPI') && (
+                                        <div className="p-1 bg-purple-50 rounded text-purple-700" title="UPI / QR Code">
+                                            <QrCode className="h-3 w-3" />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>

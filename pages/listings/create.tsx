@@ -471,7 +471,7 @@ export default function CreateListingPage() {
 
                                 {watch("paymentMethods")?.includes("UPI") && (
                                     <div className="animate-in fade-in slide-in-from-top-2 p-4 bg-purple-50 rounded-xl border border-purple-100">
-                                        <label className="block text-sm font-medium text-purple-900 mb-2">Upload UPI QR Code</label>
+                                        <label className="block text-sm font-medium text-purple-900 mb-2">Upload UPI QR Code <span className="text-red-500">*</span></label>
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -479,13 +479,26 @@ export default function CreateListingPage() {
                                                 if (e.target.files?.[0]) {
                                                     const reader = new FileReader();
                                                     reader.onloadend = () => {
-                                                        setValue('qrCode', reader.result as string);
+                                                        setValue('qrCode', reader.result as string, { shouldValidate: true });
                                                     };
                                                     reader.readAsDataURL(e.target.files[0]);
                                                 }
                                             }}
                                             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200"
                                         />
+                                        <input
+                                            type="hidden"
+                                            {...register("qrCode", {
+                                                validate: (value) => {
+                                                    const methods = watch("paymentMethods");
+                                                    if (methods?.includes("UPI") && !value) {
+                                                        return "QR Code is required for UPI payments";
+                                                    }
+                                                    return true;
+                                                }
+                                            })}
+                                        />
+                                        {errors.qrCode && <p className="text-red-500 text-xs mt-1">{errors.qrCode.message}</p>}
                                         <p className="text-xs text-gray-500 mt-2">
                                             Upload a screenshot of your UPI QR code. This will be shown to buyers at checkout.
                                         </p>
