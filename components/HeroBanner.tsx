@@ -50,8 +50,8 @@ export default function HeroBanner({ groupOrderCount = 0 }: HeroBannerProps) {
                             { name: "Zomato", desc: "Restaurant meals", logo: "/Zomato.svg" },
                         ].map(brand => (
                             <Link href={`/group-orders/create?platform=${brand.name}`} key={brand.name} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all group cursor-pointer">
-                                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform overflow-hidden">
-                                    <img src={brand.logo} alt={brand.name} className="w-full h-full object-cover" />
+                                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform overflow-hidden p-1">
+                                    <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain" />
                                 </div>
                                 <div>
                                     <div className="text-sm font-semibold text-white">{brand.name}</div>
