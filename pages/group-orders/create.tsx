@@ -41,6 +41,18 @@ export default function CreateGroupOrderPage() {
 
     const selectedPlatform = watch("platform");
 
+    // Pre-select platform from URL
+    React.useEffect(() => {
+        if (router.query.platform) {
+            const platformName = router.query.platform as string;
+            // Case insensitive match
+            const match = PLATFORMS.find(p => p.name.toLowerCase() === platformName.toLowerCase());
+            if (match) {
+                setValue("platform", match.name);
+            }
+        }
+    }, [router.query.platform, setValue]);
+
     const onSubmit = async (data: GroupOrderForm) => {
         setIsSubmitting(true);
         try {

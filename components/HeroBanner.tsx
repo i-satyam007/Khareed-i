@@ -45,12 +45,12 @@ export default function HeroBanner({ groupOrderCount = 0 }: HeroBannerProps) {
                     <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-6">Quick Group Orders</h3>
                     <div className="grid grid-cols-1 gap-3">
                         {[
-                            { name: "Blinkit", desc: "Groceries in minutes", logo: "/Blinkit.svg" },
-                            { name: "Swiggy", desc: "Food delivery", logo: "/Swiggy.svg" },
-                            { name: "Zomato", desc: "Restaurant meals", logo: "/Zomato.svg" },
+                            { name: "Blinkit", desc: "Groceries in minutes", logo: "/Blinkit.svg", isCircle: true },
+                            { name: "Swiggy", desc: "Food delivery", logo: "/Swiggy.svg", isCircle: false },
+                            { name: "Zomato", desc: "Restaurant meals", logo: "/Zomato.svg", isCircle: true },
                         ].map(brand => (
                             <Link href={`/group-orders/create?platform=${brand.name}`} key={brand.name} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all group cursor-pointer">
-                                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform overflow-hidden p-1">
+                                <div className={`w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110 ${brand.isCircle ? 'bg-white rounded-full p-1 shadow-lg overflow-hidden' : ''}`}>
                                     <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain" />
                                 </div>
                                 <div>
