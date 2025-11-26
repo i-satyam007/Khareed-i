@@ -28,9 +28,15 @@ export default function OrderDetailsPage() {
         }
     }, [router.query.alert]);
 
+    if (!router.isReady || !id) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
     if (isLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-    if (error || !order) {
+
+    if (error) {
         console.error("Order fetch error:", error, "ID:", id);
+        return <div className="min-h-screen flex items-center justify-center">Error loading order</div>;
+    }
+
+    if (!order) {
         return <div className="min-h-screen flex items-center justify-center">Order not found (ID: {id})</div>;
     }
 
