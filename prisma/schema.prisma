@@ -85,10 +85,10 @@ model Bid {
 model Order {
   id                Int         @id @default(autoincrement())
   userId            Int
-  totalAmount       Int
+  totalAmount       Int         @default(0)
   status            String      @default("PENDING")
   createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+  updatedAt         DateTime    @updatedAt @default(now())
   paymentMethod     String?
   paymentComment    String?
   paymentScreenshot String?

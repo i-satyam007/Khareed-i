@@ -47,8 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const updatedOrder = await prisma.order.update({
                     where: { id: orderId },
                     data: {
-                        paymentStatus: 'VERIFIED',
-                        status: 'completed', // Or whatever the next status is
+                        status: 'COMPLETED',
                     },
                 });
                 return res.status(200).json(updatedOrder);
@@ -64,8 +63,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const updatedOrder = await prisma.order.update({
                     where: { id: orderId },
                     data: {
-                        paymentStatus: 'REJECTED',
-                        rejectionReason: reason,
+                        status: 'REJECTED',
+                        paymentComment: `Rejection Reason: ${reason}`,
                     },
                 });
 
