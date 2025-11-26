@@ -66,7 +66,7 @@ export default function Header() {
 
   // Filter notifications - Ensure it's an array to prevent crashes
   const safeNotifications = Array.isArray(notifications) ? notifications : [];
-  const generalNotifications = safeNotifications.filter((n: any) => n.type !== 'alert');
+  const generalNotifications = safeNotifications; // Show all notifications in the list
   const alertNotifications = safeNotifications.filter((n: any) => n.type === 'alert' && !n.read);
   const unreadCount = generalNotifications.filter((n: any) => !n.read).length;
 
@@ -294,7 +294,15 @@ export default function Header() {
                         generalNotifications.map((n: any) => (
                           <div
                             key={n.id}
-                            onClick={() => {
+                            onClick={async () => {
+                              if (!n.read) {
+                                await fetch('/api/notifications', {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ id: n.id })
+                                });
+                                mutateNotifications();
+                              }
                               if (n.link) {
                                 router.push(n.link);
                                 setIsNotifOpen(false);

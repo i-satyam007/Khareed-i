@@ -110,7 +110,11 @@ export default function ProductDetailsPage() {
             });
             if (res.ok) {
                 const newOrder = await res.json();
-                router.push(`/orders/${newOrder.id}?alert=created`);
+                if (selectedPaymentMethod === 'UPI') {
+                    router.push(`/orders/${newOrder.id}/pay`);
+                } else {
+                    router.push(`/orders/${newOrder.id}?alert=order_placed`);
+                }
             } else {
                 const data = await res.json();
                 alert(data.message || 'Failed to create order');

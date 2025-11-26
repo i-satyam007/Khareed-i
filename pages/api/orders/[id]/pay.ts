@@ -35,6 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 data: {
                     paymentScreenshot: screenshot,
                     paymentStatus: 'VERIFICATION_PENDING',
+                    paymentComment: req.body.comment,
                 },
             });
 

@@ -85,21 +85,6 @@ model Bid {
 model Order {
   id           Int         @id @default(autoincrement())
   userId       Int
-  amount       Int
-  status       String      @default("pending")
-  createdAt    DateTime    @default(now())
-  groupOrderId Int?
-
-  // ✅ ADDED: Payment Verification Fields
-  paymentScreenshot String?
-  paymentStatus     String      @default("PENDING") // PENDING, VERIFICATION_PENDING, VERIFIED, REJECTED
-  rejectionReason   String?
-
-  user         User        @relation("UserOrders", fields: [userId], references: [id])
-  items        OrderItem[] @relation("OrderItems")
-  groupOrder   GroupOrder? @relation("GroupOrderOrders", fields: [groupOrderId], references: [id])
-}
-
 model OrderItem {
   id        Int     @id @default(autoincrement())
   orderId   Int

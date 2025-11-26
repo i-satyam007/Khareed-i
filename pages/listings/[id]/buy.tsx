@@ -43,7 +43,11 @@ export default function BuyPage() {
             }
 
             const newOrder = await res.json();
-            router.push(`/orders/${newOrder.id}?alert=created`);
+            if (selectedPaymentMethod === 'UPI') {
+                router.push(`/orders/${newOrder.id}/pay`);
+            } else {
+                router.push(`/orders/${newOrder.id}?alert=order_placed`);
+            }
         } catch (error: any) {
             console.error("Order failed", error);
             alert(error.message || "Failed to place order. Please try again.");

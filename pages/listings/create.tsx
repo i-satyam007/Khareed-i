@@ -43,7 +43,11 @@ const CATEGORIES = [
 
 export default function CreateListingPage() {
     const router = useRouter();
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<ListingForm>();
+    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<ListingForm>({
+        defaultValues: {
+            paymentMethods: ['CASH']
+        }
+    });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);

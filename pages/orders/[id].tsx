@@ -13,12 +13,26 @@ export default function OrderDetailsPage() {
     const [showRejectModal, setShowRejectModal] = useState(false);
 
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
-    const { data: order, isLoading, mutate } = useSWR(id ? `/api/orders/${id}` : null, fetcher);
+    const { data: order, isLoading, mutate, error } = useSWR(id ? `/api/orders/${id}` : null, fetcher);
     const { data: authData } = useSWR("/api/auth/me", fetcher);
     const user = authData?.user;
 
+    React.useEffect(() => {
+        if (router.query.alert === 'order_placed') {
+            // Use a more prominent notification if available, or standard alert for now
+            // Ideally, replace with a toast library
+            const timer = setTimeout(() => {
+                alert("Order placed successfully! Please coordinate with the seller.");
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [router.query.alert]);
+
     if (isLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-    if (!order) return <div className="min-h-screen flex items-center justify-center">Order not found</div>;
+    if (error || !order) {
+        console.error("Order fetch error:", error, "ID:", id);
+        return <div className="min-h-screen flex items-center justify-center">Order not found (ID: {id})</div>;
+    }
 
     // Determine if current user is the buyer or the seller
     const isBuyer = user?.id === order.userId;
@@ -109,9 +123,9 @@ export default function OrderDetailsPage() {
             <div className="container mx-auto px-4 py-8 max-w-2xl">
                 {/* Status Banner */}
                 <div className={`p-4 rounded-xl mb-6 flex items-center gap-3 border ${order.paymentStatus === 'VERIFIED' ? 'bg-green-50 border-green-200 text-green-800' :
-                        order.paymentStatus === 'REJECTED' ? 'bg-red-50 border-red-200 text-red-800' :
-                            order.paymentStatus === 'VERIFICATION_PENDING' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
-                                'bg-blue-50 border-blue-200 text-blue-800'
+                    order.paymentStatus === 'REJECTED' ? 'bg-red-50 border-red-200 text-red-800' :
+                        order.paymentStatus === 'VERIFICATION_PENDING' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+                            'bg-blue-50 border-blue-200 text-blue-800'
                     }`}>
                     {order.paymentStatus === 'VERIFIED' ? <Check className="h-6 w-6" /> :
                         order.paymentStatus === 'REJECTED' ? <X className="h-6 w-6" /> :
