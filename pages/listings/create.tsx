@@ -444,7 +444,7 @@ export default function CreateListingPage() {
                                 <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                                     <input
                                         type="checkbox"
-                                        {...register("paymentMethods")}
+                                        {...register("paymentMethods", { required: "Select at least one payment method" })}
                                         value="CASH"
                                         defaultChecked
                                         className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple"
@@ -467,6 +467,7 @@ export default function CreateListingPage() {
                                         <span className="block text-xs text-gray-500">Buyer pays online via UPI</span>
                                     </div>
                                 </label>
+                                {errors.paymentMethods && <p className="text-red-500 text-xs mt-1">{errors.paymentMethods.message}</p>}
 
                                 {watch("paymentMethods")?.includes("UPI") && (
                                     <div className="animate-in fade-in slide-in-from-top-2 p-4 bg-purple-50 rounded-xl border border-purple-100">
