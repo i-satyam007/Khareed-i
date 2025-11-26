@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 where: { id: orderId },
                 data: {
                     paymentScreenshot: screenshot,
-                    paymentStatus: 'VERIFICATION_PENDING',
+                    status: 'VERIFICATION_PENDING',
                     paymentComment: req.body.comment,
                 },
             });
