@@ -65,6 +65,55 @@ model Listing {
   paymentMethods String[]    @default(["CASH"]) // ["UPI", "CASH"]
 
   owner        User        @relation("UserListings", fields: [ownerId], references: [id])
+  bids         Bid[]       @relation("ListingBids")
+  offers       Offer[]     @relation("ListingOffers")
+  orderItems   OrderItem[] @relation("ListingOrderItems")
+  reviews      Review[]    @relation("ListingReviews")
+}
+
+model Bid {
+  id        Int      @id @default(autoincrement())
+  bidderId  Int
+  listingId Int
+  amount    Int
+  createdAt DateTime @default(now())
+
+  bidder    User     @relation("UserBids", fields: [bidderId], references: [id])
+  listing   Listing  @relation("ListingBids", fields: [listingId], references: [id])
+}
+
+model Order {
+  id                Int         @id @default(autoincrement())
+  userId            Int
+  totalAmount       Int
+  status            String      @default("PENDING")
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  paymentMethod     String?
+  paymentComment    String?
+  paymentScreenshot String?
+  groupOrderId      Int?
+
+  user       User        @relation("UserOrders", fields: [userId], references: [id])
+  items      OrderItem[] @relation("OrderItems")
+  groupOrder GroupOrder? @relation("GroupOrderOrders", fields: [groupOrderId], references: [id])
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  listingId Int
+  price     Int
+  quantity  Int     @default(1)
+
+  listing Listing @relation("ListingOrderItems", fields: [listingId], references: [id])
+  order   Order   @relation("OrderItems", fields: [orderId], references: [id])
+}
+
+model GroupOrder {
+  id           Int              @id @default(autoincrement())
+  platform     String
+  title        String
   description  String?
   cutoff       DateTime
   creatorId    Int
