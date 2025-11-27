@@ -38,6 +38,9 @@ model User {
   groupOrdersCreated GroupOrder[]   @relation("CreatorGroupOrders")
   groupOrderItems    GroupOrderItem[] @relation("UserGroupOrderItems")
   offers             Offer[]        @relation("UserOffers")
+  watchlist          Listing[]      @relation("UserWatchlist")
+  sentMessages       Message[]      @relation("SentMessages")
+  receivedMessages   Message[]      @relation("ReceivedMessages")
 }
 
 model Listing {
@@ -69,6 +72,7 @@ model Listing {
   offers       Offer[]     @relation("ListingOffers")
   orderItems   OrderItem[] @relation("ListingOrderItems")
   reviews      Review[]    @relation("ListingReviews")
+  favoritedBy  User[]      @relation("UserWatchlist")
 }
 
 model Bid {
@@ -175,4 +179,16 @@ model Offer {
 
   listing   Listing  @relation("ListingOffers", fields: [listingId], references: [id])
   bidder    User     @relation("UserOffers", fields: [userId], references: [id])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  senderId  Int
+  receiverId Int
+  content   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver  User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
 }

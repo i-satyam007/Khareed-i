@@ -51,6 +51,23 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
 
     const editedText = isEdited() ? ` • Edited ${timeAgo(updatedAt!)}` : "";
 
+    const [inWatchlist, setInWatchlist] = React.useState(false);
+    // Check if user has this item in watchlist (requires user context, skipping for now or fetching separately)
+
+    const toggleWatchlist = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+            const res = await fetch(`/api/listings/${id}/watchlist`, { method: 'POST' });
+            if (res.ok) {
+                const data = await res.json();
+                setInWatchlist(data.inWatchlist);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <div className="group bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full relative">
             {/* Image Placeholder */}
@@ -79,8 +96,11 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                 </div>
 
                 {/* Wishlist Button */}
-                <button className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full text-gray-400 hover:text-red-500 transition-colors">
-                    <Heart className="h-4 w-4" />
+                <button
+                    onClick={toggleWatchlist}
+                    className={`absolute top-2 right-2 p-1.5 backdrop-blur-sm rounded-full transition-colors ${inWatchlist ? 'bg-red-50 text-red-500' : 'bg-white/80 text-gray-400 hover:text-red-500'}`}
+                >
+                    <Heart className={`h-4 w-4 ${inWatchlist ? 'fill-current' : ''}`} />
                 </button>
             </div>
 
