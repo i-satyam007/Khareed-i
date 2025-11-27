@@ -43,6 +43,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 },
             });
 
+            // Notify Group Order Creator
+            await prisma.notification.create({
+                data: {
+                    userId: groupOrder.creatorId,
+                    title: 'New Group Order Contribution',
+                    body: `${user.name || user.username} has joined your group order "${groupOrder.title}". Waiting for payment.`,
+                    type: 'alert',
+                    link: `/orders/${order.id}`,
+                },
+            });
+
             return res.status(201).json(order);
         } catch (error) {
             console.error(error);
@@ -52,3 +63,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(405).json({ message: 'Method not allowed' });
 }
+
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '10mb',
+        },
+    },
+};

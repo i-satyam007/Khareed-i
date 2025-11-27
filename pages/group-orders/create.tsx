@@ -235,6 +235,7 @@ export default function CreateGroupOrderPage() {
                                         type="checkbox"
                                         {...register("paymentMethods")}
                                         value="UPI"
+                                        defaultChecked={false}
                                         className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple"
                                     />
                                     <div>
