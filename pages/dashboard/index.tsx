@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { User, MapPin, Phone, Mail, Package, ShoppingBag, LogOut, Camera, Heart } from 'lucide-react';
 import { useUser } from '@/lib/hooks/useUser';
 import useSWR from 'swr';
@@ -8,9 +9,16 @@ import ListingCard from '@/components/ListingCard';
 
 export default function DashboardProfile() {
     const { user, mutate } = useUser();
+    const router = useRouter();
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState<any>({});
     const [activeTab, setActiveTab] = useState('profile');
+
+    useEffect(() => {
+        if (router.query.tab) {
+            setActiveTab(router.query.tab as string);
+        }
+    }, [router.query.tab]);
 
     // Fetch Watchlist
     const fetcher = (url: string) => fetch(url).then((res) => res.json());

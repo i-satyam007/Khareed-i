@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag, Bell, X, CheckCircle, AlertCircle, Info } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag, Bell, X, CheckCircle, AlertCircle, Info, Heart } from 'lucide-react';
 import { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
 import { useUser } from '@/lib/hooks/useUser';
@@ -352,11 +352,15 @@ export default function Header() {
                         <p className="text-xs text-gray-500 truncate">{user.email}</p>
                       </div>
 
-                      <Link href="/profile" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <User className="h-4 w-4 text-gray-400" />
                         My Profile
                       </Link>
-                      <Link href="/orders" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Link href="/dashboard?tab=watchlist" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                        <Heart className="h-4 w-4 text-gray-400" />
+                        My Watchlist
+                      </Link>
+                      <Link href="/dashboard/my-orders" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <ShoppingBag className="h-4 w-4 text-gray-400" />
                         My Orders
                       </Link>
