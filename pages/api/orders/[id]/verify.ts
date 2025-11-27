@@ -50,6 +50,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         status: 'COMPLETED',
                     },
                 });
+
+                // Mark listing as sold
+                if (order.items.length > 0) {
+                    await prisma.listing.update({
+                        where: { id: order.items[0].listingId },
+                        data: { status: 'sold' },
+                    });
+                }
+
+                // Notify Seller
+                await prisma.notification.create({
+                    data: {
+                        userId: user.id, // Seller is the one verifying
+                        title: 'Item Sold!',
+                        body: `Payment verified! Your item has been officially sold.`,
+                        type: 'success',
+                        link: `/orders/${orderId}`,
+                    },
+                });
+
+                // Notify Buyer
+                await prisma.notification.create({
+                    data: {
+                        userId: order.userId,
+                        title: 'Payment Verified',
+                        body: `Your payment has been verified. The order is now complete!`,
+                        type: 'success',
+                        link: `/orders/${orderId}`,
+                    },
+                });
+
                 return res.status(200).json(updatedOrder);
             } else {
                 // REJECT Logic

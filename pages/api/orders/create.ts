@@ -87,19 +87,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
         });
 
-        // Mark listing as sold
-        await prisma.listing.update({
-            where: { id: listingId },
-            data: { status: 'sold' },
-        });
-
         // Notify seller
         await prisma.notification.create({
             data: {
                 userId: listing.ownerId,
-                title: 'Item Sold!',
-                body: `Your item "${listing.title}" has been sold to ${user.name || user.username}.`,
+                title: 'New Order Placed',
+                body: `You have a new order for "${listing.title}" from ${user.name || user.username}. Waiting for payment.`,
                 type: 'alert',
+                link: `/orders/${order.id}`,
             },
         });
 

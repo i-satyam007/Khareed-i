@@ -37,7 +37,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     status: 'VERIFICATION_PENDING',
                     paymentComment: req.body.comment,
                 },
+                include: {
+                    items: { include: { listing: true } },
+                    groupOrder: true,
+                }
             });
+
+            // Notify Seller
+            const sellerId = updatedOrder.items.length > 0
+                ? updatedOrder.items[0].listing.ownerId
+                : updatedOrder.groupOrder?.creatorId;
+
+            if (sellerId) {
+                await prisma.notification.create({
+                    data: {
+                        userId: sellerId,
+                        title: 'Payment Submitted',
+                        body: `Payment screenshot uploaded for Order #${updatedOrder.id}. Please verify.`,
+                        type: 'alert',
+                        link: `/orders/${updatedOrder.id}`,
+                    },
+                });
+            }
 
             return res.status(200).json(updatedOrder);
         } catch (error) {
