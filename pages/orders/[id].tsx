@@ -63,6 +63,14 @@ export default function OrderDetailsPage() {
 
         setUploading(true);
         const file = e.target.files[0];
+
+        // Check file size (10MB limit)
+        if (file.size > 10 * 1024 * 1024) {
+            alert("File size exceeds 10MB limit. Please upload a smaller image.");
+            setUploading(false);
+            return;
+        }
+
         const reader = new FileReader();
 
         reader.onloadend = async () => {
