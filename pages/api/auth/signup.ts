@@ -5,6 +5,14 @@ import { hashPwd } from "../../../lib/hash";
 import { signupSchema, commonPasswords } from "../../../lib/validators";
 import { verifyCaptchaToken } from "../../../lib/recaptcha";
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
 

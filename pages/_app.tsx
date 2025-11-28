@@ -2,6 +2,7 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import Script from "next/script";
 import { useRouter } from "next/router";
+import { Toaster } from "react-hot-toast";
 import "../styles/globals.css";
 import Header from "../components/Header";
 
@@ -44,6 +45,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           </main>
         </>
       )}
+      <Toaster position="top-center" />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import toast from 'react-hot-toast';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema, SignupInput } from "../lib/validators";
 import { useRouter } from "next/router";
@@ -108,13 +109,14 @@ export default function SignupPage() {
         const { url } = await res.json();
         setAvatarUrl(url);
         setValue('avatar', url);
+        toast.success('Profile photo uploaded!');
       } else {
         const err = await res.json();
-        alert(`Upload failed: ${err.error || 'Unknown error'}`);
+        toast.error(`Upload failed: ${err.error || 'Unknown error'}`);
       }
     } catch (err) {
       console.error(err);
-      alert('Upload error');
+      toast.error('Upload error');
     } finally {
       setIsUploading(false);
     }
@@ -154,10 +156,11 @@ export default function SignupPage() {
         return;
       }
 
-      alert("Account created successfully! Please log in.");
+      toast.success("Account created successfully! Please log in.");
       router.push("/login");
     } catch (err) {
       setServerError("Network error");
+      toast.error("Network error");
     }
   }
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import Head from 'next/head';
 import Link from 'next/link';
 import ImageCropper from '../../components/ImageCropper';
@@ -50,13 +51,13 @@ export default function DashboardProfile() {
                 const updatedUser = await res.json();
                 mutate(updatedUser);
                 setIsEditing(false);
-                alert("Profile updated successfully!");
+                toast.success("Profile updated successfully!");
             } else {
-                alert("Failed to update profile");
+                toast.error("Failed to update profile");
             }
         } catch (error) {
             console.error(error);
-            alert("An error occurred");
+            toast.error("An error occurred");
         }
     };
 
@@ -87,13 +88,14 @@ export default function DashboardProfile() {
             if (res.ok) {
                 const { url } = await res.json();
                 setFormData({ ...formData, avatar: url });
+                toast.success('Profile photo updated!');
             } else {
                 const err = await res.json();
-                alert(`Upload failed: ${err.error || 'Unknown error'}`);
+                toast.error(`Upload failed: ${err.error || 'Unknown error'}`);
             }
         } catch (err) {
             console.error(err);
-            alert('Upload error');
+            toast.error('Upload error');
         }
     };
 
