@@ -21,13 +21,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // 2) Validate input
     const parse = signupSchema.safeParse(rest);
-         if (!parse.success) {
-            // zod exposes issues array; map them to messages
-            const msg = parse.error.issues.map((issue) => issue.message).join(", ");
-            return res.status(400).json({ error: msg });
+    if (!parse.success) {
+      // zod exposes issues array; map them to messages
+      const msg = parse.error.issues.map((issue) => issue.message).join(", ");
+      return res.status(400).json({ error: msg });
     }
 
-    const { email, username, password, name } = parse.data;
+    const { email, username, password, name, phone, hostel, avatar } = parse.data;
 
     // 3) Weak/common password check
     const lower = password.toLowerCase();
@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 5) Hash + create
     const hashed = await hashPwd(password);
     const user = await prisma.user.create({
-      data: { email, username, password: hashed, name },
+      data: { email, username, password: hashed, name, phone, hostel, avatar },
     });
 
     return res.status(201).json({ success: true, id: user.id });

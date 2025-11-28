@@ -12,8 +12,8 @@ import { z } from "zod";
 export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
 export const commonPasswords = [
-  "password","12345678","qwerty","123456789","11111111","1234567","password1",
-  "123123","abc123","iloveyou","admin","letmein"
+  "password", "12345678", "qwerty", "123456789", "11111111", "1234567", "password1",
+  "123123", "abc123", "iloveyou", "admin", "letmein"
 ];
 
 export const signupSchema = z.object({
@@ -24,7 +24,10 @@ export const signupSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/, { message: "Only letters, numbers and underscores" }),
   password: z.string()
     .min(8, { message: "Minimum 8 characters" })
-    .regex(passwordRegex, { message: "Password must include uppercase, lowercase, number and special character" })
+    .regex(passwordRegex, { message: "Password must include uppercase, lowercase, number and special character" }),
+  phone: z.string().min(10, { message: "Phone number is required" }),
+  hostel: z.string().min(3, { message: "Hostel address is required" }),
+  avatar: z.string().optional()
 });
 
 export type SignupInput = z.infer<typeof signupSchema>;
