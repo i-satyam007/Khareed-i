@@ -124,9 +124,9 @@ export default function DashboardProfile() {
 
                                 <form onSubmit={handleSave} className="space-y-6 max-w-2xl">
 
-                                    {/* Avatar Upload (Mock) */}
+                                    {/* Avatar Upload */}
                                     <div className="flex items-center gap-4">
-                                        <div className="relative group cursor-pointer">
+                                        <div className="relative group cursor-pointer" onClick={() => isEditing && document.getElementById('avatar-upload')?.click()}>
                                             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 overflow-hidden border-2 border-white shadow-sm">
                                                 {formData.avatar ? <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" /> : <User className="h-10 w-10" />}
                                             </div>
@@ -136,9 +136,37 @@ export default function DashboardProfile() {
                                                 </div>
                                             )}
                                         </div>
+                                        <input
+                                            type="file"
+                                            id="avatar-upload"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    const data = new FormData();
+                                                    data.append('file', file);
+                                                    try {
+                                                        const res = await fetch('/api/upload', {
+                                                            method: 'POST',
+                                                            body: data
+                                                        });
+                                                        if (res.ok) {
+                                                            const { url } = await res.json();
+                                                            setFormData({ ...formData, avatar: url });
+                                                        } else {
+                                                            alert('Upload failed');
+                                                        }
+                                                    } catch (err) {
+                                                        console.error(err);
+                                                        alert('Upload error');
+                                                    }
+                                                }
+                                            }}
+                                        />
                                         <div>
                                             <h3 className="font-bold text-gray-900">Profile Picture</h3>
-                                            <p className="text-xs text-gray-500">PNG, JPG up to 2MB</p>
+                                            <p className="text-xs text-gray-500">PNG, JPG up to 5MB</p>
                                         </div>
                                     </div>
 

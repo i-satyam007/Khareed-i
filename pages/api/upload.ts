@@ -5,52 +5,44 @@ import path from 'path';
 
 export const config = {
     api: {
-        bodyParser: false, // Disallow body parsing, consume as stream
+        bodyParser: false,
     },
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method === 'POST') {
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    try {
         const uploadDir = path.join(process.cwd(), 'public', 'uploads');
 
-        try {
-            // Ensure upload directory exists
-            if (!fs.existsSync(uploadDir)) {
-                fs.mkdirSync(uploadDir, { recursive: true });
-            }
-        } catch (error) {
-            console.error('Directory creation error:', error);
-            return res.status(500).json({ message: 'Failed to create upload directory' });
+        // Ensure upload directory exists
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
         }
 
         const form = formidable({
             uploadDir,
             keepExtensions: true,
             maxFileSize: 5 * 1024 * 1024, // 5MB
-            filename: (name: string, ext: string, part: any, form: any) => {
+            filename: (name, ext, part, form) => {
                 return `${Date.now()}_${part.originalFilename?.replace(/\s/g, '_') || 'image'}`;
-            }
+            },
         });
 
-        try {
-            const [fields, files] = await form.parse(req);
+        const [fields, files] = await form.parse(req);
 
-            // Handle different formidable versions/structures
-            const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
-
-            if (!uploadedFile) {
-                console.error('No file found in request:', files);
-                return res.status(400).json({ message: 'No file uploaded' });
-            }
-
-            const imageUrl = `/uploads/${path.basename(uploadedFile.filepath)}`;
-            return res.status(200).json({ url: imageUrl });
-        } catch (err) {
-            console.error('Upload error:', err);
-            return res.status(500).json({ message: 'Error uploading file', error: String(err) });
+        const file = files.file?.[0];
+        if (!file) {
+            return res.status(400).json({ error: 'No file uploaded' });
         }
-    } else {
-        res.setHeader('Allow', ['POST']);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
+
+        const fileUrl = `/uploads/${path.basename(file.filepath)}`;
+
+        return res.status(200).json({ url: fileUrl });
+    } catch (error) {
+        console.error('Upload error:', error);
+        return res.status(500).json({ error: 'File upload failed' });
     }
 }
