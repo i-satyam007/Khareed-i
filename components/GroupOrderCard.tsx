@@ -9,6 +9,7 @@ type GroupOrderProps = {
     cutoff: string;
     minCart: string;
     host: string;
+    hostAvatar?: string;
 };
 
 function platformColor(platform: GroupOrderProps["platform"]) {
@@ -22,14 +23,25 @@ function platformColor(platform: GroupOrderProps["platform"]) {
     }
 }
 
-export default function GroupOrderCard({ id, platform, title, cutoff, minCart, host }: GroupOrderProps) {
+export default function GroupOrderCard({ id, platform, title, cutoff, minCart, host, hostAvatar }: GroupOrderProps) {
     return (
         <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full">
             <div className="flex items-center justify-between mb-3">
                 <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${platformColor(platform)}`}>
                     {platform}
                 </span>
-                <span className="text-[10px] text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">Host: {host}</span>
+                <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
+                    <div className="w-4 h-4 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+                        {hostAvatar ? (
+                            <img src={hostAvatar} alt="Host" className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[8px] font-bold text-gray-500">
+                                {host[0]}
+                            </div>
+                        )}
+                    </div>
+                    <span className="text-[10px] text-gray-500 truncate max-w-[80px]">Host: {host}</span>
+                </div>
             </div>
 
             <h3 className="font-semibold text-gray-900 text-sm mb-2 line-clamp-1">{title}</h3>

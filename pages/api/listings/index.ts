@@ -39,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 },
                 include: {
                     owner: {
-                        select: { name: true },
+                        select: { name: true, avatar: true },
                     },
                     bids: {
                         orderBy: { amount: 'desc' },

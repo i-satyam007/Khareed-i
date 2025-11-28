@@ -167,8 +167,12 @@ export default function GroupOrderDetailsPage() {
                                 <div key={participant.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-xs font-bold text-purple-700">
-                                                {participant.name[0]}
+                                            <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-xs font-bold text-purple-700 overflow-hidden">
+                                                {participant.avatar ? (
+                                                    <img src={participant.avatar} alt={participant.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    participant.name[0]
+                                                )}
                                             </div>
                                             <span className="font-bold text-gray-900 text-sm">{participant.name}</span>
                                             {participant.id === user?.id && <span className="text-[10px] bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">You</span>}

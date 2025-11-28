@@ -91,6 +91,7 @@ export default function Home() {
                   cutoff={new Date(order.cutoff).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   minCart={order.minOrderValue ? `Min ₹${order.minOrderValue}` : "No min"}
                   host={`${order.creator?.name} (${order.creator?.hostel || 'Unknown'})`}
+                  hostAvatar={order.creator?.avatar}
                 />
               ))}
             </div>

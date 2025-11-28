@@ -19,9 +19,13 @@ type ListingProps = {
     category?: string;
     bids?: any[];
     paymentMethods?: string[];
+    owner?: {
+        name: string;
+        avatar?: string;
+    };
 };
 
-export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt, updatedAt, condition, category, bids, paymentMethods }: ListingProps) {
+export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt, updatedAt, condition, category, bids, paymentMethods, owner }: ListingProps) {
     const discount = Math.round(((mrp - price) / mrp) * 100);
     const displayImage = image || imagePath;
 
@@ -122,22 +126,61 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                     {/* Auction Timer or Posted Time */}
                     <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500">
                         {isAuction && endTime ? (
-                            <div className="flex flex-col items-end">
-                                <div className="flex items-center gap-1 text-orange-600 font-bold">
-                                    <Clock className="h-3 w-3" />
-                                    <span>Ends in {endTime}</span>
+                            <div className="flex flex-col items-end w-full">
+                                <div className="flex items-center justify-between w-full">
+                                    <div className="flex items-center gap-1 text-orange-600 font-bold">
+                                        <Clock className="h-3 w-3" />
+                                        <span>Ends in {endTime}</span>
+                                    </div>
+                                    {/* Owner Avatar for Auction */}
+                                    {owner && (
+                                        <div className="flex items-center gap-1.5" title={`Sold by ${owner.name}`}>
+                                            <div className="w-5 h-5 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
+                                                {owner.avatar ? (
+                                                    <img src={owner.avatar} alt={owner.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-[8px] font-bold text-gray-500">
+                                                        {owner.name[0].toUpperCase()}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span className="text-[10px] text-gray-600 truncate max-w-[60px]">{owner.name.split(' ')[0]}</span>
+                                        </div>
+                                    )}
                                 </div>
                                 {bids && bids.length > 0 && (
-                                    <div className="text-[10px] text-gray-500 mt-0.5">
+                                    <div className="text-[10px] text-gray-500 mt-1 w-full text-right">
                                         Top Bid by <span className="font-bold text-gray-900">{bids[0].bidder?.name || bids[0].bidder?.username || 'User'}</span>
                                     </div>
                                 )}
                             </div>
                         ) : (
                             <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
-                                    <span>{displayTime}{editedText}</span>
+                                <div className="flex items-center gap-2">
+                                    {/* Owner Avatar for Regular Listing */}
+                                    {owner && (
+                                        <div className="flex items-center gap-1.5" title={`Sold by ${owner.name}`}>
+                                            <div className="w-5 h-5 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
+                                                {owner.avatar ? (
+                                                    <img src={owner.avatar} alt={owner.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-[8px] font-bold text-gray-500">
+                                                        {owner.name[0].toUpperCase()}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-medium text-gray-900 leading-none">{owner.name.split(' ')[0]}</span>
+                                                <span className="text-[9px] text-gray-400 leading-none mt-0.5">{displayTime}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {!owner && (
+                                        <div className="flex items-center gap-1">
+                                            <Clock className="h-3 w-3" />
+                                            <span>{displayTime}{editedText}</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="flex gap-1">
                                     {paymentMethods?.includes('CASH') && (

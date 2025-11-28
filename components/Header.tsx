@@ -334,8 +334,12 @@ export default function Header() {
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     className="user-btn flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1.5 rounded-lg transition-colors outline-none"
                   >
-                    <div className="w-8 h-8 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold text-xs">
-                      {user.name ? user.name[0].toUpperCase() : <User className="h-4 w-4" />}
+                    <div className="w-8 h-8 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold text-xs overflow-hidden">
+                      {user.avatar ? (
+                        <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        user.name ? user.name[0].toUpperCase() : <User className="h-4 w-4" />
+                      )}
                     </div>
                     <div className="hidden sm:block text-left">
                       <p className="text-[10px] text-gray-500 font-medium leading-tight">Hello,</p>

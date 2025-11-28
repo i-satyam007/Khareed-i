@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import useSWR from 'swr';
 import OfferModal from '../../components/OfferModal';
 
@@ -308,8 +309,12 @@ export default function ProductDetailsPage() {
                         {/* Seller Info Card */}
                         <div className="bg-white border border-gray-100 rounded-xl p-4 mb-6 flex items-center justify-between shadow-sm">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold">
-                                    {listing.owner?.name ? listing.owner.name[0].toUpperCase() : <User className="h-5 w-5" />}
+                                <div className="w-10 h-10 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold overflow-hidden">
+                                    {listing.owner?.avatar ? (
+                                        <img src={listing.owner.avatar} alt={listing.owner.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        listing.owner?.name ? listing.owner.name[0].toUpperCase() : <User className="h-5 w-5" />
+                                    )}
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-gray-900">{listing.owner?.name || listing.owner?.username || "Unknown Seller"}</p>
@@ -318,9 +323,9 @@ export default function ProductDetailsPage() {
                                     </p>
                                 </div>
                             </div>
-                            <button className="text-xs font-medium text-kh-purple border border-kh-purple px-3 py-1.5 rounded-lg hover:bg-purple-50 transition-colors">
+                            <Link href={`/users/${listing.owner?.id}`} className="text-xs font-medium text-kh-purple border border-kh-purple px-3 py-1.5 rounded-lg hover:bg-purple-50 transition-colors">
                                 View Profile
-                            </button>
+                            </Link>
                         </div>
 
                         {/* Description */}
@@ -372,8 +377,12 @@ export default function ProductDetailsPage() {
                                             {listing.bids.map((bid: any) => (
                                                 <div key={bid.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold text-xs">
-                                                            {bid.bidder?.name?.[0] || 'U'}
+                                                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold text-xs overflow-hidden">
+                                                            {bid.bidder?.avatar ? (
+                                                                <img src={bid.bidder.avatar} alt={bid.bidder.name} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                bid.bidder?.name?.[0] || 'U'
+                                                            )}
                                                         </div>
                                                         <div>
                                                             <p className="text-sm font-bold text-gray-900">{bid.bidder?.name || bid.bidder?.username || 'User'}</p>
@@ -403,8 +412,12 @@ export default function ProductDetailsPage() {
                                             {listing.offers.map((offer: any) => (
                                                 <div key={offer.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs">
-                                                            {offer.bidder?.name?.[0] || 'U'}
+                                                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs overflow-hidden">
+                                                            {offer.bidder?.avatar ? (
+                                                                <img src={offer.bidder.avatar} alt={offer.bidder.name} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                offer.bidder?.name?.[0] || 'U'
+                                                            )}
                                                         </div>
                                                         <div>
                                                             <p className="text-sm font-bold text-gray-900">{offer.bidder?.name || offer.bidder?.username || 'User'}</p>

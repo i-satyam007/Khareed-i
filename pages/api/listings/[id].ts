@@ -43,6 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             name: true,
                             username: true,
                             email: true,
+                            avatar: true,
                         },
                     },
                     bids: {
