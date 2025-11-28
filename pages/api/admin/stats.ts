@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
-import { withIronSessionApiRoute } from 'iron-session/next';
-import { sessionOptions } from '@/lib/session';
+import { getUser } from '@/lib/getUser';
 
 const prisma = new PrismaClient();
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const user = req.session.user;
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    const user = await getUser(req);
 
     if (!user || user.role !== 'admin') {
         return res.status(403).json({ error: 'Unauthorized' });
@@ -15,7 +14,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         const totalUsers = await prisma.user.count();
         const activeListings = await prisma.listing.count({ where: { status: 'active' } });
-        const pendingListings = await prisma.listing.count({ where: { status: 'pending' } }); // Assuming 'pending' status exists or we use something else
+        const pendingListings = await prisma.listing.count({ where: { status: 'pending' } });
 
         res.json({
             totalUsers,
@@ -28,5 +27,3 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         await prisma.$disconnect();
     }
 }
-
-export default withIronSessionApiRoute(handler, sessionOptions);

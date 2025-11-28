@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
-import { withIronSessionApiRoute } from 'iron-session/next';
-import { sessionOptions } from '@/lib/session';
+import { getUser } from '@/lib/getUser';
 
 const prisma = new PrismaClient();
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const user = req.session.user;
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    const user = await getUser(req);
 
     if (!user || user.role !== 'admin') {
         return res.status(403).json({ error: 'Unauthorized' });
@@ -49,5 +48,3 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(405).json({ error: 'Method not allowed' });
 }
-
-export default withIronSessionApiRoute(handler, sessionOptions);
