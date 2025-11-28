@@ -331,6 +331,37 @@ export default function ProductDetailsPage() {
                             </p>
                         </div>
 
+                        {/* Reviews Section (Only for Sold items) */}
+                        {listing.status === 'sold' && (
+                            <div className="mb-8">
+                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Reviews</h3>
+                                <div className="space-y-4">
+                                    {listing.reviews && listing.reviews.length > 0 ? (
+                                        listing.reviews.map((review: any) => (
+                                            <div key={review.id} className="bg-white border border-gray-200 rounded-xl p-4">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-500">
+                                                            {review.user?.avatar ? <img src={review.user.avatar} className="w-full h-full rounded-full object-cover" /> : review.user?.name?.[0]}
+                                                        </div>
+                                                        <span className="font-bold text-sm text-gray-900">{review.user?.name || 'User'}</span>
+                                                    </div>
+                                                    <div className="flex text-yellow-400 text-xs">
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <span key={i} className={i < review.rating ? "text-yellow-400" : "text-gray-300"}>★</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <p className="text-gray-600 text-sm">{review.comment}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-gray-500 text-sm italic">No reviews yet.</div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Owner View: Bid History */}
                         {isOwner && listing.isAuction && (
                             <div className="mb-8">

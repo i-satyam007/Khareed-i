@@ -13,6 +13,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === 'GET') {
         try {
+            const { sort = 'createdAt', order = 'desc' } = req.query;
+            const orderBy = { [sort as string]: order };
+
             const users = await prisma.user.findMany({
                 select: {
                     id: true,
@@ -25,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     blacklistUntil: true,
                     createdAt: true
                 },
-                orderBy: { createdAt: 'desc' }
+                orderBy
             });
             return res.json(users);
         } catch (error) {
@@ -47,6 +50,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 await prisma.user.update({
                     where: { id: Number(id) },
                     data: { blacklistUntil: banDate }
+                });
+            } else if (action === 'unban') {
+                await prisma.user.update({
+                    where: { id: Number(id) },
+                    data: { blacklistUntil: null }
                 });
             }
             return res.json({ success: true });

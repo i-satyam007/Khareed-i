@@ -39,6 +39,7 @@ export default async function handler(
         email: true,
         username: true,
         role: true, // Fetch role to debug
+        blacklistUntil: true,
       }
     });
 
@@ -48,6 +49,14 @@ export default async function handler(
     }
 
     console.log(`User found: ${user.username} (${user.email}), Role: ${user.role}`);
+
+    // Check if user is banned
+    if (user.blacklistUntil && new Date(user.blacklistUntil) > new Date()) {
+      console.log('Login failed: User is banned');
+      return res.status(403).json({
+        error: `Your account has been suspended until ${new Date(user.blacklistUntil).toLocaleDateString()}. Please contact support.`
+      });
+    }
 
     // Password check
     const valid = await comparePwd(password, user.password);

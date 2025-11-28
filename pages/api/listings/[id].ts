@@ -61,6 +61,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             },
                         },
                     } : false,
+                    reviews: {
+                        include: {
+                            user: {
+                                select: { name: true, avatar: true }
+                            }
+                        }
+                    }
                 },
             });
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import ImageCropper from '../../components/ImageCropper';
 import { useRouter } from 'next/router';
 import { User, MapPin, Phone, Mail, Package, ShoppingBag, LogOut, Camera, Heart, Shield } from 'lucide-react';
 import { useUser } from '@/lib/hooks/useUser';
@@ -13,6 +14,7 @@ export default function DashboardProfile() {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState<any>({});
     const [activeTab, setActiveTab] = useState('profile');
+    const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
 
     useEffect(() => {
         if (router.query.tab) {
@@ -58,6 +60,43 @@ export default function DashboardProfile() {
         }
     };
 
+    const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
+                setCropImageSrc(reader.result as string);
+            });
+            reader.readAsDataURL(file);
+            // Reset input so same file can be selected again
+            e.target.value = '';
+        }
+    };
+
+    const handleCropComplete = async (croppedBlob: Blob) => {
+        setCropImageSrc(null); // Close cropper
+
+        const data = new FormData();
+        data.append('file', croppedBlob, 'profile.jpg');
+
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: data
+            });
+            if (res.ok) {
+                const { url } = await res.json();
+                setFormData({ ...formData, avatar: url });
+            } else {
+                const err = await res.json();
+                alert(`Upload failed: ${err.error || 'Unknown error'}`);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Upload error');
+        }
+    };
+
     if (!user) return <div>Loading...</div>;
 
     return (
@@ -65,6 +104,14 @@ export default function DashboardProfile() {
             <Head>
                 <title>My Profile | Khareed-i</title>
             </Head>
+
+            {cropImageSrc && (
+                <ImageCropper
+                    imageSrc={cropImageSrc}
+                    onCropComplete={handleCropComplete}
+                    onCancel={() => setCropImageSrc(null)}
+                />
+            )}
 
             <div className="container mx-auto px-4 py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
@@ -148,28 +195,7 @@ export default function DashboardProfile() {
                                             id="avatar-upload"
                                             className="hidden"
                                             accept="image/*"
-                                            onChange={async (e) => {
-                                                const file = e.target.files?.[0];
-                                                if (file) {
-                                                    const data = new FormData();
-                                                    data.append('file', file);
-                                                    try {
-                                                        const res = await fetch('/api/upload', {
-                                                            method: 'POST',
-                                                            body: data
-                                                        });
-                                                        if (res.ok) {
-                                                            const { url } = await res.json();
-                                                            setFormData({ ...formData, avatar: url });
-                                                        } else {
-                                                            alert('Upload failed');
-                                                        }
-                                                    } catch (err) {
-                                                        console.error(err);
-                                                        alert('Upload error');
-                                                    }
-                                                }
-                                            }}
+                                            onChange={onFileChange}
                                         />
                                         <div>
                                             <h3 className="font-bold text-gray-900">Profile Picture</h3>

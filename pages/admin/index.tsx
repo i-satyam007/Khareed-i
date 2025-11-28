@@ -172,16 +172,33 @@ function ListingsTab() {
 }
 
 function UsersTab() {
-    const { data: users, mutate } = useSWR('/api/admin/users', fetcher);
+    const [sort, setSort] = useState('createdAt');
+    const [order, setOrder] = useState('desc');
+    const { data: users, mutate } = useSWR(`/api/admin/users?sort=${sort}&order=${order}`, fetcher);
     const [search, setSearch] = useState("");
 
-    const handleBan = async (id: number) => {
-        if (!confirm("Are you sure you want to ban this user?")) return;
-        await fetch(`/api/admin/users?id=${id}&action=ban`, { method: 'PUT' });
+    const handleBanAction = async (id: number, isBanned: boolean) => {
+        const action = isBanned ? 'unban' : 'ban';
+        if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+        await fetch(`/api/admin/users?id=${id}&action=${action}`, { method: 'PUT' });
         mutate();
     };
 
     const filtered = users?.filter((u: any) => u.name?.toLowerCase().includes(search.toLowerCase()) || u.email.includes(search)) || [];
+
+    const toggleSort = (field: string) => {
+        if (sort === field) {
+            setOrder(order === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSort(field);
+            setOrder('asc');
+        }
+    };
+
+    const SortIcon = ({ field }: { field: string }) => {
+        if (sort !== field) return <div className="w-4 h-4 inline-block" />;
+        return order === 'asc' ? <span className="ml-1">▲</span> : <span className="ml-1">▼</span>;
+    };
 
     return (
         <div className="space-y-6">
@@ -203,35 +220,56 @@ function UsersTab() {
                 <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 border-b border-gray-100 text-gray-500">
                         <tr>
-                            <th className="px-6 py-4 font-medium">User</th>
-                            <th className="px-6 py-4 font-medium">Email</th>
-                            <th className="px-6 py-4 font-medium">Role</th>
-                            <th className="px-6 py-4 font-medium">Trust Score</th>
+                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-gray-100" onClick={() => toggleSort('name')}>
+                                User <SortIcon field="name" />
+                            </th>
+                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-gray-100" onClick={() => toggleSort('email')}>
+                                Email <SortIcon field="email" />
+                            </th>
+                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-gray-100" onClick={() => toggleSort('role')}>
+                                Role <SortIcon field="role" />
+                            </th>
+                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-gray-100" onClick={() => toggleSort('failedPaymentCount')}>
+                                Trust Score <SortIcon field="failedPaymentCount" />
+                            </th>
                             <th className="px-6 py-4 font-medium text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                        {filtered.map((u: any) => (
-                            <tr key={u.id} className="hover:bg-gray-50/50">
-                                <td className="px-6 py-4 font-medium text-gray-900 flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-500">
-                                        {u.avatar ? <img src={u.avatar} className="w-full h-full rounded-full object-cover" /> : u.name?.[0]}
-                                    </div>
-                                    {u.name}
-                                </td>
-                                <td className="px-6 py-4 text-gray-600">{u.email}</td>
-                                <td className="px-6 py-4 text-gray-600 capitalize">{u.role}</td>
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-1">
-                                        <div className={`h-2 w-2 rounded-full ${u.failedPaymentCount > 2 ? 'bg-red-500' : 'bg-green-500'}`} />
-                                        <span className="text-gray-700">{100 - (u.failedPaymentCount * 10)}%</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <button onClick={() => handleBan(u.id)} className="text-red-600 hover:text-red-700 font-medium text-xs">Ban User</button>
-                                </td>
-                            </tr>
-                        ))}
+                        {filtered.map((u: any) => {
+                            const isBanned = u.blacklistUntil && new Date(u.blacklistUntil) > new Date();
+                            return (
+                                <tr key={u.id} className={`hover:bg-gray-50/50 ${isBanned ? 'bg-red-50' : ''}`}>
+                                    <td className="px-6 py-4 font-medium text-gray-900 flex items-center gap-3">
+                                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-500">
+                                            {u.avatar ? <img src={u.avatar} className="w-full h-full rounded-full object-cover" /> : u.name?.[0]}
+                                        </div>
+                                        <div>
+                                            <p>{u.name}</p>
+                                            {isBanned && <span className="text-[10px] text-red-600 font-bold uppercase">Banned</span>}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-gray-600">{u.email}</td>
+                                    <td className="px-6 py-4 text-gray-600 capitalize">{u.role}</td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-1">
+                                            <div className={`h-2 w-2 rounded-full ${u.failedPaymentCount > 2 ? 'bg-red-500' : 'bg-green-500'}`} />
+                                            <span className="text-gray-700">{Math.max(0, 100 - (u.failedPaymentCount * 10))}%</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        {u.role !== 'admin' && (
+                                            <button
+                                                onClick={() => handleBanAction(u.id, isBanned)}
+                                                className={`font-medium text-xs px-3 py-1 rounded-lg transition-colors ${isBanned ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                                            >
+                                                {isBanned ? 'Unban User' : 'Ban User'}
+                                            </button>
+                                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

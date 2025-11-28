@@ -43,6 +43,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ url: fileUrl });
     } catch (error) {
         console.error('Upload error:', error);
-        return res.status(500).json({ error: 'File upload failed' });
+        return res.status(500).json({ error: 'File upload failed', details: (error as Error).message });
     }
 }

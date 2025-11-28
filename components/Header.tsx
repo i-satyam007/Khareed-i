@@ -353,21 +353,21 @@ export default function Header() {
                       </div>
 
                       {user.role === 'admin' && (
-                        <Link href="/admin" className="flex items-center gap-2 px-4 py-2.5 text-sm text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors font-bold">
+                        <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors font-bold">
                           <Shield className="h-4 w-4" />
                           Admin Dashboard
                         </Link>
                       )}
 
-                      <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <User className="h-4 w-4 text-gray-400" />
                         My Profile
                       </Link>
-                      <Link href="/dashboard?tab=watchlist" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Link href="/dashboard?tab=watchlist" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <Heart className="h-4 w-4 text-gray-400" />
                         My Watchlist
                       </Link>
-                      <Link href="/dashboard/my-orders" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Link href="/dashboard/my-orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <ShoppingBag className="h-4 w-4 text-gray-400" />
                         My Orders
                       </Link>
