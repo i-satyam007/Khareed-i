@@ -1,5 +1,4 @@
 const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
 
@@ -22,26 +21,26 @@ try {
 const prisma = new PrismaClient();
 
 async function main() {
-  const hashedPassword = await bcrypt.hash('Admin!group5', 10);
-
-  const admin = await prisma.user.upsert({
-    where: { email: 'johnkumarsingh010@gmail.com' },
-    update: {
-      role: 'admin',
-      password: hashedPassword,
-      username: 'admin',
-      name: 'Admin User'
-    },
-    create: {
-      email: 'johnkumarsingh010@gmail.com',
-      username: 'admin',
-      password: hashedPassword,
-      name: 'Admin User',
-      role: 'admin'
-    },
+  const admin = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: 'johnkumarsingh010@gmail.com' },
+        { username: 'admin' }
+      ]
+    }
   });
 
-  console.log('Admin user created/updated:', admin);
+  if (admin) {
+    console.log('Admin user found:', {
+      id: admin.id,
+      email: admin.email,
+      username: admin.username,
+      role: admin.role,
+      passwordHash: admin.password.substring(0, 10) + '...'
+    });
+  } else {
+    console.log('Admin user NOT found.');
+  }
 }
 
 main()
