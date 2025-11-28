@@ -15,30 +15,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-
-        // Ensure upload directory exists
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
         const form = formidable({
-            uploadDir,
             keepExtensions: true,
-            maxFileSize: 5 * 1024 * 1024, // 5MB
-            filename: (name, ext, part, form) => {
-                return `${Date.now()}_${part.originalFilename?.replace(/\s/g, '_') || 'image'}`;
-            },
+            maxFileSize: 4 * 1024 * 1024, // 4MB limit for Vercel serverless
         });
 
         const [fields, files] = await form.parse(req);
-
         const file = files.file?.[0];
+
         if (!file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        const fileUrl = `/uploads/${path.basename(file.filepath)}`;
+        // Read file buffer
+        const fileData = fs.readFileSync(file.filepath);
+        // Convert to base64
+        const base64Data = fileData.toString('base64');
+        const mimeType = file.mimetype || 'image/jpeg';
+        const fileUrl = `data:${mimeType};base64,${base64Data}`;
 
         return res.status(200).json({ url: fileUrl });
     } catch (error) {

@@ -40,6 +40,7 @@ export default function AdminDashboard() {
                     <SidebarItem icon={<LayoutDashboard />} label="Overview" active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
                     <SidebarItem icon={<Package />} label="Listings" active={activeTab === 'listings'} onClick={() => setActiveTab('listings')} />
                     <SidebarItem icon={<Users />} label="Users" active={activeTab === 'users'} onClick={() => setActiveTab('users')} />
+                    <SidebarItem icon={<Shield />} label="Blacklisted" active={false} onClick={() => router.push('/admin/blacklisted')} />
                     <SidebarItem icon={<AlertTriangle />} label="Suspicious Activity" active={activeTab === 'suspicious'} onClick={() => setActiveTab('suspicious')} />
                 </nav>
 
