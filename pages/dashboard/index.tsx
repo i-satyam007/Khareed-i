@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { User, MapPin, Phone, Mail, Package, ShoppingBag, LogOut, Camera, Heart } from 'lucide-react';
+import { User, MapPin, Phone, Mail, Package, ShoppingBag, LogOut, Camera, Heart, Shield } from 'lucide-react';
 import { useUser } from '@/lib/hooks/useUser';
 import useSWR from 'swr';
 import ListingCard from '@/components/ListingCard';
@@ -93,6 +93,13 @@ export default function DashboardProfile() {
                                 >
                                     <Heart className="h-5 w-5" /> My Watchlist
                                 </button>
+
+                                {user.role === 'admin' && (
+                                    <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-purple-700 bg-purple-50 hover:bg-purple-100 font-bold rounded-xl transition-colors">
+                                        <Shield className="h-5 w-5" /> Admin Dashboard
+                                    </Link>
+                                )}
+
                                 <Link href="/dashboard/my-listings" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium rounded-xl transition-colors">
                                     <Package className="h-5 w-5" /> My Listings
                                 </Link>
