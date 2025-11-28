@@ -28,6 +28,7 @@ export default async function handler(
     }
 
     // Find user (email OR username)
+    console.log(`Login attempt for: ${identifier}`);
     const user = await prisma.user.findFirst({
       where: {
         OR: [{ email: identifier }, { username: identifier }],
@@ -37,14 +38,25 @@ export default async function handler(
         password: true,
         email: true,
         username: true,
+        role: true, // Fetch role to debug
       }
     });
 
-    if (!user) return res.status(401).json({ error: "Invalid credentials" });
+    if (!user) {
+      console.log('Login failed: User not found');
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    console.log(`User found: ${user.username} (${user.email}), Role: ${user.role}`);
 
     // Password check
     const valid = await comparePwd(password, user.password);
-    if (!valid) return res.status(401).json({ error: "Invalid credentials" });
+    if (!valid) {
+      console.log('Login failed: Invalid password');
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    console.log('Login successful');
 
     // Create JWT
     const token = signToken({ userId: user.id });
