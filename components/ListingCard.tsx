@@ -73,13 +73,13 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
     };
 
     return (
-        <div className="group bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col h-full relative">
+        <div className="group bg-kh-surface border border-gray-800 rounded-xl overflow-hidden hover:shadow-lg hover:shadow-kh-purple/5 transition-all duration-300 flex flex-col h-full relative">
             {/* Image Placeholder */}
-            <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+            <div className="aspect-[4/3] bg-gray-900 relative overflow-hidden">
                 {displayImage ? (
                     <img src={displayImage} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">
+                    <div className="w-full h-full flex items-center justify-center text-gray-700 bg-gray-900">
                         <span className="text-xs">No Image</span>
                     </div>
                 )}
@@ -87,13 +87,13 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                 {/* Badges */}
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
                     {isAuction && (
-                        <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold rounded-md border border-purple-200 shadow-sm flex items-center gap-1">
+                        <span className="px-2 py-0.5 bg-purple-900/40 text-purple-300 text-[10px] font-bold rounded-md border border-purple-500/20 shadow-sm flex items-center gap-1 backdrop-blur-sm">
                             <Gavel className="h-3 w-3" />
                             Auction
                         </span>
                     )}
                     {negotiable && !isAuction && (
-                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-md border border-blue-100">
+                        <span className="px-2 py-0.5 bg-blue-900/40 text-blue-300 text-[10px] font-bold rounded-md border border-blue-500/20 backdrop-blur-sm">
                             Negotiable
                         </span>
                     )}
@@ -102,7 +102,7 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                 {/* Wishlist Button */}
                 <button
                     onClick={toggleWatchlist}
-                    className={`absolute top-2 right-2 p-1.5 backdrop-blur-sm rounded-full transition-colors ${inWatchlist ? 'bg-red-50 text-red-500' : 'bg-white/80 text-gray-400 hover:text-red-500'}`}
+                    className={`absolute top-2 right-2 p-1.5 backdrop-blur-md rounded-full transition-colors ${inWatchlist ? 'bg-red-500/20 text-red-500' : 'bg-black/40 text-gray-300 hover:text-red-400'}`}
                 >
                     <Heart className={`h-4 w-4 ${inWatchlist ? 'fill-current' : ''}`} />
                 </button>
@@ -111,31 +111,31 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
             {/* Content */}
             <div className="p-4 flex flex-col flex-1">
                 <Link href={`/listings/${id}`} className="block">
-                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1 group-hover:text-kh-red transition-colors" title={title}>
+                    <h3 className="text-sm font-medium text-kh-dark line-clamp-2 mb-1 group-hover:text-kh-red transition-colors" title={title}>
                         {title}
                     </h3>
                 </Link>
 
                 <div className="mt-auto pt-2">
                     <div className="flex items-baseline gap-2">
-                        <span className="text-lg font-bold text-gray-900">₹{price}</span>
-                        <span className="text-xs text-gray-400 line-through">₹{mrp}</span>
-                        <span className="text-xs font-bold text-green-600">{discount}% OFF</span>
+                        <span className="text-lg font-bold text-kh-dark">₹{price}</span>
+                        <span className="text-xs text-gray-500 line-through">₹{mrp}</span>
+                        <span className="text-xs font-bold text-green-500">{discount}% OFF</span>
                     </div>
 
                     {/* Auction Timer or Posted Time */}
-                    <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500">
+                    <div className="mt-3 pt-3 border-t border-gray-800 flex items-center justify-between text-[10px] text-gray-400">
                         {isAuction && endTime ? (
                             <div className="flex flex-col items-end w-full">
                                 <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-1 text-orange-600 font-bold">
+                                    <div className="flex items-center gap-1 text-orange-500 font-bold">
                                         <Clock className="h-3 w-3" />
                                         <span>Ends in {endTime}</span>
                                     </div>
                                     {/* Owner Avatar for Auction */}
                                     {owner && (
                                         <div className="flex items-center gap-1.5" title={`Sold by ${owner.name}`}>
-                                            <div className="w-5 h-5 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
+                                            <div className="w-5 h-5 rounded-full bg-gray-800 overflow-hidden border border-gray-700">
                                                 {owner.avatar ? (
                                                     <img src={owner.avatar} alt={owner.name} className="w-full h-full object-cover" />
                                                 ) : (
@@ -144,13 +144,13 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                                                     </div>
                                                 )}
                                             </div>
-                                            <span className="text-[10px] text-gray-600 truncate max-w-[60px]">{owner.name.split(' ')[0]}</span>
+                                            <span className="text-[10px] text-gray-400 truncate max-w-[60px]">{owner.name.split(' ')[0]}</span>
                                         </div>
                                     )}
                                 </div>
                                 {bids && bids.length > 0 && (
                                     <div className="text-[10px] text-gray-500 mt-1 w-full text-right">
-                                        Top Bid by <span className="font-bold text-gray-900">{bids[0].bidder?.name || bids[0].bidder?.username || 'User'}</span>
+                                        Top Bid by <span className="font-bold text-kh-dark">{bids[0].bidder?.name || bids[0].bidder?.username || 'User'}</span>
                                     </div>
                                 )}
                             </div>
@@ -160,7 +160,7 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                                     {/* Owner Avatar for Regular Listing */}
                                     {owner && (
                                         <div className="flex items-center gap-1.5" title={`Sold by ${owner.name}`}>
-                                            <div className="w-5 h-5 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
+                                            <div className="w-5 h-5 rounded-full bg-gray-800 overflow-hidden border border-gray-700">
                                                 {owner.avatar ? (
                                                     <img src={owner.avatar} alt={owner.name} className="w-full h-full object-cover" />
                                                 ) : (
@@ -170,8 +170,8 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                                                 )}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-[10px] font-medium text-gray-900 leading-none">{owner.name.split(' ')[0]}</span>
-                                                <span className="text-[9px] text-gray-400 leading-none mt-0.5">{displayTime}</span>
+                                                <span className="text-[10px] font-medium text-kh-dark leading-none">{owner.name.split(' ')[0]}</span>
+                                                <span className="text-[9px] text-gray-500 leading-none mt-0.5">{displayTime}</span>
                                             </div>
                                         </div>
                                     )}
@@ -184,12 +184,12 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                                 </div>
                                 <div className="flex gap-1">
                                     {paymentMethods?.includes('CASH') && (
-                                        <div className="p-1 bg-green-50 rounded text-green-700" title="Cash on Delivery">
+                                        <div className="p-1 bg-green-900/20 rounded text-green-500" title="Cash on Delivery">
                                             <Banknote className="h-3 w-3" />
                                         </div>
                                     )}
                                     {paymentMethods?.includes('UPI') && (
-                                        <div className="p-1 bg-purple-50 rounded text-purple-700" title="UPI / QR Code">
+                                        <div className="p-1 bg-purple-900/20 rounded text-purple-400" title="UPI / QR Code">
                                             <QrCode className="h-3 w-3" />
                                         </div>
                                     )}

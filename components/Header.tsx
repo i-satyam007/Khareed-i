@@ -200,9 +200,9 @@ export default function Header() {
         </div>
       </div>
 
-      <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
+      <header className="sticky top-0 z-50 bg-kh-light shadow-sm border-b border-gray-800">
         {/* Top Bar */}
-        <div className="bg-kh-dark text-white text-xs py-1 px-4 text-center hidden md:block">
+        <div className="bg-kh-surface text-kh-dark text-xs py-1 px-4 text-center hidden md:block border-b border-gray-800">
           🚀 Khareed-i: The Ultimate IPM Reselling Marketplace & Group Ordering Platform
         </div>
 
@@ -217,27 +217,27 @@ export default function Header() {
                 style={{ height: '56px' }}
               />
               <div className="hidden sm:block">
-                <h1 className="text-xl font-extrabold text-gray-900 leading-none tracking-tight">Khareed-i</h1>
+                <h1 className="text-xl font-extrabold text-kh-dark leading-none tracking-tight">Khareed-i</h1>
                 <p className="text-[10px] font-bold text-kh-purple tracking-widest uppercase">IPM Marketplace</p>
               </div>
             </Link>
 
             {/* Search Bar */}
             <div className="hidden md:flex flex-1 max-w-2xl mx-auto">
-              <form onSubmit={handleSearch} className="w-full flex items-center bg-gray-100 rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-kh-purple/20 focus-within:border-kh-purple transition-all overflow-hidden shadow-sm">
+              <form onSubmit={handleSearch} className="w-full flex items-center bg-kh-surface rounded-lg border border-gray-700 focus-within:ring-2 focus-within:ring-kh-purple/20 focus-within:border-kh-purple transition-all overflow-hidden shadow-sm">
 
                 {/* Category Dropdown */}
-                <div className="relative group border-r border-gray-300 bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div className="relative group border-r border-gray-700 bg-kh-surface hover:bg-gray-800 transition-colors">
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="appearance-none bg-transparent py-2.5 pl-4 pr-8 text-sm font-medium text-gray-700 focus:outline-none cursor-pointer w-[140px] truncate"
+                    className="appearance-none bg-transparent py-2.5 pl-4 pr-8 text-sm font-medium text-kh-dark focus:outline-none cursor-pointer w-[140px] truncate"
                   >
                     {CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat} value={cat} className="bg-kh-surface text-kh-dark">{cat}</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                 </div>
 
                 {/* Input */}
@@ -246,7 +246,7 @@ export default function Header() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search for products, brands and more..."
-                  className="flex-1 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+                  className="flex-1 bg-kh-surface px-4 py-2.5 text-sm text-kh-dark placeholder-gray-500 focus:outline-none"
                 />
 
                 {/* Search Button */}
@@ -261,9 +261,9 @@ export default function Header() {
             <div className="flex items-center gap-6 flex-shrink-0">
 
               {/* Group Order CTA */}
-              <Link href="/group-orders" className="hidden lg:flex items-center gap-2 text-sm font-bold text-gray-700 hover:text-kh-red transition-colors group">
-                <div className="p-2 bg-orange-50 rounded-full group-hover:bg-orange-100 transition-colors">
-                  <Users className="h-5 w-5 text-orange-600" />
+              <Link href="/group-orders" className="hidden lg:flex items-center gap-2 text-sm font-bold text-kh-dark hover:text-kh-red transition-colors group">
+                <div className="p-2 bg-orange-500/10 rounded-full group-hover:bg-orange-500/20 transition-colors">
+                  <Users className="h-5 w-5 text-orange-500" />
                 </div>
                 <span>Group Order</span>
               </Link>
@@ -272,11 +272,11 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setIsNotifOpen(!isNotifOpen)}
-                  className="notification-btn p-2 hover:bg-gray-100 rounded-full transition-colors relative outline-none"
+                  className="notification-btn p-2 hover:bg-gray-800 rounded-full transition-colors relative outline-none"
                 >
-                  <Bell className="h-6 w-6 text-gray-700" />
+                  <Bell className="h-6 w-6 text-kh-dark" />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full border-2 border-white">
+                    <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full border-2 border-kh-light">
                       {unreadCount}
                     </span>
                   )}
@@ -284,9 +284,9 @@ export default function Header() {
 
                 {/* Notification Dropdown */}
                 {isNotifOpen && (
-                  <div className="notification-dropdown absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2">
-                    <div className="px-4 py-2 border-b border-gray-50 flex justify-between items-center">
-                      <span className="font-bold text-gray-900 text-sm">Notifications</span>
+                  <div className="notification-dropdown absolute right-0 mt-2 w-80 bg-kh-surface rounded-xl shadow-xl border border-gray-700 py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                    <div className="px-4 py-2 border-b border-gray-700 flex justify-between items-center">
+                      <span className="font-bold text-kh-dark text-sm">Notifications</span>
                       {unreadCount > 0 && (
                         <button onClick={markAllRead} className="text-xs text-kh-purple hover:underline">
                           Mark all read
@@ -314,11 +314,11 @@ export default function Header() {
                                 setIsNotifOpen(false);
                               }
                             }}
-                            className={`px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 cursor-pointer ${!n.read ? 'bg-blue-50/50' : ''}`}
+                            className={`px-4 py-3 hover:bg-gray-800 transition-colors border-b border-gray-700 last:border-0 cursor-pointer ${!n.read ? 'bg-kh-purple/10' : ''}`}
                           >
-                            <p className="text-sm font-semibold text-gray-900">{n.title}</p>
-                            <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">{n.body}</p>
-                            <p className="text-[10px] text-gray-400 mt-1">{new Date(n.createdAt).toLocaleDateString()}</p>
+                            <p className="text-sm font-semibold text-kh-dark">{n.title}</p>
+                            <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{n.body}</p>
+                            <p className="text-[10px] text-gray-500 mt-1">{new Date(n.createdAt).toLocaleDateString()}</p>
                           </div>
                         ))
                       )}
@@ -332,7 +332,7 @@ export default function Header() {
                 <div className="relative">
                   <button
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="user-btn flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1.5 rounded-lg transition-colors outline-none"
+                    className="user-btn flex items-center gap-2 cursor-pointer hover:bg-gray-800 p-1.5 rounded-lg transition-colors outline-none"
                   >
                     <div className="w-8 h-8 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold text-xs overflow-hidden">
                       {user.avatar ? (
@@ -342,45 +342,45 @@ export default function Header() {
                       )}
                     </div>
                     <div className="hidden sm:block text-left">
-                      <p className="text-[10px] text-gray-500 font-medium leading-tight">Hello,</p>
-                      <p className="text-xs font-bold text-gray-900 leading-tight">{user.name?.split(' ')[0] || user.username}</p>
+                      <p className="text-[10px] text-gray-400 font-medium leading-tight">Hello,</p>
+                      <p className="text-xs font-bold text-kh-dark leading-tight">{user.name?.split(' ')[0] || user.username}</p>
                     </div>
                     <ChevronDown className={`h-3 w-3 text-gray-400 hidden sm:block transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {/* Dropdown Menu */}
                   {isMenuOpen && (
-                    <div className="user-dropdown absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2">
-                      <div className="px-4 py-2 border-b border-gray-50 mb-1">
-                        <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
-                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    <div className="user-dropdown absolute right-0 mt-2 w-56 bg-kh-surface rounded-xl shadow-xl border border-gray-700 py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                      <div className="px-4 py-2 border-b border-gray-700 mb-1">
+                        <p className="text-sm font-bold text-kh-dark truncate">{user.name}</p>
+                        <p className="text-xs text-gray-400 truncate">{user.email}</p>
                       </div>
 
                       {user.role === 'admin' && (
-                        <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors font-bold">
+                        <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-purple-400 bg-purple-900/20 hover:bg-purple-900/30 transition-colors font-bold">
                           <Shield className="h-4 w-4" />
                           Admin Dashboard
                         </Link>
                       )}
 
-                      <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-kh-dark hover:bg-gray-800 transition-colors">
                         <User className="h-4 w-4 text-gray-400" />
                         My Profile
                       </Link>
-                      <Link href="/dashboard?tab=watchlist" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Link href="/dashboard?tab=watchlist" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-kh-dark hover:bg-gray-800 transition-colors">
                         <Heart className="h-4 w-4 text-gray-400" />
                         My Watchlist
                       </Link>
-                      <Link href="/dashboard/my-orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Link href="/dashboard/my-orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-kh-dark hover:bg-gray-800 transition-colors">
                         <ShoppingBag className="h-4 w-4 text-gray-400" />
                         My Orders
                       </Link>
 
-                      <div className="h-px bg-gray-100 my-1" />
+                      <div className="h-px bg-gray-700 my-1" />
 
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2 text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-medium transition-colors"
+                        className="w-full flex items-center gap-2 text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-900/20 font-medium transition-colors"
                       >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -391,13 +391,13 @@ export default function Header() {
                   )}
                 </div>
               ) : (
-                <Link href="/login" className="flex items-center gap-2 hover:bg-gray-50 p-1.5 rounded-lg transition-colors">
-                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                <Link href="/login" className="flex items-center gap-2 hover:bg-gray-800 p-1.5 rounded-lg transition-colors">
+                  <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center text-gray-400">
                     <User className="h-4 w-4" />
                   </div>
                   <div className="hidden sm:block text-left">
-                    <p className="text-[10px] text-gray-500 font-medium leading-tight">Hello, Sign in</p>
-                    <p className="text-xs font-bold text-gray-900 leading-tight">Account</p>
+                    <p className="text-[10px] text-gray-400 font-medium leading-tight">Hello, Sign in</p>
+                    <p className="text-xs font-bold text-kh-dark leading-tight">Account</p>
                   </div>
                   <ChevronDown className="h-3 w-3 text-gray-400 hidden sm:block" />
                 </Link>
@@ -408,14 +408,14 @@ export default function Header() {
 
         {/* Mobile Search Bar */}
         <div className="md:hidden px-4 pb-3">
-          <form onSubmit={handleSearch} className="flex items-center bg-gray-100 rounded-lg border border-gray-200 overflow-hidden">
-            <Search className="h-4 w-4 text-gray-500 ml-3" />
+          <form onSubmit={handleSearch} className="flex items-center bg-kh-surface rounded-lg border border-gray-700 overflow-hidden">
+            <Search className="h-4 w-4 text-gray-400 ml-3" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search Khareed-i..."
-              className="flex-1 bg-transparent px-3 py-2 text-sm focus:outline-none"
+              className="flex-1 bg-transparent px-3 py-2 text-sm text-kh-dark placeholder-gray-500 focus:outline-none"
             />
           </form>
         </div>

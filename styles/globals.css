@@ -8,7 +8,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   body {
-    @apply bg-kh-light text-kh-dark font-sans antialiased;
+    @apply bg-kh-light text-kh-dark font-sans antialiased selection:bg-kh-purple/30 selection:text-kh-purple;
   }
 }
 

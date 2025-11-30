@@ -20,7 +20,7 @@ export default function Home() {
   const trendingListings = Array.isArray(listings) ? listings.slice(0, 4) : [];
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-kh-light font-sans">
       <Head>
         <title>Khareed-i | IPM Reselling Marketplace</title>
         <meta name="description" content="Buy, Sell, and Group Order with Khareed-i" />
@@ -36,13 +36,13 @@ export default function Home() {
         <section>
           <div className="flex items-end justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-kh-dark flex items-center gap-2">
                 <ShoppingBag className="h-6 w-6 text-kh-red" />
                 Fresh Listings
               </h2>
-              <p className="text-sm text-gray-500 mt-1">Latest items added by students</p>
+              <p className="text-sm text-gray-400 mt-1">Latest items added by students</p>
             </div>
-            <Link href="/listings" className="text-sm font-medium text-kh-purple hover:text-purple-700 hover:underline flex items-center gap-1">
+            <Link href="/listings" className="text-sm font-medium text-kh-purple hover:text-purple-400 hover:underline flex items-center gap-1">
               View all <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -67,13 +67,13 @@ export default function Home() {
         </section>
 
         {/* Active Group Orders */}
-        <section className="bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-2xl p-6 sm:p-8">
+        <section className="bg-gradient-to-br from-purple-900/10 to-kh-surface border border-purple-500/10 rounded-2xl p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Active Group Orders</h2>
-              <p className="text-sm text-gray-500">Join a cart to split fees</p>
+              <h2 className="text-xl font-bold text-kh-dark">Active Group Orders</h2>
+              <p className="text-sm text-gray-400">Join a cart to split fees</p>
             </div>
-            <Link href="/group-orders" className="text-sm font-medium text-kh-purple hover:text-purple-700 hover:underline">View all →</Link>
+            <Link href="/group-orders" className="text-sm font-medium text-kh-purple hover:text-purple-400 hover:underline">View all →</Link>
           </div>
 
           {isGroupOrdersLoading ? (
@@ -104,11 +104,11 @@ export default function Home() {
 
         {/* Categories Grid */}
         <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Browse by Category</h2>
+          <h2 className="text-xl font-bold text-kh-dark mb-4">Browse by Category</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {["Electronics", "Books", "Hostel Essentials", "Clothing", "Sports Gear", "Stationery"].map((cat) => (
-              <Link href={`/listings?category=${encodeURIComponent(cat)}`} key={cat} className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-kh-purple hover:shadow-md transition-all group">
-                <div className="text-sm font-medium text-gray-700 group-hover:text-kh-purple">{cat}</div>
+              <Link href={`/listings?category=${encodeURIComponent(cat)}`} key={cat} className="bg-kh-surface border border-gray-800 rounded-xl p-4 text-center hover:border-kh-purple hover:shadow-lg hover:shadow-kh-purple/10 transition-all group">
+                <div className="text-sm font-medium text-gray-300 group-hover:text-kh-purple">{cat}</div>
               </Link>
             ))}
           </div>

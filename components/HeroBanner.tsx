@@ -8,19 +8,19 @@ interface HeroBannerProps {
 
 export default function HeroBanner({ groupOrderCount = 0 }: HeroBannerProps) {
     return (
-        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1a1c1e] to-[#2d3033] text-white shadow-xl ring-1 ring-black/5">
+        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-kh-surface to-gray-900 text-kh-dark shadow-xl ring-1 ring-white/5">
             {/* Background Effect */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-[0.03] rounded-full -mr-20 -mt-20 blur-3xl"></div>
+            <div className="absolute top-0 right-0 w-96 h-96 bg-kh-purple opacity-[0.05] rounded-full -mr-20 -mt-20 blur-3xl"></div>
 
             <div className="flex flex-col lg:flex-row min-h-[360px]">
                 {/* Left: Content */}
                 <div className="p-8 lg:p-12 flex-1 flex flex-col justify-center z-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-xs font-medium text-gray-300 w-fit mb-6">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-300 w-fit mb-6 backdrop-blur-sm">
                         <span className="w-2 h-2 rounded-full bg-kh-red animate-pulse"></span>
                         Live: {groupOrderCount > 0 ? `${groupOrderCount} Group Orders Active` : 'Start a Group Order'}
                     </div>
 
-                    <h1 className="text-3xl lg:text-5xl font-bold mb-6 leading-tight">
+                    <h1 className="text-3xl lg:text-5xl font-bold mb-6 leading-tight text-white">
                         Resell fast.<br />Order smart.<br />
                         <span className="text-kh-red bg-clip-text text-transparent bg-gradient-to-r from-kh-red to-orange-400">Save together.</span>
                     </h1>
@@ -41,7 +41,7 @@ export default function HeroBanner({ groupOrderCount = 0 }: HeroBannerProps) {
                 </div>
 
                 {/* Right: Visual / Quick Actions */}
-                <div className="lg:w-[35%] bg-white/5 backdrop-blur-md border-l border-white/5 p-6 lg:p-8 flex flex-col justify-center">
+                <div className="lg:w-[35%] bg-black/20 backdrop-blur-md border-l border-white/5 p-6 lg:p-8 flex flex-col justify-center">
                     <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-6">Quick Group Orders</h3>
                     <div className="grid grid-cols-1 gap-3">
                         {[
@@ -49,15 +49,15 @@ export default function HeroBanner({ groupOrderCount = 0 }: HeroBannerProps) {
                             { name: "Swiggy", desc: "Food delivery", logo: "/Swiggy.svg" },
                             { name: "Zomato", desc: "Restaurant meals", logo: "/Zomato.svg" },
                         ].map(brand => (
-                            <Link href={`/group-orders/create?platform=${brand.name}`} key={brand.name} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all group cursor-pointer">
-                                <div className="w-12 h-12 flex items-center justify-center transition-transform group-hover:scale-110">
+                            <Link href={`/group-orders/create?platform=${brand.name}`} key={brand.name} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all group cursor-pointer hover:border-kh-purple/30">
+                                <div className="w-12 h-12 flex items-center justify-center transition-transform group-hover:scale-110 bg-white/5 rounded-lg p-2">
                                     <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain" />
                                 </div>
                                 <div>
-                                    <div className="text-sm font-semibold text-white">{brand.name}</div>
+                                    <div className="text-sm font-semibold text-white group-hover:text-kh-purple transition-colors">{brand.name}</div>
                                     <div className="text-[11px] text-gray-400">{brand.desc}</div>
                                 </div>
-                                <ArrowRight className="ml-auto h-4 w-4 text-gray-500 group-hover:text-white transition-colors" />
+                                <ArrowRight className="ml-auto h-4 w-4 text-gray-500 group-hover:text-kh-purple transition-colors" />
                             </Link>
                         ))}
                     </div>
