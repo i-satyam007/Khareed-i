@@ -102,7 +102,7 @@ export default function DashboardProfile() {
     if (!user) return <div>Loading...</div>;
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans">
+        <div className="min-h-screen bg-kh-light font-sans">
             <Head>
                 <title>My Profile | Khareed-i</title>
             </Head>
@@ -120,42 +120,42 @@ export default function DashboardProfile() {
 
                     {/* Sidebar Navigation */}
                     <aside className="w-full lg:w-64 flex-shrink-0">
-                        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                            <div className="p-6 bg-kh-purple/5 border-b border-gray-100 text-center">
+                        <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-sm overflow-hidden">
+                            <div className="p-6 bg-white/5 border-b border-white/10 text-center">
                                 <div className="w-20 h-20 bg-kh-purple/20 rounded-full flex items-center justify-center text-2xl font-bold text-kh-purple mx-auto mb-3 overflow-hidden">
                                     {user.avatar ? <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" /> : user.name?.[0]}
                                 </div>
-                                <h2 className="font-bold text-gray-900">{user.name}</h2>
-                                <p className="text-xs text-gray-500">@{user.username}</p>
+                                <h2 className="font-bold text-white">{user.name}</h2>
+                                <p className="text-xs text-gray-400">@{user.username}</p>
                             </div>
 
                             <nav className="p-2 space-y-1">
                                 <button
                                     onClick={() => setActiveTab('profile')}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 font-medium rounded-xl transition-colors ${activeTab === 'profile' ? 'bg-purple-50 text-kh-purple' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 font-medium rounded-xl transition-colors ${activeTab === 'profile' ? 'bg-kh-purple/20 text-kh-purple' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
                                 >
                                     <User className="h-5 w-5" /> My Profile
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('watchlist')}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 font-medium rounded-xl transition-colors ${activeTab === 'watchlist' ? 'bg-purple-50 text-kh-purple' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 font-medium rounded-xl transition-colors ${activeTab === 'watchlist' ? 'bg-kh-purple/20 text-kh-purple' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
                                 >
                                     <Heart className="h-5 w-5" /> My Watchlist
                                 </button>
 
                                 {user.role === 'admin' && (
-                                    <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-purple-700 bg-purple-50 hover:bg-purple-100 font-bold rounded-xl transition-colors">
+                                    <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 font-bold rounded-xl transition-colors">
                                         <Shield className="h-5 w-5" /> Admin Dashboard
                                     </Link>
                                 )}
 
-                                <Link href="/dashboard/my-listings" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium rounded-xl transition-colors">
+                                <Link href="/dashboard/my-listings" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 hover:text-white font-medium rounded-xl transition-colors">
                                     <Package className="h-5 w-5" /> My Listings
                                 </Link>
-                                <Link href="/dashboard/my-orders" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium rounded-xl transition-colors">
+                                <Link href="/dashboard/my-orders" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 hover:text-white font-medium rounded-xl transition-colors">
                                     <ShoppingBag className="h-5 w-5" /> My Orders
                                 </Link>
-                                <Link href="/api/auth/logout" className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 font-medium rounded-xl transition-colors mt-2">
+                                <Link href="/api/auth/logout" className="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 font-medium rounded-xl transition-colors mt-2">
                                     <LogOut className="h-5 w-5" /> Sign Out
                                 </Link>
                             </nav>
@@ -165,9 +165,9 @@ export default function DashboardProfile() {
                     {/* Main Content */}
                     <main className="flex-1">
                         {activeTab === 'profile' && (
-                            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8">
+                            <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-sm p-6 md:p-8">
                                 <div className="flex items-center justify-between mb-6">
-                                    <h1 className="text-2xl font-bold text-gray-900">Profile Details</h1>
+                                    <h1 className="text-2xl font-bold text-white">Profile Details</h1>
                                     {!isEditing && (
                                         <button
                                             onClick={() => setIsEditing(true)}
@@ -183,7 +183,7 @@ export default function DashboardProfile() {
                                     {/* Avatar Upload */}
                                     <div className="flex items-center gap-4">
                                         <div className="relative group cursor-pointer" onClick={() => isEditing && document.getElementById('avatar-upload')?.click()}>
-                                            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 overflow-hidden border-2 border-white shadow-sm">
+                                            <div className="w-24 h-24 bg-black/20 rounded-full flex items-center justify-center text-gray-400 overflow-hidden border-2 border-white/10 shadow-sm">
                                                 {formData.avatar ? <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" /> : <User className="h-10 w-10" />}
                                             </div>
                                             {isEditing && (
@@ -200,63 +200,63 @@ export default function DashboardProfile() {
                                             onChange={onFileChange}
                                         />
                                         <div>
-                                            <h3 className="font-bold text-gray-900">Profile Picture</h3>
-                                            <p className="text-xs text-gray-500">PNG, JPG up to 4MB</p>
+                                            <h3 className="font-bold text-white">Profile Picture</h3>
+                                            <p className="text-xs text-gray-400">PNG, JPG up to 4MB</p>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                            <label className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
                                             <div className="relative">
-                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                                 <input
                                                     type="text"
                                                     disabled={!isEditing}
                                                     value={formData.name}
                                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                                    className="w-full pl-10 pr-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-kh-purple focus:border-transparent outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                                 />
                                             </div>
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                            <label className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
                                             <div className="relative">
-                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                                 <input
                                                     type="email"
                                                     disabled
                                                     value={user.email}
-                                                    className="w-full pl-10 pr-4 py-2 bg-gray-100 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed"
+                                                    className="w-full pl-10 pr-4 py-2 bg-black/10 border border-white/10 rounded-lg text-gray-500 cursor-not-allowed"
                                                 />
                                             </div>
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Hostel Address</label>
+                                            <label className="block text-sm font-medium text-gray-300 mb-1">Hostel Address</label>
                                             <div className="relative">
-                                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                                 <input
                                                     type="text"
                                                     disabled={!isEditing}
                                                     value={formData.hostel}
                                                     onChange={(e) => setFormData({ ...formData, hostel: e.target.value })}
-                                                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                                    className="w-full pl-10 pr-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-kh-purple focus:border-transparent outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                                 />
                                             </div>
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                            <label className="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
                                             <div className="relative">
-                                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                                 <input
                                                     type="tel"
                                                     disabled={!isEditing}
                                                     value={formData.phone}
                                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                                    className="w-full pl-10 pr-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-kh-purple focus:border-transparent outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                                 />
                                             </div>
                                         </div>
@@ -273,7 +273,7 @@ export default function DashboardProfile() {
                                             <button
                                                 type="button"
                                                 onClick={() => { setIsEditing(false); setFormData({ name: user.name, hostel: user.hostel, phone: user.phone, avatar: user.avatar }); }}
-                                                className="px-6 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                                                className="px-6 py-2 bg-white/5 border border-white/10 text-gray-300 font-medium rounded-lg hover:bg-white/10 transition-colors"
                                             >
                                                 Cancel
                                             </button>
@@ -286,7 +286,7 @@ export default function DashboardProfile() {
 
                         {activeTab === 'watchlist' && (
                             <div className="space-y-6">
-                                <h1 className="text-2xl font-bold text-gray-900">My Watchlist</h1>
+                                <h1 className="text-2xl font-bold text-white">My Watchlist</h1>
                                 {watchlist.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                         {watchlist.map((listing: any) => (
@@ -294,12 +294,12 @@ export default function DashboardProfile() {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-200">
-                                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <Heart className="h-8 w-8 text-gray-400" />
+                                    <div className="text-center py-20 bg-white/5 backdrop-blur-md rounded-xl border border-dashed border-white/10">
+                                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <Heart className="h-8 w-8 text-gray-500" />
                                         </div>
-                                        <h3 className="text-lg font-bold text-gray-900">Your watchlist is empty</h3>
-                                        <p className="text-gray-500 text-sm mt-1">Save items you're interested in to view them here.</p>
+                                        <h3 className="text-lg font-bold text-white">Your watchlist is empty</h3>
+                                        <p className="text-gray-400 text-sm mt-1">Save items you're interested in to view them here.</p>
                                         <Link href="/listings" className="inline-block mt-4 px-6 py-2 bg-kh-purple text-white font-bold rounded-lg hover:bg-purple-700 transition-colors">
                                             Browse Listings
                                         </Link>

@@ -28,39 +28,41 @@ export default function ForgotUsername() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 px-4">
-      <h1 className="text-2xl font-bold mb-4">Forgot Username</h1>
-      
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">Enter your email</label>
-          <input 
-            {...register("email", { required: true })} 
-            type="email" 
-            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-600" 
-            placeholder="john@example.com" 
-          />
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-kh-light px-4">
+      <div className="w-full max-w-md bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/10">
+        <h1 className="text-2xl font-bold mb-4 text-white">Forgot Username</h1>
 
-        {/* ✅ Feedback Messages */}
-        {feedback && (
-          <div className={`p-3 rounded text-sm ${feedback.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
-            {feedback.msg}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Enter your email</label>
+            <input
+              {...register("email", { required: true })}
+              type="email"
+              className="w-full bg-black/20 border border-white/10 p-2 rounded text-white focus:outline-none focus:ring-2 focus:ring-kh-purple placeholder-gray-500"
+              placeholder="john@example.com"
+            />
           </div>
-        )}
 
-        {/* ✅ Orange Button */}
-        <button 
-          disabled={isSubmitting} 
-          className="w-full bg-orange-600 hover:bg-orange-700 text-white p-2 rounded font-semibold transition-colors"
-        >
-          {isSubmitting ? "Sending..." : "Recover Username"}
-        </button>
+          {/* ✅ Feedback Messages */}
+          {feedback && (
+            <div className={`p-3 rounded text-sm ${feedback.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+              {feedback.msg}
+            </div>
+          )}
 
-        <div className="text-center mt-4">
-           <Link href="/login" className="text-sm text-gray-500 hover:text-orange-600">Back to Login</Link>
-        </div>
-      </form>
+          {/* ✅ Purple Button */}
+          <button
+            disabled={isSubmitting}
+            className="w-full bg-kh-purple hover:bg-purple-600 text-white p-2 rounded font-semibold transition-colors"
+          >
+            {isSubmitting ? "Sending..." : "Recover Username"}
+          </button>
+
+          <div className="text-center mt-4">
+            <Link href="/login" className="text-sm text-gray-400 hover:text-kh-purple">Back to Login</Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

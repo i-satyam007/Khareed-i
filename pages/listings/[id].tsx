@@ -135,7 +135,7 @@ export default function ProductDetailsPage() {
     const images = listing.imagePath ? [listing.imagePath] : []; // Handle single image for now, extendable to array
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans">
+        <div className="min-h-screen bg-kh-light font-sans">
             <Head>
                 <title>{listing.title} | Khareed-i</title>
             </Head>
@@ -145,7 +145,7 @@ export default function ProductDetailsPage() {
 
                     {/* Left: Images */}
                     <div className="space-y-4">
-                        <div className="aspect-[4/3] bg-white rounded-2xl border border-gray-200 overflow-hidden flex items-center justify-center relative group">
+                        <div className="aspect-[4/3] bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden flex items-center justify-center relative group">
                             {images.length > 0 ? (
                                 <a href={images[activeImage]} target="_blank" rel="noopener noreferrer" className="cursor-zoom-in w-full h-full">
                                     <img
@@ -155,7 +155,7 @@ export default function ProductDetailsPage() {
                                     />
                                 </a>
                             ) : (
-                                <div className="text-gray-300 flex flex-col items-center">
+                                <div className="text-gray-500 flex flex-col items-center">
                                     <span className="text-6xl">📷</span>
                                     <span className="text-sm mt-2">No Image Available</span>
                                 </div>
@@ -173,7 +173,7 @@ export default function ProductDetailsPage() {
                                     <div
                                         key={i}
                                         onClick={() => setActiveImage(i)}
-                                        className={`w-20 h-20 bg-white rounded-lg border shrink-0 cursor-pointer transition-colors overflow-hidden ${activeImage === i ? 'border-kh-purple ring-2 ring-kh-purple/20' : 'border-gray-200 hover:border-kh-purple'}`}
+                                        className={`w-20 h-20 bg-white/5 rounded-lg border shrink-0 cursor-pointer transition-colors overflow-hidden ${activeImage === i ? 'border-kh-purple ring-2 ring-kh-purple/20' : 'border-white/10 hover:border-kh-purple'}`}
                                     >
                                         <img src={img} alt={`Thumbnail ${i}`} className="w-full h-full object-cover" />
                                     </div>
@@ -186,16 +186,16 @@ export default function ProductDetailsPage() {
                     <div className="flex flex-col">
 
                         {/* Breadcrumb */}
-                        <div className="text-xs text-gray-500 mb-4 flex items-center gap-2">
-                            <span>Home</span> / <span>Listings</span> / <span className="text-gray-900 font-medium">{listing.category}</span>
+                        <div className="text-xs text-gray-400 mb-4 flex items-center gap-2">
+                            <span>Home</span> / <span>Listings</span> / <span className="text-white font-medium">{listing.category}</span>
                         </div>
 
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{listing.title}</h1>
+                        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">{listing.title}</h1>
 
                         <div className="flex items-center gap-4 mb-6">
                             <div className="flex items-baseline gap-2">
-                                <span className="text-3xl font-bold text-gray-900">₹{listing.price}</span>
-                                <span className="text-lg text-gray-400 line-through">₹{listing.mrp}</span>
+                                <span className="text-3xl font-bold text-white">₹{listing.price}</span>
+                                <span className="text-lg text-gray-500 line-through">₹{listing.mrp}</span>
                             </div>
                             <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-md">{discount}% OFF</span>
                             {listing.negotiable && (
@@ -206,33 +206,33 @@ export default function ProductDetailsPage() {
                             )}
                         </div>
                         {listing.isAuction && listing.bids && listing.bids.length > 0 && (
-                            <div className="mb-6 -mt-4 text-sm text-gray-600 flex items-center gap-2 bg-purple-50 p-3 rounded-lg border border-purple-100">
-                                <Gavel className="h-4 w-4 text-purple-600" />
+                            <div className="mb-6 -mt-4 text-sm text-gray-300 flex items-center gap-2 bg-purple-500/10 p-3 rounded-lg border border-purple-500/20">
+                                <Gavel className="h-4 w-4 text-purple-400" />
                                 <span>
-                                    Highest Bid by <span className="font-bold text-gray-900">{listing.bids[0].bidder?.name || listing.bids[0].bidder?.username || 'User'}</span>
+                                    Highest Bid by <span className="font-bold text-white">{listing.bids[0].bidder?.name || listing.bids[0].bidder?.username || 'User'}</span>
                                 </span>
                             </div>
                         )}
 
                         {/* Auction Winner View */}
                         {listing.isAuction && listing.auctionTo && new Date(listing.auctionTo) < new Date() && listing.bids && listing.bids[0] && user && listing.bids[0].bidder?.username === user.username && (
-                            <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 mb-6 animate-in fade-in slide-in-from-top-2">
+                            <div className="bg-purple-500/10 p-4 rounded-xl border border-purple-500/20 mb-6 animate-in fade-in slide-in-from-top-2">
                                 <div className="flex items-start gap-3">
-                                    <Gavel className="h-5 w-5 text-purple-600 mt-0.5" />
+                                    <Gavel className="h-5 w-5 text-purple-400 mt-0.5" />
                                     <div className="w-full">
-                                        <p className="text-purple-800 font-bold mb-1">You Won This Auction!</p>
-                                        <p className="text-purple-700 text-sm mb-3">
+                                        <p className="text-purple-300 font-bold mb-1">You Won This Auction!</p>
+                                        <p className="text-purple-200 text-sm mb-3">
                                             Congratulations! You had the highest bid of <strong>₹{listing.bids[0].amount}</strong>.
                                         </p>
 
                                         {/* Payment Method Selection */}
                                         <div className="mb-4">
-                                            <p className="text-xs font-bold text-purple-800 mb-2 uppercase">Select Payment Method</p>
+                                            <p className="text-xs font-bold text-purple-300 mb-2 uppercase">Select Payment Method</p>
                                             <div className="flex gap-2">
                                                 {listing.paymentMethods?.includes('CASH') && (
                                                     <button
                                                         onClick={() => setSelectedPaymentMethod('CASH')}
-                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'CASH' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-purple-200 hover:border-purple-400'}`}
+                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'CASH' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white/5 text-gray-300 border-purple-500/20 hover:border-purple-400'}`}
                                                     >
                                                         Cash on Delivery
                                                     </button>
@@ -240,7 +240,7 @@ export default function ProductDetailsPage() {
                                                 {listing.paymentMethods?.includes('UPI') && (
                                                     <button
                                                         onClick={() => setSelectedPaymentMethod('UPI')}
-                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'UPI' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-purple-200 hover:border-purple-400'}`}
+                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'UPI' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white/5 text-gray-300 border-purple-500/20 hover:border-purple-400'}`}
                                                     >
                                                         UPI / QR Code
                                                     </button>
@@ -262,23 +262,23 @@ export default function ProductDetailsPage() {
 
                         {/* Bidder View: Accepted Offer */}
                         {myOffer && myOffer.status === 'ACCEPTED' && (
-                            <div className="bg-green-50 p-4 rounded-xl border border-green-200 mb-6 animate-in fade-in slide-in-from-top-2">
+                            <div className="bg-green-500/10 p-4 rounded-xl border border-green-500/20 mb-6 animate-in fade-in slide-in-from-top-2">
                                 <div className="flex items-start gap-3">
-                                    <Check className="h-5 w-5 text-green-600 mt-0.5" />
+                                    <Check className="h-5 w-5 text-green-400 mt-0.5" />
                                     <div className="w-full">
-                                        <p className="text-green-800 font-bold mb-1">Offer Accepted!</p>
-                                        <p className="text-green-700 text-sm mb-3">
+                                        <p className="text-green-400 font-bold mb-1">Offer Accepted!</p>
+                                        <p className="text-green-300 text-sm mb-3">
                                             The seller accepted your offer of <strong>₹{myOffer.amount}</strong>.
                                         </p>
 
                                         {/* Payment Method Selection */}
                                         <div className="mb-4">
-                                            <p className="text-xs font-bold text-green-800 mb-2 uppercase">Select Payment Method</p>
+                                            <p className="text-xs font-bold text-green-400 mb-2 uppercase">Select Payment Method</p>
                                             <div className="flex gap-2">
                                                 {listing.paymentMethods?.includes('CASH') && (
                                                     <button
                                                         onClick={() => setSelectedPaymentMethod('CASH')}
-                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'CASH' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-green-200 hover:border-green-400'}`}
+                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'CASH' ? 'bg-green-600 text-white border-green-600' : 'bg-white/5 text-gray-300 border-green-500/20 hover:border-green-400'}`}
                                                     >
                                                         Cash on Delivery
                                                     </button>
@@ -286,7 +286,7 @@ export default function ProductDetailsPage() {
                                                 {listing.paymentMethods?.includes('UPI') && (
                                                     <button
                                                         onClick={() => setSelectedPaymentMethod('UPI')}
-                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'UPI' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-green-200 hover:border-green-400'}`}
+                                                        className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold transition-all ${selectedPaymentMethod === 'UPI' ? 'bg-green-600 text-white border-green-600' : 'bg-white/5 text-gray-300 border-green-500/20 hover:border-green-400'}`}
                                                     >
                                                         UPI / QR Code
                                                     </button>
@@ -307,7 +307,7 @@ export default function ProductDetailsPage() {
                         )}
 
                         {/* Seller Info Card */}
-                        <div className="bg-white border border-gray-100 rounded-xl p-4 mb-6 flex items-center justify-between shadow-sm">
+                        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 mb-6 flex items-center justify-between shadow-sm">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold overflow-hidden">
                                     {listing.owner?.avatar ? (
@@ -317,8 +317,8 @@ export default function ProductDetailsPage() {
                                     )}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-gray-900">{listing.owner?.name || listing.owner?.username || "Unknown Seller"}</p>
-                                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                                    <p className="text-sm font-bold text-white">{listing.owner?.name || listing.owner?.username || "Unknown Seller"}</p>
+                                    <p className="text-xs text-gray-400 flex items-center gap-1">
                                         <MapPin className="h-3 w-3" /> {listing.owner?.hostel || "Campus"}
                                     </p>
                                 </div>
@@ -330,8 +330,8 @@ export default function ProductDetailsPage() {
 
                         {/* Description */}
                         <div className="mb-8">
-                            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-2">Description</h3>
-                            <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">
+                            <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2">Description</h3>
+                            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
                                 {listing.description}
                             </p>
                         </div>
@@ -339,25 +339,25 @@ export default function ProductDetailsPage() {
                         {/* Reviews Section (Only for Sold items) */}
                         {listing.status === 'sold' && (
                             <div className="mb-8">
-                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Reviews</h3>
+                                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-3">Reviews</h3>
                                 <div className="space-y-4">
                                     {listing.reviews && listing.reviews.length > 0 ? (
                                         listing.reviews.map((review: any) => (
-                                            <div key={review.id} className="bg-white border border-gray-200 rounded-xl p-4">
+                                            <div key={review.id} className="bg-white/5 border border-white/10 rounded-xl p-4">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-500">
+                                                        <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center text-xs font-bold text-gray-400">
                                                             {review.user?.avatar ? <img src={review.user.avatar} className="w-full h-full rounded-full object-cover" /> : review.user?.name?.[0]}
                                                         </div>
-                                                        <span className="font-bold text-sm text-gray-900">{review.user?.name || 'User'}</span>
+                                                        <span className="font-bold text-sm text-white">{review.user?.name || 'User'}</span>
                                                     </div>
                                                     <div className="flex text-yellow-400 text-xs">
                                                         {[...Array(5)].map((_, i) => (
-                                                            <span key={i} className={i < review.rating ? "text-yellow-400" : "text-gray-300"}>★</span>
+                                                            <span key={i} className={i < review.rating ? "text-yellow-400" : "text-gray-600"}>★</span>
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <p className="text-gray-600 text-sm">{review.comment}</p>
+                                                <p className="text-gray-300 text-sm">{review.comment}</p>
                                             </div>
                                         ))
                                     ) : (
@@ -370,14 +370,14 @@ export default function ProductDetailsPage() {
                         {/* Owner View: Bid History */}
                         {isOwner && listing.isAuction && (
                             <div className="mb-8">
-                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Bid History</h3>
-                                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-3">Bid History</h3>
+                                <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
                                     {listing.bids && listing.bids.length > 0 ? (
-                                        <div className="divide-y divide-gray-100">
+                                        <div className="divide-y divide-white/10">
                                             {listing.bids.map((bid: any) => (
-                                                <div key={bid.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                                                <div key={bid.id} className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold text-xs overflow-hidden">
+                                                        <div className="w-8 h-8 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-400 font-bold text-xs overflow-hidden">
                                                             {bid.bidder?.avatar ? (
                                                                 <img src={bid.bidder.avatar} alt={bid.bidder.name} className="w-full h-full object-cover" />
                                                             ) : (
@@ -385,11 +385,11 @@ export default function ProductDetailsPage() {
                                                             )}
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm font-bold text-gray-900">{bid.bidder?.name || bid.bidder?.username || 'User'}</p>
-                                                            <p className="text-xs text-gray-500">{new Date(bid.createdAt).toLocaleString()}</p>
+                                                            <p className="text-sm font-bold text-white">{bid.bidder?.name || bid.bidder?.username || 'User'}</p>
+                                                            <p className="text-xs text-gray-400">{new Date(bid.createdAt).toLocaleString()}</p>
                                                         </div>
                                                     </div>
-                                                    <span className="font-bold text-gray-900">₹{bid.amount}</span>
+                                                    <span className="font-bold text-white">₹{bid.amount}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -405,14 +405,14 @@ export default function ProductDetailsPage() {
                         {/* Owner View: Offers */}
                         {isOwner && listing.negotiable && (
                             <div className="mb-8">
-                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Offers</h3>
-                                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-3">Offers</h3>
+                                <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
                                     {listing.offers && listing.offers.length > 0 ? (
-                                        <div className="divide-y divide-gray-100">
+                                        <div className="divide-y divide-white/10">
                                             {listing.offers.map((offer: any) => (
-                                                <div key={offer.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                                                <div key={offer.id} className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs overflow-hidden">
+                                                        <div className="w-8 h-8 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-400 font-bold text-xs overflow-hidden">
                                                             {offer.bidder?.avatar ? (
                                                                 <img src={offer.bidder.avatar} alt={offer.bidder.name} className="w-full h-full object-cover" />
                                                             ) : (
@@ -420,18 +420,18 @@ export default function ProductDetailsPage() {
                                                             )}
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm font-bold text-gray-900">{offer.bidder?.name || offer.bidder?.username || 'User'}</p>
-                                                            <p className="text-xs text-gray-500">{new Date(offer.createdAt).toLocaleString()}</p>
-                                                            <span className={`text-xs font-bold px-2 py-0.5 rounded ${offer.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' :
-                                                                offer.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                                                                    'bg-yellow-100 text-yellow-700'
+                                                            <p className="text-sm font-bold text-white">{offer.bidder?.name || offer.bidder?.username || 'User'}</p>
+                                                            <p className="text-xs text-gray-400">{new Date(offer.createdAt).toLocaleString()}</p>
+                                                            <span className={`text-xs font-bold px-2 py-0.5 rounded ${offer.status === 'ACCEPTED' ? 'bg-green-500/10 text-green-400' :
+                                                                offer.status === 'REJECTED' ? 'bg-red-500/10 text-red-400' :
+                                                                    'bg-yellow-500/10 text-yellow-400'
                                                                 }`}>
                                                                 {offer.status}
                                                             </span>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-3">
-                                                        <span className="font-bold text-gray-900">₹{offer.amount}</span>
+                                                        <span className="font-bold text-white">₹{offer.amount}</span>
                                                         {offer.status === 'PENDING' && (
                                                             <div className="flex gap-2">
                                                                 <button
@@ -466,12 +466,12 @@ export default function ProductDetailsPage() {
                         {/* Actions - Self-Buy Prevention */}
                         <div className="mt-auto space-y-3">
                             {isOwner ? (
-                                <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-4 text-center">
-                                    <p className="text-yellow-800 font-bold text-sm mb-2">This is your listing</p>
+                                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 text-center">
+                                    <p className="text-yellow-400 font-bold text-sm mb-2">This is your listing</p>
                                     <div className="flex gap-3">
                                         <button
                                             onClick={() => router.push(`/listings/${id}/edit`)}
-                                            className="flex-1 bg-white border border-gray-300 text-gray-700 font-bold py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                                            className="flex-1 bg-white/5 border border-white/10 text-white font-bold py-2.5 rounded-lg hover:bg-white/10 transition-colors"
                                         >
                                             Edit Listing
                                         </button>
@@ -491,7 +491,7 @@ export default function ProductDetailsPage() {
                                                     }
                                                 }
                                             }}
-                                            className="flex-1 bg-red-50 border border-red-100 text-red-600 font-bold py-2.5 rounded-lg hover:bg-red-100 transition-colors"
+                                            className="flex-1 bg-red-500/10 border border-red-500/20 text-red-400 font-bold py-2.5 rounded-lg hover:bg-red-500/20 transition-colors"
                                         >
                                             Delete
                                         </button>
@@ -514,14 +514,14 @@ export default function ProductDetailsPage() {
                                                 alert("Chat feature coming soon!");
                                             }
                                         }}
-                                        className="flex-1 bg-white border-2 border-gray-200 hover:border-kh-purple text-gray-700 font-bold py-3.5 rounded-xl transition-all"
+                                        className="flex-1 bg-white/5 border-2 border-white/10 hover:border-kh-purple text-white font-bold py-3.5 rounded-xl transition-all"
                                     >
                                         {listing.negotiable ? "Make an Offer" : "Chat with Seller"}
                                     </button>
                                 </div>
                             )}
 
-                            <button className="w-full flex items-center justify-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 py-2">
+                            <button className="w-full flex items-center justify-center gap-2 text-sm font-medium text-gray-400 hover:text-white py-2">
                                 <Share2 className="h-4 w-4" /> Share this listing
                             </button>
                         </div>

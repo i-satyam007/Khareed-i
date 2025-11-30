@@ -102,23 +102,23 @@ export default function GroupOrderDetailsPage() {
     const userFinal = userTotal + userShare;
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans pb-20">
+        <div className="min-h-screen bg-kh-light font-sans pb-20">
             <Head>
                 <title>{order.title} | Khareed-i Group Order</title>
             </Head>
 
             {/* Header / Status Bar */}
-            <div className="bg-white border-b border-gray-200 sticky top-0 z-30">
+            <div className="bg-white/5 backdrop-blur-md border-b border-white/10 sticky top-0 z-30">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                     <div>
-                        <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                        <h1 className="text-lg font-bold text-white flex items-center gap-2">
                             {order.platform} <span className="text-gray-400">/</span> {order.title}
                         </h1>
-                        <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                        <p className="text-xs text-gray-400 flex items-center gap-1 mt-1">
                             <Clock className="h-3 w-3" /> Cutoff: {new Date(order.cutoff).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • Hosted by {order.creator.name}
                         </p>
                     </div>
-                    <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <div className="bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-green-500/20">
                         <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                         {order.status.toUpperCase()}
                     </div>
@@ -131,8 +131,8 @@ export default function GroupOrderDetailsPage() {
                 <div className="lg:col-span-2 space-y-6">
 
                     {/* Add Item Form */}
-                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                        <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <div className="bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-sm">
+                        <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
                             <Plus className="h-4 w-4" /> Add Item to Cart
                         </h3>
                         <form onSubmit={handleAddItem} className="flex gap-3">
@@ -141,14 +141,14 @@ export default function GroupOrderDetailsPage() {
                                 placeholder="Item Name (e.g. Lays Blue)"
                                 value={newItemName}
                                 onChange={(e) => setNewItemName(e.target.value)}
-                                className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-kh-purple"
+                                className="flex-1 px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-kh-purple placeholder-gray-500"
                             />
                             <input
                                 type="number"
                                 placeholder="Price (₹)"
                                 value={newItemPrice}
                                 onChange={(e) => setNewItemPrice(e.target.value)}
-                                className="w-24 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-kh-purple"
+                                className="w-24 px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-kh-purple placeholder-gray-500"
                             />
                             <button type="submit" disabled={isSubmitting} className="bg-kh-purple hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-colors disabled:opacity-50">
                                 {isSubmitting ? '...' : 'Add'}
@@ -164,31 +164,31 @@ export default function GroupOrderDetailsPage() {
                             const pUserFinal = pUserTotal + pUserShare;
 
                             return (
-                                <div key={participant.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                                <div key={participant.id} className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
+                                    <div className="bg-white/5 px-4 py-3 border-b border-white/10 flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-xs font-bold text-purple-700 overflow-hidden">
+                                            <div className="w-6 h-6 bg-purple-500/10 rounded-full flex items-center justify-center text-xs font-bold text-purple-400 overflow-hidden">
                                                 {participant.avatar ? (
                                                     <img src={participant.avatar} alt={participant.name} className="w-full h-full object-cover" />
                                                 ) : (
                                                     participant.name[0]
                                                 )}
                                             </div>
-                                            <span className="font-bold text-gray-900 text-sm">{participant.name}</span>
-                                            {participant.id === user?.id && <span className="text-[10px] bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">You</span>}
+                                            <span className="font-bold text-white text-sm">{participant.name}</span>
+                                            {participant.id === user?.id && <span className="text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded">You</span>}
                                         </div>
-                                        <div className="text-sm font-bold text-gray-900">₹{Math.round(pUserFinal)}</div>
+                                        <div className="text-sm font-bold text-white">₹{Math.round(pUserFinal)}</div>
                                     </div>
 
                                     <div className="p-4 space-y-2">
                                         {participant.items.length > 0 ? (
                                             participant.items.map((item: any, idx: number) => (
                                                 <div key={idx} className="flex items-center justify-between text-sm">
-                                                    <span className="text-gray-600">{item.name}</span>
+                                                    <span className="text-gray-300">{item.name}</span>
                                                     <div className="flex items-center gap-3">
-                                                        <span className="text-gray-900 font-medium">₹{item.price}</span>
+                                                        <span className="text-white font-medium">₹{item.price}</span>
                                                         {participant.id === user?.id && (
-                                                            <button onClick={() => handleDeleteItem(item.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></button>
+                                                            <button onClick={() => handleDeleteItem(item.id)} className="text-red-400 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button>
                                                         )}
                                                     </div>
                                                 </div>
@@ -199,7 +199,7 @@ export default function GroupOrderDetailsPage() {
                                     </div>
 
                                     {/* Breakdown for this user */}
-                                    <div className="px-4 py-2 bg-gray-50/50 border-t border-gray-100 text-[10px] text-gray-500 flex justify-between">
+                                    <div className="px-4 py-2 bg-white/5 border-t border-white/10 text-[10px] text-gray-400 flex justify-between">
                                         <span>Items: ₹{pUserTotal}</span>
                                         <span>+ Fees (Split): ₹{Math.round(pUserShare)}</span>
                                     </div>
@@ -212,33 +212,33 @@ export default function GroupOrderDetailsPage() {
 
                 {/* Right: Summary */}
                 <div className="lg:col-span-1">
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm sticky top-24">
-                        <h3 className="font-bold text-gray-900 mb-4">Order Summary</h3>
+                    <div className="bg-white/5 backdrop-blur-md p-6 rounded-xl border border-white/10 shadow-sm sticky top-24">
+                        <h3 className="font-bold text-white mb-4">Order Summary</h3>
 
-                        <div className="space-y-2 text-sm mb-4 border-b border-gray-100 pb-4">
-                            <div className="flex justify-between text-gray-600">
+                        <div className="space-y-2 text-sm mb-4 border-b border-white/10 pb-4">
+                            <div className="flex justify-between text-gray-400">
                                 <span>Cart Total</span>
                                 <span>₹{totalCartValue}</span>
                             </div>
-                            <div className="flex justify-between text-gray-600">
+                            <div className="flex justify-between text-gray-400">
                                 <span>Delivery Fee</span>
                                 <span>₹{deliveryFee}</span>
                             </div>
-                            <div className="flex justify-between text-gray-600">
+                            <div className="flex justify-between text-gray-400">
                                 <span>Handling Fee</span>
                                 <span>₹{handlingFee}</span>
                             </div>
                         </div>
 
-                        <div className="flex justify-between font-bold text-lg text-gray-900 mb-6">
+                        <div className="flex justify-between font-bold text-lg text-white mb-6">
                             <span>Total Payable</span>
                             <span>₹{finalTotal}</span>
                         </div>
 
                         {userTotal > 0 && (
-                            <div className="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-100">
-                                <p className="text-xs text-purple-800 font-bold mb-1">Your Share:</p>
-                                <div className="flex justify-between text-sm font-bold text-purple-900">
+                            <div className="mb-4 p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                                <p className="text-xs text-purple-300 font-bold mb-1">Your Share:</p>
+                                <div className="flex justify-between text-sm font-bold text-purple-200">
                                     <span>Payable Now</span>
                                     <span>₹{Math.round(userFinal)}</span>
                                 </div>

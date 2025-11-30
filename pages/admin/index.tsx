@@ -24,14 +24,14 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 font-sans flex">
+        <div className="min-h-screen bg-kh-light font-sans flex">
             <Head>
                 <title>Admin Dashboard | Khareed-i</title>
             </Head>
 
             {/* Sidebar */}
-            <aside className="w-64 bg-gray-900 text-white flex-shrink-0 hidden md:flex flex-col">
-                <div className="p-6 border-b border-gray-800">
+            <aside className="w-64 bg-black/40 backdrop-blur-md border-r border-white/10 text-white flex-shrink-0 hidden md:flex flex-col">
+                <div className="p-6 border-b border-white/10">
                     <h1 className="text-xl font-bold tracking-tight">Khareed-i Admin</h1>
                     <p className="text-xs text-gray-400 mt-1">Super Admin Console</p>
                 </div>
@@ -44,7 +44,7 @@ export default function AdminDashboard() {
                     <SidebarItem icon={<AlertTriangle />} label="Suspicious Activity" active={activeTab === 'suspicious'} onClick={() => setActiveTab('suspicious')} />
                 </nav>
 
-                <div className="p-4 border-t border-gray-800">
+                <div className="p-4 border-t border-white/10">
                     <div className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors cursor-pointer" onClick={() => router.push('/')}>
                         <LogOut className="h-5 w-5" />
                         <span className="font-medium">Exit Dashboard</span>
@@ -69,7 +69,7 @@ function SidebarItem({ icon, label, active, onClick }: any) {
     return (
         <button
             onClick={onClick}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${active ? 'bg-kh-purple text-white shadow-lg shadow-purple-900/20' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${active ? 'bg-kh-purple text-white shadow-lg shadow-purple-900/20' : 'text-gray-400 hover:bg-white/10 hover:text-white'}`}
         >
             {React.cloneElement(icon, { className: "h-5 w-5" })}
             <span className="font-medium">{label}</span>
@@ -84,7 +84,7 @@ function OverviewTab() {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+            <h2 className="text-2xl font-bold text-white">Dashboard Overview</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatCard title="Total Users" value={stats?.totalUsers || 0} icon={<Users className="text-blue-500" />} />
@@ -99,12 +99,12 @@ function OverviewTab() {
 
 function StatCard({ title, value, icon }: any) {
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-between">
+        <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-white/10 flex items-center justify-between">
             <div>
-                <p className="text-sm font-medium text-gray-500">{title}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{value}</p>
+                <p className="text-sm font-medium text-gray-400">{title}</p>
+                <p className="text-3xl font-bold text-white mt-1">{value}</p>
             </div>
-            <div className="p-3 bg-gray-50 rounded-xl">{React.cloneElement(icon, { className: "h-8 w-8" })}</div>
+            <div className="p-3 bg-white/10 rounded-xl">{React.cloneElement(icon, { className: "h-8 w-8" })}</div>
         </div>
     );
 }
@@ -124,7 +124,7 @@ function ListingsTab() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">Manage Listings</h2>
+                <h2 className="text-2xl font-bold text-white">Manage Listings</h2>
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
@@ -132,14 +132,14 @@ function ListingsTab() {
                         placeholder="Search listings..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-kh-purple/20"
+                        className="pl-10 pr-4 py-2 bg-black/20 border border-white/10 text-white placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-kh-purple/20"
                     />
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white/5 backdrop-blur-md rounded-xl shadow-sm border border-white/10 overflow-hidden">
                 <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 border-b border-gray-100 text-gray-500">
+                    <thead className="bg-white/5 border-b border-white/10 text-gray-400">
                         <tr>
                             <th className="px-6 py-4 font-medium">Title</th>
                             <th className="px-6 py-4 font-medium">Seller</th>
@@ -148,14 +148,14 @@ function ListingsTab() {
                             <th className="px-6 py-4 font-medium text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-white/10">
                         {filtered.map((listing: any) => (
-                            <tr key={listing.id} className="hover:bg-gray-50/50">
-                                <td className="px-6 py-4 font-medium text-gray-900">{listing.title}</td>
-                                <td className="px-6 py-4 text-gray-600">{listing.owner?.name}</td>
-                                <td className="px-6 py-4 text-gray-900">₹{listing.price}</td>
+                            <tr key={listing.id} className="hover:bg-white/5">
+                                <td className="px-6 py-4 font-medium text-white">{listing.title}</td>
+                                <td className="px-6 py-4 text-gray-400">{listing.owner?.name}</td>
+                                <td className="px-6 py-4 text-white">₹{listing.price}</td>
                                 <td className="px-6 py-4">
-                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${listing.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${listing.status === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-white/10 text-gray-400'}`}>
                                         {listing.status}
                                     </span>
                                 </td>
@@ -204,7 +204,7 @@ function UsersTab() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">Manage Users</h2>
+                <h2 className="text-2xl font-bold text-white">Manage Users</h2>
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
@@ -212,37 +212,37 @@ function UsersTab() {
                         placeholder="Search users..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-kh-purple/20"
+                        className="pl-10 pr-4 py-2 bg-black/20 border border-white/10 text-white placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-kh-purple/20"
                     />
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white/5 backdrop-blur-md rounded-xl shadow-sm border border-white/10 overflow-hidden">
                 <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 border-b border-gray-100 text-gray-500">
+                    <thead className="bg-white/5 border-b border-white/10 text-gray-400">
                         <tr>
-                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-gray-100" onClick={() => toggleSort('name')}>
+                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-white/10" onClick={() => toggleSort('name')}>
                                 User <SortIcon field="name" />
                             </th>
-                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-gray-100" onClick={() => toggleSort('email')}>
+                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-white/10" onClick={() => toggleSort('email')}>
                                 Email <SortIcon field="email" />
                             </th>
-                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-gray-100" onClick={() => toggleSort('role')}>
+                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-white/10" onClick={() => toggleSort('role')}>
                                 Role <SortIcon field="role" />
                             </th>
-                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-gray-100" onClick={() => toggleSort('failedPaymentCount')}>
+                            <th className="px-6 py-4 font-medium cursor-pointer hover:bg-white/10" onClick={() => toggleSort('failedPaymentCount')}>
                                 Trust Score <SortIcon field="failedPaymentCount" />
                             </th>
                             <th className="px-6 py-4 font-medium text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-white/10">
                         {filtered.map((u: any) => {
                             const isBanned = u.blacklistUntil && new Date(u.blacklistUntil) > new Date();
                             return (
-                                <tr key={u.id} className={`hover:bg-gray-50/50 ${isBanned ? 'bg-red-50' : ''}`}>
-                                    <td className="px-6 py-4 font-medium text-gray-900 flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-500">
+                                <tr key={u.id} className={`hover:bg-white/5 ${isBanned ? 'bg-red-500/10' : ''}`}>
+                                    <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
+                                        <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-xs font-bold text-gray-400">
                                             {u.avatar ? <img src={u.avatar} className="w-full h-full rounded-full object-cover" /> : u.name?.[0]}
                                         </div>
                                         <div>
@@ -250,19 +250,19 @@ function UsersTab() {
                                             {isBanned && <span className="text-[10px] text-red-600 font-bold uppercase">Banned</span>}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-gray-600">{u.email}</td>
-                                    <td className="px-6 py-4 text-gray-600 capitalize">{u.role}</td>
+                                    <td className="px-6 py-4 text-gray-400">{u.email}</td>
+                                    <td className="px-6 py-4 text-gray-400 capitalize">{u.role}</td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-1">
                                             <div className={`h-2 w-2 rounded-full ${u.failedPaymentCount > 2 ? 'bg-red-500' : 'bg-green-500'}`} />
-                                            <span className="text-gray-700">{Math.max(0, 100 - (u.failedPaymentCount * 10))}%</span>
+                                            <span className="text-gray-300">{Math.max(0, 100 - (u.failedPaymentCount * 10))}%</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         {u.role !== 'admin' && (
                                             <button
                                                 onClick={() => handleBanAction(u.id, isBanned)}
-                                                className={`font-medium text-xs px-3 py-1 rounded-lg transition-colors ${isBanned ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                                                className={`font-medium text-xs px-3 py-1 rounded-lg transition-colors ${isBanned ? 'bg-green-500/10 text-green-400 hover:bg-green-500/20' : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'}`}
                                             >
                                                 {isBanned ? 'Unban User' : 'Ban User'}
                                             </button>
@@ -284,26 +284,26 @@ function SuspiciousTab() {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Suspicious Activity Monitor</h2>
+            <h2 className="text-2xl font-bold text-white">Suspicious Activity Monitor</h2>
 
             {suspiciousUsers.length === 0 ? (
-                <div className="p-8 text-center bg-white rounded-xl border border-gray-200 text-gray-500">
+                <div className="p-8 text-center bg-white/5 backdrop-blur-md rounded-xl border border-white/10 text-gray-400">
                     <Shield className="h-12 w-12 mx-auto text-green-500 mb-3" />
-                    <h3 className="font-bold text-gray-900">All Clear!</h3>
+                    <h3 className="font-bold text-white">All Clear!</h3>
                     <p>No suspicious activity detected recently.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4">
                     {suspiciousUsers.map((u: any) => (
-                        <div key={u.id} className="bg-red-50 border border-red-100 p-4 rounded-xl flex items-center justify-between">
+                        <div key={u.id} className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <AlertTriangle className="h-6 w-6 text-red-500" />
                                 <div>
-                                    <h3 className="font-bold text-gray-900">{u.name} (@{u.username})</h3>
-                                    <p className="text-sm text-red-700">Flagged for {u.failedPaymentCount} failed payments/reports.</p>
+                                    <h3 className="font-bold text-white">{u.name} (@{u.username})</h3>
+                                    <p className="text-sm text-red-400">Flagged for {u.failedPaymentCount} failed payments/reports.</p>
                                 </div>
                             </div>
-                            <button className="px-4 py-2 bg-white border border-red-200 text-red-600 font-bold rounded-lg hover:bg-red-50 text-sm">
+                            <button className="px-4 py-2 bg-white/5 border border-red-500/20 text-red-400 font-bold rounded-lg hover:bg-red-500/10 text-sm">
                                 Review Profile
                             </button>
                         </div>

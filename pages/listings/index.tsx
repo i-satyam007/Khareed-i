@@ -33,7 +33,7 @@ export default function ListingsPage() {
     }) : [];
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans">
+        <div className="min-h-screen bg-kh-light font-sans">
             <Head>
                 <title>All Listings | Khareed-i</title>
             </Head>
@@ -43,7 +43,7 @@ export default function ListingsPage() {
 
                     {/* Mobile Filter Toggle */}
                     <button
-                        className="lg:hidden flex items-center gap-2 text-sm font-bold text-gray-700 bg-white p-3 rounded-lg border border-gray-200 shadow-sm"
+                        className="lg:hidden flex items-center gap-2 text-sm font-bold text-white bg-white/5 p-3 rounded-lg border border-white/10 shadow-sm"
                         onClick={() => setShowFilters(!showFilters)}
                     >
                         <Filter className="h-4 w-4" /> Filters
@@ -51,7 +51,7 @@ export default function ListingsPage() {
 
                     {/* Sidebar Filters */}
                     <aside className={`
-            fixed inset-0 z-40 bg-white p-6 lg:static lg:block lg:w-64 lg:bg-transparent lg:p-0 lg:z-auto transition-transform duration-300 ease-in-out
+            fixed inset-0 z-40 bg-kh-dark p-6 lg:static lg:block lg:w-64 lg:bg-transparent lg:p-0 lg:z-auto transition-transform duration-300 ease-in-out
             ${showFilters ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           `}>
                         <div className="flex items-center justify-between mb-6 lg:hidden">
@@ -62,7 +62,7 @@ export default function ListingsPage() {
                         <div className="space-y-8">
                             {/* Categories */}
                             <div>
-                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Categories</h3>
+                                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-3">Categories</h3>
                                 <div className="space-y-2">
                                     {CATEGORIES.map(cat => (
                                         <label key={cat} className="flex items-center gap-2 cursor-pointer group">
@@ -73,7 +73,7 @@ export default function ListingsPage() {
                                                 onChange={() => setSelectedCategory(cat)}
                                                 className="text-kh-red focus:ring-kh-red"
                                             />
-                                            <span className={`text-sm ${selectedCategory === cat ? 'text-kh-red font-semibold' : 'text-gray-600 group-hover:text-gray-900'}`}>
+                                            <span className={`text-sm ${selectedCategory === cat ? 'text-kh-red font-semibold' : 'text-gray-400 group-hover:text-white'}`}>
                                                 {cat}
                                             </span>
                                         </label>
@@ -83,7 +83,7 @@ export default function ListingsPage() {
 
                             {/* Price Range */}
                             <div>
-                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Max Price: ₹{priceRange}</h3>
+                                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-3">Max Price: ₹{priceRange}</h3>
                                 <input
                                     type="range"
                                     min="0"
@@ -91,7 +91,7 @@ export default function ListingsPage() {
                                     step="100"
                                     value={priceRange}
                                     onChange={(e) => setPriceRange(Number(e.target.value))}
-                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-kh-red"
+                                    className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-kh-red"
                                 />
                                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                                     <span>₹0</span>
@@ -101,7 +101,7 @@ export default function ListingsPage() {
 
                             {/* Toggles */}
                             <div>
-                                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Preferences</h3>
+                                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-3">Preferences</h3>
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -109,7 +109,7 @@ export default function ListingsPage() {
                                         onChange={(e) => setOnlyNegotiable(e.target.checked)}
                                         className="rounded text-kh-red focus:ring-kh-red"
                                     />
-                                    <span className="text-sm text-gray-700">Negotiable Only</span>
+                                    <span className="text-sm text-gray-300">Negotiable Only</span>
                                 </label>
                             </div>
                         </div>
@@ -118,16 +118,16 @@ export default function ListingsPage() {
                     {/* Main Grid */}
                     <main className="flex-1">
                         <div className="flex items-center justify-between mb-6">
-                            <h1 className="text-xl font-bold text-gray-900">
+                            <h1 className="text-xl font-bold text-white">
                                 {selectedCategory === "All Categories" ? "All Listings" : selectedCategory}
-                                <span className="text-gray-500 text-sm font-normal ml-2">
+                                <span className="text-gray-400 text-sm font-normal ml-2">
                                     ({filteredListings.length} items)
                                 </span>
                             </h1>
 
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-gray-500 hidden sm:inline">Sort by:</span>
-                                <select className="bg-white border border-gray-200 text-sm rounded-lg p-2 focus:outline-none focus:border-kh-purple">
+                                <span className="text-sm text-gray-400 hidden sm:inline">Sort by:</span>
+                                <select className="bg-black/20 border border-white/10 text-sm rounded-lg p-2 focus:outline-none focus:border-kh-purple text-white">
                                     <option>Newest First</option>
                                     <option>Price: Low to High</option>
                                     <option>Price: High to Low</option>
@@ -150,8 +150,8 @@ export default function ListingsPage() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-200">
-                                <p className="text-gray-500">No items match your filters.</p>
+                            <div className="text-center py-20 bg-white/5 backdrop-blur-md rounded-xl border border-dashed border-white/10">
+                                <p className="text-gray-400">No items match your filters.</p>
                                 <button
                                     onClick={() => { setSelectedCategory("All Categories"); setPriceRange(10000); setOnlyNegotiable(false); }}
                                     className="mt-2 text-kh-red font-medium hover:underline"

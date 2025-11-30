@@ -94,24 +94,24 @@ export default function UpiPaymentPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans pb-20">
+        <div className="min-h-screen bg-kh-light font-sans pb-20">
             <Head>
                 <title>Pay via UPI | Order #{order.id}</title>
             </Head>
 
-            <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+            <div className="bg-white/5 backdrop-blur-md border-b border-white/10 sticky top-0 z-10">
                 <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-                    <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <ArrowLeft className="h-5 w-5 text-gray-600" />
+                    <button onClick={() => router.back()} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                        <ArrowLeft className="h-5 w-5 text-gray-400" />
                     </button>
-                    <h1 className="text-lg font-bold text-gray-900">Complete Payment</h1>
+                    <h1 className="text-lg font-bold text-white">Complete Payment</h1>
                 </div>
             </div>
 
             <div className="container mx-auto px-4 py-8 max-w-md">
 
                 {/* Timer Banner */}
-                <div className={`mb-6 p-4 rounded-xl flex items-center justify-between ${timeLeft < 60 ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-blue-50 text-blue-700 border border-blue-100'}`}>
+                <div className={`mb-6 p-4 rounded-xl flex items-center justify-between ${timeLeft < 60 ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
                     <div className="flex items-center gap-2">
                         <Clock className="h-5 w-5" />
                         <span className="font-bold text-sm">Time Remaining</span>
@@ -119,41 +119,41 @@ export default function UpiPaymentPage() {
                     <span className="text-xl font-mono font-bold">{formatTime(timeLeft)}</span>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-sm border border-white/10 overflow-hidden">
                     {/* Amount Header */}
-                    <div className="bg-gray-50 p-6 text-center border-b border-gray-100">
-                        <p className="text-sm text-gray-500 mb-1">Total Amount to Pay</p>
-                        <p className="text-3xl font-bold text-gray-900">₹{order.amount}</p>
+                    <div className="bg-white/5 p-6 text-center border-b border-white/10">
+                        <p className="text-sm text-gray-400 mb-1">Total Amount to Pay</p>
+                        <p className="text-3xl font-bold text-white">₹{order.amount}</p>
                     </div>
 
                     {/* QR Code Section */}
                     <div className="p-8 flex flex-col items-center">
-                        <div className="bg-white p-2 rounded-xl shadow-sm border border-gray-200 mb-4">
+                        <div className="bg-white p-2 rounded-xl shadow-sm border border-white/10 mb-4">
                             <img src={qrCode} alt="Seller QR" className="w-64 h-64 object-contain" />
                         </div>
-                        <p className="text-sm font-medium text-gray-900 text-center">
+                        <p className="text-sm font-medium text-white text-center">
                             Scan this QR code using any UPI app
                         </p>
                         <div className="flex gap-2 mt-3">
-                            <span className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-500 font-medium">GPay</span>
-                            <span className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-500 font-medium">PhonePe</span>
-                            <span className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-500 font-medium">Paytm</span>
+                            <span className="px-2 py-1 bg-white/10 rounded text-xs text-gray-400 font-medium">GPay</span>
+                            <span className="px-2 py-1 bg-white/10 rounded text-xs text-gray-400 font-medium">PhonePe</span>
+                            <span className="px-2 py-1 bg-white/10 rounded text-xs text-gray-400 font-medium">Paytm</span>
                         </div>
                     </div>
 
                     {/* Upload & Comment Section */}
-                    <div className="p-6 border-t border-gray-100 space-y-4">
+                    <div className="p-6 border-t border-white/10 space-y-4">
 
                         {/* Comment Box */}
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
                                 <MessageSquare className="h-4 w-4" /> Add a Note (Optional)
                             </label>
                             <textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                                 placeholder="e.g. Paid via GPay (Txn ID: 1234...)"
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all resize-none text-sm"
+                                className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all resize-none text-sm text-white placeholder-gray-500"
                                 rows={2}
                             />
                         </div>
@@ -162,7 +162,7 @@ export default function UpiPaymentPage() {
                         <div className="pt-2">
                             <label className={`
                                 w-full flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all
-                                ${uploading ? 'bg-gray-50 border-gray-300 opacity-50' : 'bg-purple-50 border-purple-200 hover:bg-purple-100 hover:border-purple-300'}
+                                ${uploading ? 'bg-white/5 border-white/10 opacity-50' : 'bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20 hover:border-purple-500/40'}
                             `}>
                                 <input
                                     type="file"
@@ -172,7 +172,7 @@ export default function UpiPaymentPage() {
                                     className="hidden"
                                 />
                                 {uploading ? (
-                                    <span className="text-sm font-bold text-gray-500">Uploading...</span>
+                                    <span className="text-sm font-bold text-gray-400">Uploading...</span>
                                 ) : (
                                     <>
                                         <Upload className="h-6 w-6 text-kh-purple" />

@@ -94,11 +94,21 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
 
     // Phase 1: Anticipation (0% - 15%)
     const bagShake = useTransform(scrollYProgress, [0, 0.05, 0.1, 0.15], [0, -5, 5, 0]);
-    const bagGlow = useTransform(scrollYProgress, [0, 0.15], ["drop-shadow(0 0 0px rgba(157, 115, 255, 0))", "drop-shadow(0 0 30px rgba(157, 115, 255, 0.6))"]);
+    // Golden Glow Animation
+    const glowScale = useTransform(scrollYProgress, [0, 0.15], [0.8, 1.5]);
+    const glowOpacity = useTransform(scrollYProgress, [0, 0.15, 0.2], [0, 1, 0]);
 
     // Phase 2: The Release (15% - 100%)
-    const bagY = useTransform(scrollYProgress, [0.15, 1], ["0vh", "40vh"]);
-    const bagScale = useTransform(scrollYProgress, [0.15, 1], [1, 0.8]);
+    // Bag moves down and locks at 40vh. easeOut for smooth landing.
+    const bagY = useTransform(scrollYProgress, [0.15, 1], ["0vh", "40vh"], { ease: (t) => 1 - Math.pow(1 - t, 3) }); // cubic-bezier easeOut
+    const bagScale = useTransform(scrollYProgress, [0.15, 1], [1.3, 0.8]); // Start larger (1.3)
+
+    // Flying Logo Animation
+    // Flies UP out of bag (0.15 - 0.4) then moves to top-left (0.4 - 0.9)
+    const logoY = useTransform(scrollYProgress, [0.15, 0.4, 0.9], ["0px", "-200px", "-45vh"]); // Adjust final Y to match header
+    const logoX = useTransform(scrollYProgress, [0.4, 0.9], ["0px", "-45vw"]); // Move to left
+    const logoScale = useTransform(scrollYProgress, [0.15, 0.4, 0.9], [0.5, 1, 0.3]); // Scale down to match header logo size
+    const logoOpacity = useTransform(scrollYProgress, [0.9, 1], [1, 0]); // Fade out at the very end
 
     // Items Animation
     // Start appearing after 15%, fully out by 60%, spread by 100%
@@ -108,29 +118,29 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
     const itemScale = useTransform(itemsProgress, [0, 0.5], [0, 1]);
     const itemOpacity = useTransform(itemsProgress, [0, 0.2], [0, 1]);
 
-    // Trajectories
+    // Trajectories - Move UP (-y) to clear bag
     // Shirt: Top-Left
     const shirtX = useTransform(itemsProgress, [0, 1], [0, -200]);
-    const shirtY = useTransform(itemsProgress, [0, 1], [0, -250]);
+    const shirtY = useTransform(itemsProgress, [0, 1], [0, -350]); // Increased Y
     const shirtRotate = useTransform(itemsProgress, [0, 1], [0, -15]);
 
     // Apple: Top-Right
     const appleX = useTransform(itemsProgress, [0, 1], [0, 200]);
-    const appleY = useTransform(itemsProgress, [0, 1], [0, -250]);
+    const appleY = useTransform(itemsProgress, [0, 1], [0, -350]); // Increased Y
     const appleRotate = useTransform(itemsProgress, [0, 1], [0, 15]);
 
     // Books: Center-Up
-    const bookY = useTransform(itemsProgress, [0, 1], [0, -350]);
+    const bookY = useTransform(itemsProgress, [0, 1], [0, -450]); // Increased Y
     const bookRotate = useTransform(itemsProgress, [0, 1], [0, 5]);
 
     // Calculator: Mid-Left
     const calcX = useTransform(itemsProgress, [0, 1], [0, -300]);
-    const calcY = useTransform(itemsProgress, [0, 1], [0, -50]);
+    const calcY = useTransform(itemsProgress, [0, 1], [0, -150]); // Increased Y
     const calcRotate = useTransform(itemsProgress, [0, 1], [0, -30]);
 
     // Dumbell: Mid-Right
     const dumbellX = useTransform(itemsProgress, [0, 1], [0, 300]);
-    const dumbellY = useTransform(itemsProgress, [0, 1], [0, -50]);
+    const dumbellY = useTransform(itemsProgress, [0, 1], [0, -150]); // Increased Y
     const dumbellRotate = useTransform(itemsProgress, [0, 1], [0, 30]);
 
     // Completion Check
@@ -153,7 +163,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
             {/* Sticky Container for Animation */}
             <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
 
-                {/* Items Container - Behind Bag */}
+                {/* Items Container - Behind Bag but above Glow */}
                 <div className="absolute z-10 flex items-center justify-center">
                     {/* Shirt */}
                     <motion.img
@@ -187,9 +197,23 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
                     />
                 </div>
 
+                {/* Golden Glow - Behind Bag */}
+                <motion.div
+                    style={{ scale: glowScale, opacity: glowOpacity }}
+                    className="absolute z-15 w-64 h-64 rounded-full bg-[radial-gradient(circle,rgba(255,215,0,0.8)_0%,rgba(255,215,0,0)_70%)] blur-xl"
+                />
+
+                {/* Flying Logo - Inside/Behind Bag initially */}
+                <motion.div
+                    style={{ x: logoX, y: logoY, scale: logoScale, opacity: logoOpacity }}
+                    className="absolute z-18" // Lower than bag front
+                >
+                    <img src="/brand-logo-large.svg" alt="Khareed-i Logo" className="w-40 h-auto object-contain" />
+                </motion.div>
+
                 {/* Main Bag - In Front */}
                 <motion.div
-                    style={{ x: bagShake, y: bagY, scale: bagScale, filter: bagGlow }}
+                    style={{ x: bagShake, y: bagY, scale: bagScale }}
                     className="relative z-20"
                 >
                     <img src="/assets/shopping-bag.png" alt="Shopping Bag" className="w-64 md:w-80 h-auto object-contain drop-shadow-2xl" />
@@ -201,9 +225,9 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1 }}
                     onClick={onComplete}
-                    className="fixed bottom-8 right-8 z-50 flex items-center gap-2 px-6 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-full text-white text-sm font-medium hover:bg-white/10 transition-colors group"
+                    className="fixed bottom-8 right-8 z-50 flex items-center gap-2 text-white/70 text-sm font-medium hover:text-white transition-colors group"
                 >
-                    Skip to Home
+                    Skip Intro
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
 

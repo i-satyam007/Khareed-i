@@ -177,22 +177,22 @@ export default function SignupPage() {
 
       {/* Back to Home Link */}
       <div className="absolute top-6 left-6">
-        <Link href="/" className="flex items-center gap-2 text-sm font-medium text-kh-gray hover:text-kh-dark transition-colors">
+        <Link href="/" className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
           Back to Home
         </Link>
       </div>
 
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl border border-gray-100 mx-4 mt-10">
+      <div className="w-full max-w-md bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/10 mx-4 mt-10">
 
         {/* Header */}
         <div className="text-center mb-6 flex flex-col items-center">
           <Link href="/" className="inline-block mb-4 hover:scale-105 transition-transform">
             <Logo className="h-16 w-16" />
           </Link>
-          <h2 className="text-2xl font-bold text-gray-900">Create your account</h2>
-          <p className="mt-2 text-sm text-gray-500">
-            Already have an account? <Link href="/login" className="font-semibold text-kh-red hover:text-red-600 transition-colors">Sign in</Link>
+          <h2 className="text-2xl font-bold text-white">Create your account</h2>
+          <p className="mt-2 text-sm text-gray-400">
+            Already have an account? <Link href="/login" className="font-semibold text-kh-purple hover:text-purple-400 transition-colors">Sign in</Link>
           </p>
         </div>
 
@@ -201,7 +201,7 @@ export default function SignupPage() {
           {/* Avatar Upload */}
           <div className="flex justify-center mb-6">
             <div className="relative group cursor-pointer" onClick={() => document.getElementById('signup-avatar')?.click()}>
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 overflow-hidden border-2 border-dashed border-gray-300 hover:border-kh-purple transition-colors">
+              <div className="w-24 h-24 bg-black/20 rounded-full flex items-center justify-center text-gray-400 overflow-hidden border-2 border-dashed border-white/10 hover:border-kh-purple transition-colors">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
@@ -228,12 +228,12 @@ export default function SignupPage() {
 
           {/* Full Name */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Full Name</label>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Full Name</label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
               <input
                 {...register("name")}
-                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-kh-purple focus:border-transparent transition-all placeholder-gray-500"
                 placeholder="John Doe"
               />
             </div>
@@ -241,10 +241,10 @@ export default function SignupPage() {
 
           {/* Email */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Email Address</label>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Email Address</label>
             <input
               {...register("email")}
-              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
+              className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-kh-purple focus:border-transparent transition-all placeholder-gray-500"
               placeholder="you@iimidr.ac.in"
             />
             {errors.email && <p className="mt-1 text-xs text-red-500 font-medium">{errors.email.message}</p>}
@@ -252,10 +252,10 @@ export default function SignupPage() {
 
           {/* Username */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Username</label>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Username</label>
             <input
               {...register("username")}
-              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
+              className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-kh-purple focus:border-transparent transition-all placeholder-gray-500"
               placeholder="johndoe123"
             />
             {errors.username && <p className="mt-1 text-xs text-red-500 font-medium">{errors.username.message}</p>}
@@ -264,24 +264,24 @@ export default function SignupPage() {
           {/* Phone & Hostel */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Phone <span className="text-red-500">*</span></label>
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Phone <span className="text-red-500">*</span></label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 <input
                   {...register("phone")}
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-kh-purple focus:border-transparent transition-all placeholder-gray-500"
                   placeholder="9876543210"
                 />
               </div>
               {errors.phone && <p className="mt-1 text-xs text-red-500 font-medium">{errors.phone.message}</p>}
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Hostel <span className="text-red-500">*</span></label>
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Hostel <span className="text-red-500">*</span></label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 <input
                   {...register("hostel")}
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-kh-purple focus:border-transparent transition-all placeholder-gray-500"
                   placeholder="BH-3, 204"
                 />
               </div>
@@ -291,17 +291,17 @@ export default function SignupPage() {
 
           {/* Password */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Password</label>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Password</label>
             <input
               {...register("password")}
               type="password"
-              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
+              className="w-full px-4 py-2.5 bg-black/20 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-kh-purple focus:border-transparent transition-all placeholder-gray-500"
               placeholder="••••••••"
             />
             {errors.password && <p className="mt-1 text-xs text-red-500 font-medium">{errors.password.message}</p>}
 
             <div className="mt-3">
-              <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ease-out ${strengthColors[score]}`}
                   style={{ width: `${(score + 1) * 20}%` }}
@@ -317,8 +317,8 @@ export default function SignupPage() {
           </div>
 
           {serverError && (
-            <div className="rounded-lg bg-red-50 p-3 border border-red-100">
-              <div className="flex items-center gap-2 text-sm text-red-700">
+            <div className="rounded-lg bg-red-500/10 p-3 border border-red-500/20">
+              <div className="flex items-center gap-2 text-sm text-red-400">
                 <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg>
                 <p className="font-medium">{serverError}</p>
               </div>
@@ -328,7 +328,7 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={isSubmitting || isUploading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-kh-red hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kh-red disabled:opacity-70 disabled:cursor-not-allowed transition-all transform active:scale-[0.98]"
+            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-kh-purple hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kh-purple disabled:opacity-70 disabled:cursor-not-allowed transition-all transform active:scale-[0.98]"
           >
             {isSubmitting ? (
               <span className="flex items-center gap-2">

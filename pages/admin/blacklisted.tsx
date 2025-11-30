@@ -34,27 +34,27 @@ export default function BlacklistedUsers() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 font-sans flex">
+        <div className="min-h-screen bg-kh-light font-sans flex">
             <Head>
                 <title>Blacklisted Users | Khareed-i Admin</title>
             </Head>
 
             {/* Sidebar */}
-            <aside className="w-64 bg-gray-900 text-white flex-shrink-0 hidden md:flex flex-col">
-                <div className="p-6 border-b border-gray-800">
+            <aside className="w-64 bg-black/40 backdrop-blur-md border-r border-white/10 text-white flex-shrink-0 hidden md:flex flex-col">
+                <div className="p-6 border-b border-white/10">
                     <h1 className="text-xl font-bold tracking-tight">Khareed-i Admin</h1>
                     <p className="text-xs text-gray-400 mt-1">Super Admin Console</p>
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
-                    <Link href="/admin" className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition-all">
+                    <Link href="/admin" className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/10 hover:text-white transition-all">
                         <ArrowLeft className="h-5 w-5" />
                         <span className="font-medium">Back to Dashboard</span>
                     </Link>
                     <div className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider mt-4">
                         Risk Management
                     </div>
-                    <div className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-900/20 text-red-400 border border-red-900/50">
+                    <div className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20">
                         <Shield className="h-5 w-5" />
                         <span className="font-medium">Blacklisted Users</span>
                     </div>
@@ -66,8 +66,8 @@ export default function BlacklistedUsers() {
                 <div className="p-8">
                     <div className="flex justify-between items-center mb-8">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Blacklisted & High Risk Users</h1>
-                            <p className="text-gray-500 text-sm mt-1">Manage users with payment failures or active bans.</p>
+                            <h1 className="text-2xl font-bold text-white">Blacklisted & High Risk Users</h1>
+                            <p className="text-gray-400 text-sm mt-1">Manage users with payment failures or active bans.</p>
                         </div>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -76,14 +76,14 @@ export default function BlacklistedUsers() {
                                 placeholder="Search users..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-kh-purple/20 w-64"
+                                className="pl-10 pr-4 py-2 bg-black/20 border border-white/10 text-white placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-kh-purple/20 w-64"
                             />
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-white/5 backdrop-blur-md rounded-xl shadow-sm border border-white/10 overflow-hidden">
                         <table className="w-full text-left text-sm">
-                            <thead className="bg-gray-50 border-b border-gray-100 text-gray-500">
+                            <thead className="bg-white/5 border-b border-white/10 text-gray-400">
                                 <tr>
                                     <th className="px-6 py-4 font-medium">User</th>
                                     <th className="px-6 py-4 font-medium">Risk Level</th>
@@ -92,7 +92,7 @@ export default function BlacklistedUsers() {
                                     <th className="px-6 py-4 font-medium text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody className="divide-y divide-white/10">
                                 {blacklistedUsers.length === 0 ? (
                                     <tr>
                                         <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
@@ -104,17 +104,17 @@ export default function BlacklistedUsers() {
                                     blacklistedUsers.map((u: any) => {
                                         const isBanned = u.blacklistUntil && new Date(u.blacklistUntil) > new Date();
                                         const riskLevel = isBanned ? 'Critical' : (u.failedPaymentCount >= 3 ? 'High' : 'Warning');
-                                        const riskColor = isBanned ? 'bg-red-100 text-red-700' : (u.failedPaymentCount >= 3 ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700');
+                                        const riskColor = isBanned ? 'bg-red-500/10 text-red-400' : (u.failedPaymentCount >= 3 ? 'bg-orange-500/10 text-orange-400' : 'bg-yellow-500/10 text-yellow-400');
 
                                         return (
-                                            <tr key={u.id} className="hover:bg-gray-50/50">
-                                                <td className="px-6 py-4 font-medium text-gray-900 flex items-center gap-3">
-                                                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-500">
+                                            <tr key={u.id} className="hover:bg-white/5">
+                                                <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
+                                                    <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-xs font-bold text-gray-400">
                                                         {u.avatar ? <img src={u.avatar} className="w-full h-full rounded-full object-cover" /> : u.name?.[0]}
                                                     </div>
                                                     <div>
                                                         <p>{u.name}</p>
-                                                        <p className="text-xs text-gray-500">{u.email}</p>
+                                                        <p className="text-xs text-gray-400">{u.email}</p>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -122,7 +122,7 @@ export default function BlacklistedUsers() {
                                                         {riskLevel}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-gray-600">
+                                                <td className="px-6 py-4 text-gray-400">
                                                     {isBanned ? 'Account Banned' : `${u.failedPaymentCount} Failed Payments`}
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -136,7 +136,7 @@ export default function BlacklistedUsers() {
                                                     {isBanned && (
                                                         <button
                                                             onClick={() => handleUnban(u.id)}
-                                                            className="text-green-600 hover:text-green-700 font-medium text-xs bg-green-50 px-3 py-1.5 rounded-lg border border-green-100"
+                                                            className="text-green-400 hover:text-green-500 font-medium text-xs bg-green-500/10 px-3 py-1.5 rounded-lg border border-green-500/20"
                                                         >
                                                             Unban User
                                                         </button>

@@ -6,12 +6,23 @@ import { Toaster } from "react-hot-toast";
 import "../styles/globals.css";
 import Header from "../components/Header";
 import ClickSpark from "../components/ClickSpark";
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import Script from "next/script";
+import { useRouter } from "next/router";
+import { Toaster } from "react-hot-toast";
+import "../styles/globals.css";
+import Header from "../components/Header";
+import ClickSpark from "../components/ClickSpark";
 import ShinyText from "../components/ShinyText";
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import IntroSequence from "../components/IntroSequence";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
     const handleStart = () => setLoading(true);
@@ -32,8 +43,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const isAuthPage = [
     "/login",
     "/signup",
-    "/forgot-password"
+    "/forgot-password",
+    "/forgot-username"
   ].includes(router.pathname);
+
+  const isHomePage = router.pathname === "/";
 
   return (
     <>
@@ -63,7 +77,23 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       ) : (
         // ✅ Standard Layout: Header + Padding + Container
         <>
-          <Header />
+          <AnimatePresence mode="wait">
+            {isHomePage && showIntro && (
+              <motion.div
+                key="intro-overlay"
+                className="fixed inset-0 z-[60]"
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <IntroSequence onComplete={() => setShowIntro(false)} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className={`${isHomePage && showIntro ? 'opacity-0 pointer-events-none' : 'opacity-100 transition-opacity duration-1000'}`}>
+            <Header />
+          </div>
+
           <main className="py-8">
             {/* Using container-responsive to match the Header alignment */}
             <div className="container-responsive">

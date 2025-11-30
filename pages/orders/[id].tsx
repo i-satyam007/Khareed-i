@@ -129,17 +129,17 @@ export default function OrderDetailsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans pb-20">
+        <div className="min-h-screen bg-kh-light font-sans pb-20">
             <Head>
                 <title>Order #{order.id} | Khareed-i</title>
             </Head>
 
             <div className="container mx-auto px-4 py-8 max-w-2xl">
                 {/* Status Banner */}
-                <div className={`p-4 rounded-xl mb-6 flex items-center gap-3 border ${order.paymentStatus === 'VERIFIED' ? 'bg-green-50 border-green-200 text-green-800' :
-                    order.paymentStatus === 'REJECTED' ? 'bg-red-50 border-red-200 text-red-800' :
-                        order.paymentStatus === 'VERIFICATION_PENDING' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
-                            'bg-blue-50 border-blue-200 text-blue-800'
+                <div className={`p-4 rounded-xl mb-6 flex items-center gap-3 border ${order.paymentStatus === 'VERIFIED' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
+                    order.paymentStatus === 'REJECTED' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+                        order.paymentStatus === 'VERIFICATION_PENDING' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
+                            'bg-blue-500/10 border-blue-500/20 text-blue-400'
                     }`}>
                     {order.paymentStatus === 'VERIFIED' ? <Check className="h-6 w-6" /> :
                         order.paymentStatus === 'REJECTED' ? <X className="h-6 w-6" /> :
@@ -160,46 +160,46 @@ export default function OrderDetailsPage() {
                 </div>
 
                 {/* Order Summary */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>
+                <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-sm border border-white/10 p-6 mb-6">
+                    <h2 className="text-lg font-bold text-white mb-4">Order Summary</h2>
                     {order.items?.map((item: any) => (
-                        <div key={item.id} className="flex justify-between items-center py-2 border-b last:border-0">
+                        <div key={item.id} className="flex justify-between items-center py-2 border-b border-white/10 last:border-0">
                             <div>
-                                <p className="font-medium text-gray-900">{item.listing.title}</p>
-                                <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                                <p className="font-medium text-white">{item.listing.title}</p>
+                                <p className="text-sm text-gray-400">Qty: {item.quantity}</p>
                             </div>
-                            <p className="font-bold text-gray-900">₹{item.price * item.quantity}</p>
+                            <p className="font-bold text-white">₹{item.price * item.quantity}</p>
                         </div>
                     ))}
                     {order.groupOrder && (
                         <div className="py-2">
-                            <p className="font-medium text-gray-900">{order.groupOrder.title}</p>
-                            <p className="text-sm text-gray-500">Group Order via {order.groupOrder.platform}</p>
+                            <p className="font-medium text-white">{order.groupOrder.title}</p>
+                            <p className="text-sm text-gray-400">Group Order via {order.groupOrder.platform}</p>
                         </div>
                     )}
-                    <div className="flex justify-between items-center pt-4 mt-2 border-t border-gray-100">
-                        <p className="font-bold text-gray-900">Total Amount</p>
+                    <div className="flex justify-between items-center pt-4 mt-2 border-t border-white/10">
+                        <p className="font-bold text-white">Total Amount</p>
                         <p className="text-2xl font-bold text-kh-purple">₹{order.amount}</p>
                     </div>
                 </div>
 
                 {/* Payment Section */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">Payment</h2>
+                <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-sm border border-white/10 p-6">
+                    <h2 className="text-lg font-bold text-white mb-4">Payment</h2>
 
                     {/* Buyer View */}
                     {isBuyer && order.paymentStatus !== 'VERIFIED' && (
                         <div className="space-y-6">
                             {isUpiAvailable ? (
-                                <div className="bg-purple-50 p-6 rounded-xl border border-purple-100 text-center">
-                                    <p className="text-sm font-bold text-purple-900 mb-4">Scan to Pay ₹{order.amount}</p>
+                                <div className="bg-purple-500/10 p-6 rounded-xl border border-purple-500/20 text-center">
+                                    <p className="text-sm font-bold text-purple-300 mb-4">Scan to Pay ₹{order.amount}</p>
                                     <div className="bg-white p-2 rounded-lg inline-block shadow-sm mb-4">
                                         <img src={seller.qrCode} alt="Seller QR" className="w-48 h-48 object-contain" />
                                     </div>
-                                    <p className="text-xs text-purple-700">Scan using any UPI app (GPay, PhonePe, Paytm)</p>
+                                    <p className="text-xs text-purple-200">Scan using any UPI app (GPay, PhonePe, Paytm)</p>
                                 </div>
                             ) : (
-                                <div className="bg-gray-50 p-4 rounded-xl text-center text-gray-500">
+                                <div className="bg-white/5 p-4 rounded-xl text-center text-gray-400">
                                     No UPI QR code available. Please pay cash on delivery.
                                 </div>
                             )}
@@ -207,14 +207,14 @@ export default function OrderDetailsPage() {
                             {/* Upload Screenshot */}
                             {isUpiAvailable && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Upload Payment Screenshot</label>
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">Upload Payment Screenshot</label>
                                     <div className="relative">
                                         <input
                                             type="file"
                                             accept="image/*"
                                             onChange={handleUploadScreenshot}
                                             disabled={uploading || order.paymentStatus === 'VERIFICATION_PENDING'}
-                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-kh-purple file:text-white hover:file:bg-purple-700 transition-colors cursor-pointer"
+                                            className="block w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-kh-purple file:text-white hover:file:bg-purple-700 transition-colors cursor-pointer"
                                         />
                                     </div>
                                     {uploading && <p className="text-xs text-kh-purple mt-2">Uploading...</p>}
@@ -228,8 +228,8 @@ export default function OrderDetailsPage() {
                         <div className="space-y-6">
                             {order.paymentScreenshot ? (
                                 <div>
-                                    <p className="text-sm font-medium text-gray-700 mb-2">Payment Screenshot</p>
-                                    <div className="rounded-xl overflow-hidden border border-gray-200 mb-4">
+                                    <p className="text-sm font-medium text-gray-300 mb-2">Payment Screenshot</p>
+                                    <div className="rounded-xl overflow-hidden border border-white/10 mb-4">
                                         <img src={order.paymentScreenshot} alt="Payment Proof" className="w-full h-auto" />
                                     </div>
 
@@ -245,7 +245,7 @@ export default function OrderDetailsPage() {
                                             <button
                                                 onClick={() => setShowRejectModal(true)}
                                                 disabled={verifying}
-                                                className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                                className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                                             >
                                                 <X className="h-5 w-5" /> Reject
                                             </button>
@@ -262,15 +262,15 @@ export default function OrderDetailsPage() {
 
             {/* Reject Modal */}
             {showRejectModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-md p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">Reject Payment</h3>
-                        <p className="text-sm text-gray-500 mb-4">Please provide a reason for rejecting this payment. Repeated rejections may penalize the buyer.</p>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+                    <div className="bg-kh-surface rounded-2xl w-full max-w-md p-6 border border-white/10">
+                        <h3 className="text-lg font-bold text-white mb-4">Reject Payment</h3>
+                        <p className="text-sm text-gray-400 mb-4">Please provide a reason for rejecting this payment. Repeated rejections may penalize the buyer.</p>
 
                         <textarea
                             value={rejectReason}
                             onChange={(e) => setRejectReason(e.target.value)}
-                            className="w-full p-3 border border-gray-200 rounded-xl mb-4 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none"
+                            className="w-full p-3 bg-black/20 border border-white/10 rounded-xl mb-4 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none text-white"
                             placeholder="e.g. Screenshot is blurry, Transaction ID mismatch..."
                             rows={3}
                         />
@@ -278,7 +278,7 @@ export default function OrderDetailsPage() {
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setShowRejectModal(false)}
-                                className="flex-1 py-2.5 text-gray-700 font-bold hover:bg-gray-50 rounded-xl transition-colors"
+                                className="flex-1 py-2.5 text-gray-300 font-bold hover:bg-white/10 rounded-xl transition-colors"
                             >
                                 Cancel
                             </button>
