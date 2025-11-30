@@ -245,105 +245,105 @@ export default function CreateListingPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans">
+        <div className="min-h-screen bg-kh-light font-sans text-gray-100">
             <Head>
                 <title>List an Item | Khareed-i</title>
             </Head>
 
             <div className="container mx-auto px-4 py-8 max-w-3xl">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">List an Item</h1>
-                    <p className="text-gray-500 text-sm mb-8">Fill in the details to sell your product on Khareed-i.</p>
+                <div className="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl border border-white/10 p-6 md:p-8">
+                    <h1 className="text-2xl font-bold text-white mb-2">List an Item</h1>
+                    <p className="text-gray-400 text-sm mb-8">Fill in the details to sell your product on Khareed-i.</p>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
 
                         {/* Basic Details */}
                         <section className="space-y-4">
-                            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Basic Details</h2>
+                            <h2 className="text-sm font-bold text-gray-100 uppercase tracking-wider border-b border-white/10 pb-2">Basic Details</h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Product Title</label>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1">Product Title</label>
                                     <input
                                         {...register("title", { required: "Title is required" })}
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
+                                        className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                                         placeholder="e.g. Scientific Calculator FX-991ES"
                                     />
-                                    {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+                                    {errors.title && <p className="text-red-400 text-xs mt-1">{errors.title.message}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1">Category</label>
                                     <select
                                         {...register("category", { required: "Category is required" })}
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
+                                        className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all [&>option]:bg-gray-900"
                                     >
                                         <option value="">Select Category</option>
                                         {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
-                                    {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
+                                    {errors.category && <p className="text-red-400 text-xs mt-1">{errors.category.message}</p>}
 
                                     {/* Other Category Input */}
                                     {selectedCategory === 'Other' && (
                                         <div className="mt-2 animate-in fade-in slide-in-from-top-1">
                                             <input
                                                 {...register("otherCategory", { required: "Please specify the category" })}
-                                                className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all text-sm"
+                                                className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm"
                                                 placeholder="Specify Category..."
                                             />
-                                            {errors.otherCategory && <p className="text-red-500 text-xs mt-1">{errors.otherCategory.message}</p>}
+                                            {errors.otherCategory && <p className="text-red-400 text-xs mt-1">{errors.otherCategory.message}</p>}
                                         </div>
                                     )}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date (Optional)</label>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1">Expiry Date (Optional)</label>
                                     <div className="relative">
                                         <input
                                             type="date"
                                             {...register("expiryDate")}
                                             min={new Date().toISOString().split('T')[0]}
-                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
+                                            className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all [color-scheme:dark]"
                                         />
                                     </div>
-                                    <p className="text-[10px] text-gray-400 mt-1">Useful for food, coupons, or time-sensitive items.</p>
+                                    <p className="text-[10px] text-gray-500 mt-1">Useful for food, coupons, or time-sensitive items.</p>
                                 </div>
 
                                 <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
                                     <textarea
                                         {...register("description", { required: "Description is required" })}
                                         rows={4}
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all resize-none"
+                                        className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none"
                                         placeholder="Describe the condition, age, and features..."
                                     />
-                                    {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+                                    {errors.description && <p className="text-red-400 text-xs mt-1">{errors.description.message}</p>}
                                 </div>
                             </div>
                         </section>
 
                         {/* Pricing & Negotiation */}
                         <section className="space-y-4">
-                            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Pricing & Strategy</h2>
+                            <h2 className="text-sm font-bold text-gray-100 uppercase tracking-wider border-b border-white/10 pb-2">Pricing & Strategy</h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">MRP (₹)</label>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1">MRP (₹)</label>
                                     <input
                                         type="number"
                                         {...register("mrp", { required: "MRP is required", min: 0 })}
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
+                                        className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                                         placeholder="Original Price"
                                     />
                                 </div>
 
                                 {!isAuction && (
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price (₹)</label>
+                                        <label className="block text-sm font-medium text-gray-300 mb-1">Selling Price (₹)</label>
                                         <input
                                             type="number"
                                             {...register("price", { required: !isAuction ? "Selling Price is required" : false, min: 0 })}
-                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
+                                            className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                                             placeholder="Your Price"
                                         />
                                     </div>
@@ -352,27 +352,27 @@ export default function CreateListingPage() {
 
                             <div className="flex flex-col gap-3 pt-2">
                                 {!isAuction && (
-                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                        <input type="checkbox" {...register("negotiable")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" />
+                                    <label className="flex items-center gap-3 p-3 border border-white/10 rounded-lg cursor-pointer hover:bg-white/5 transition-colors">
+                                        <input type="checkbox" {...register("negotiable")} className="w-4 h-4 text-purple-500 rounded focus:ring-purple-500 bg-black/20 border-white/10" />
                                         <div>
-                                            <span className="block text-sm font-medium text-gray-900">Open to Negotiation</span>
-                                            <span className="block text-xs text-gray-500">Allow buyers to chat and negotiate price</span>
+                                            <span className="block text-sm font-medium text-gray-200">Open to Negotiation</span>
+                                            <span className="block text-xs text-gray-400">Allow buyers to chat and negotiate price</span>
                                         </div>
                                     </label>
                                 )}
 
-                                <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" {...register("isAuction")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" />
+                                <label className="flex items-center gap-3 p-3 border border-white/10 rounded-lg cursor-pointer hover:bg-white/5 transition-colors">
+                                    <input type="checkbox" {...register("isAuction")} className="w-4 h-4 text-purple-500 rounded focus:ring-purple-500 bg-black/20 border-white/10" />
                                     <div>
-                                        <span className="block text-sm font-medium text-gray-900">List as Auction</span>
-                                        <span className="block text-xs text-gray-500">Let buyers bid on your item</span>
+                                        <span className="block text-sm font-medium text-gray-200">List as Auction</span>
+                                        <span className="block text-xs text-gray-400">Let buyers bid on your item</span>
                                     </div>
                                 </label>
                             </div>
 
                             {/* Negotiation Warning */}
                             {!isAuction && watch("negotiable") && sellingPrice && (
-                                <div className="mt-2 flex items-start gap-2 text-xs text-blue-700 bg-blue-50 p-3 rounded-md border border-blue-100 animate-in fade-in slide-in-from-top-1">
+                                <div className="mt-2 flex items-start gap-2 text-xs text-blue-300 bg-blue-900/20 p-3 rounded-md border border-blue-500/20 animate-in fade-in slide-in-from-top-1">
                                     <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                                     <p>
                                         System Rule: Negotiation offers cannot go below <strong>₹{Math.round(sellingPrice * 0.6)}</strong> (60% of Selling Price).
@@ -382,26 +382,26 @@ export default function CreateListingPage() {
 
                             {/* Auction Settings */}
                             {isAuction && (
-                                <div className="bg-purple-50 p-4 rounded-lg border border-purple-100 space-y-4 animate-in fade-in slide-in-from-top-2">
-                                    <div className="flex items-center gap-2 text-purple-800 text-sm font-bold mb-2">
+                                <div className="bg-purple-900/10 p-4 rounded-lg border border-purple-500/20 space-y-4 animate-in fade-in slide-in-from-top-2">
+                                    <div className="flex items-center gap-2 text-purple-300 text-sm font-bold mb-2">
                                         <Clock className="h-4 w-4" /> Auction Settings
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-xs font-semibold text-purple-900 mb-1">Start Price (₹)</label>
+                                            <label className="block text-xs font-semibold text-purple-200 mb-1">Start Price (₹)</label>
                                             <input
                                                 type="number"
                                                 {...register("auctionStartPrice", { required: isAuction ? "Start Price is required" : false, min: 0 })}
-                                                className="w-full px-3 py-2 bg-white border border-purple-200 rounded-md text-sm focus:outline-none focus:border-purple-400"
+                                                className="w-full px-3 py-2 bg-black/20 border border-purple-500/30 rounded-md text-sm text-white focus:outline-none focus:border-purple-400"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-semibold text-purple-900 mb-1">Duration (Hours)</label>
+                                            <label className="block text-xs font-semibold text-purple-200 mb-1">Duration (Hours)</label>
                                             <input
                                                 type="number"
                                                 {...register("auctionDuration", { required: isAuction ? "Duration is required" : false, min: 1 })}
-                                                className="w-full px-3 py-2 bg-white border border-purple-200 rounded-md text-sm focus:outline-none focus:border-purple-400"
+                                                className="w-full px-3 py-2 bg-black/20 border border-purple-500/30 rounded-md text-sm text-white focus:outline-none focus:border-purple-400"
                                                 placeholder="e.g. 24"
                                             />
                                         </div>
@@ -412,16 +412,16 @@ export default function CreateListingPage() {
                             {/* Negative Bids Logic - Only for Auctions */}
                             {isAuction && (
                                 <div className="pt-2 space-y-3">
-                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                        <input type="checkbox" {...register("allowNegativeBids")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" />
+                                    <label className="flex items-center gap-3 p-3 border border-white/10 rounded-lg cursor-pointer hover:bg-white/5 transition-colors">
+                                        <input type="checkbox" {...register("allowNegativeBids")} className="w-4 h-4 text-purple-500 rounded focus:ring-purple-500 bg-black/20 border-white/10" />
                                         <div>
-                                            <span className="block text-sm font-medium text-gray-900">Allow Negative Bids</span>
-                                            <span className="block text-xs text-gray-500">Allow bids lower than selling price (Max 60% limit applies)</span>
+                                            <span className="block text-sm font-medium text-gray-200">Allow Negative Bids</span>
+                                            <span className="block text-xs text-gray-400">Allow bids lower than selling price (Max 60% limit applies)</span>
                                         </div>
                                     </label>
 
                                     {allowNegativeBids && basePrice && (
-                                        <div className="mt-2 flex items-start gap-2 text-xs text-orange-700 bg-orange-50 p-3 rounded-md border border-orange-100">
+                                        <div className="mt-2 flex items-start gap-2 text-xs text-orange-300 bg-orange-900/20 p-3 rounded-md border border-orange-500/20">
                                             <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                                             <p>
                                                 System Rule: Bids cannot go below <strong>₹{Math.round(basePrice * 0.6)}</strong> (60% of Start Price).
@@ -430,11 +430,11 @@ export default function CreateListingPage() {
                                         </div>
                                     )}
 
-                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                                        <input type="checkbox" {...register("autoSell")} className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple" defaultChecked />
+                                    <label className="flex items-center gap-3 p-3 border border-white/10 rounded-lg cursor-pointer hover:bg-white/5 transition-colors">
+                                        <input type="checkbox" {...register("autoSell")} className="w-4 h-4 text-purple-500 rounded focus:ring-purple-500 bg-black/20 border-white/10" defaultChecked />
                                         <div>
-                                            <span className="block text-sm font-medium text-gray-900">Auto-Sell to Highest Bidder</span>
-                                            <span className="block text-xs text-gray-500">Automatically accept the highest bid when auction ends</span>
+                                            <span className="block text-sm font-medium text-gray-200">Auto-Sell to Highest Bidder</span>
+                                            <span className="block text-xs text-gray-400">Automatically accept the highest bid when auction ends</span>
                                         </div>
                                     </label>
                                 </div>
@@ -443,11 +443,11 @@ export default function CreateListingPage() {
 
                         {/* Image Upload */}
                         <section className="space-y-4">
-                            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Photos</h2>
+                            <h2 className="text-sm font-bold text-gray-100 uppercase tracking-wider border-b border-white/10 pb-2">Photos</h2>
 
                             <div className="relative">
                                 {previewImage ? (
-                                    <div className="relative w-full h-64 rounded-xl overflow-hidden border border-gray-200 group">
+                                    <div className="relative w-full h-64 rounded-xl overflow-hidden border border-white/10 group">
                                         <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
                                         <button
                                             type="button"
@@ -458,7 +458,7 @@ export default function CreateListingPage() {
                                         </button>
                                     </div>
                                 ) : (
-                                    <label className="block border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer group">
+                                    <label className="block border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:bg-white/5 transition-colors cursor-pointer group">
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -466,10 +466,10 @@ export default function CreateListingPage() {
                                             className="hidden"
                                             disabled={uploading}
                                         />
-                                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-                                            <Upload className="h-6 w-6 text-gray-500" />
+                                        <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                            <Upload className="h-6 w-6 text-gray-400" />
                                         </div>
-                                        <p className="text-sm font-medium text-gray-900">
+                                        <p className="text-sm font-medium text-gray-200">
                                             {uploading ? "Uploading..." : "Click to upload photos"}
                                         </p>
                                         <p className="text-xs text-gray-500 mt-1">SVG, PNG, JPG or GIF (max. 5MB)</p>
@@ -480,40 +480,40 @@ export default function CreateListingPage() {
 
                         {/* Payment Preferences */}
                         <section className="space-y-4">
-                            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Payment Preferences</h2>
+                            <h2 className="text-sm font-bold text-gray-100 uppercase tracking-wider border-b border-white/10 pb-2">Payment Preferences</h2>
 
                             <div className="space-y-4">
-                                <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <label className="flex items-center gap-3 p-3 border border-white/10 rounded-lg cursor-pointer hover:bg-white/5 transition-colors">
                                     <input
                                         type="checkbox"
                                         {...register("paymentMethods", { required: "Select at least one payment method" })}
                                         value="CASH"
                                         defaultChecked
-                                        className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple"
+                                        className="w-4 h-4 text-purple-500 rounded focus:ring-purple-500 bg-black/20 border-white/10"
                                     />
                                     <div>
-                                        <span className="block text-sm font-medium text-gray-900">Cash on Delivery / Pay on Spot</span>
-                                        <span className="block text-xs text-gray-500">Buyer pays when they collect the item</span>
+                                        <span className="block text-sm font-medium text-gray-200">Cash on Delivery / Pay on Spot</span>
+                                        <span className="block text-xs text-gray-400">Buyer pays when they collect the item</span>
                                     </div>
                                 </label>
 
-                                <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <label className="flex items-center gap-3 p-3 border border-white/10 rounded-lg cursor-pointer hover:bg-white/5 transition-colors">
                                     <input
                                         type="checkbox"
                                         {...register("paymentMethods")}
                                         value="UPI"
-                                        className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple"
+                                        className="w-4 h-4 text-purple-500 rounded focus:ring-purple-500 bg-black/20 border-white/10"
                                     />
                                     <div>
-                                        <span className="block text-sm font-medium text-gray-900">UPI / QR Code</span>
-                                        <span className="block text-xs text-gray-500">Buyer pays online via UPI</span>
+                                        <span className="block text-sm font-medium text-gray-200">UPI / QR Code</span>
+                                        <span className="block text-xs text-gray-400">Buyer pays online via UPI</span>
                                     </div>
                                 </label>
-                                {errors.paymentMethods && <p className="text-red-500 text-xs mt-1">{errors.paymentMethods.message}</p>}
+                                {errors.paymentMethods && <p className="text-red-400 text-xs mt-1">{errors.paymentMethods.message}</p>}
 
                                 {watch("paymentMethods")?.includes("UPI") && (
-                                    <div className="animate-in fade-in slide-in-from-top-2 p-4 bg-purple-50 rounded-xl border border-purple-100">
-                                        <label className="block text-sm font-medium text-purple-900 mb-2">Upload UPI QR Code <span className="text-red-500">*</span></label>
+                                    <div className="animate-in fade-in slide-in-from-top-2 p-4 bg-purple-900/10 rounded-xl border border-purple-500/20">
+                                        <label className="block text-sm font-medium text-purple-200 mb-2">Upload UPI QR Code <span className="text-red-400">*</span></label>
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -528,7 +528,7 @@ export default function CreateListingPage() {
                                                     }
                                                 }
                                             }}
-                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200"
+                                            className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-500/20 file:text-purple-300 hover:file:bg-purple-500/30"
                                         />
                                         <input
                                             type="hidden"
@@ -542,7 +542,7 @@ export default function CreateListingPage() {
                                                 }
                                             })}
                                         />
-                                        {errors.qrCode && <p className="text-red-500 text-xs mt-1">{errors.qrCode.message}</p>}
+                                        {errors.qrCode && <p className="text-red-400 text-xs mt-1">{errors.qrCode.message}</p>}
                                         <p className="text-xs text-gray-500 mt-2">
                                             Upload a screenshot of your UPI QR code. This will be shown to buyers at checkout.
                                         </p>
@@ -568,16 +568,16 @@ export default function CreateListingPage() {
 
             {/* Cropper Modal */}
             {cropImage && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-                    <div className="bg-white rounded-2xl overflow-hidden w-full max-w-lg flex flex-col max-h-[90vh]">
-                        <div className="p-4 border-b flex justify-between items-center">
-                            <h3 className="font-bold text-gray-900">Crop Image</h3>
-                            <button onClick={() => setCropImage(null)} className="text-gray-500 hover:text-gray-700">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+                    <div className="bg-gray-900 rounded-2xl overflow-hidden w-full max-w-lg flex flex-col max-h-[90vh] border border-white/10">
+                        <div className="p-4 border-b border-white/10 flex justify-between items-center">
+                            <h3 className="font-bold text-white">Crop Image</h3>
+                            <button onClick={() => setCropImage(null)} className="text-gray-400 hover:text-white">
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
 
-                        <div className="relative h-64 sm:h-80 bg-gray-900">
+                        <div className="relative h-64 sm:h-80 bg-black">
                             <Cropper
                                 image={cropImage}
                                 crop={crop}
@@ -591,7 +591,7 @@ export default function CreateListingPage() {
 
                         <div className="p-4 space-y-4">
                             <div>
-                                <label className="text-xs font-medium text-gray-500 mb-1 block">Zoom</label>
+                                <label className="text-xs font-medium text-gray-400 mb-1 block">Zoom</label>
                                 <input
                                     type="range"
                                     value={zoom}
@@ -600,21 +600,21 @@ export default function CreateListingPage() {
                                     step={0.1}
                                     aria-labelledby="Zoom"
                                     onChange={(e) => setZoom(Number(e.target.value))}
-                                    className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                    className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                                 />
                             </div>
 
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setCropImage(null)}
-                                    className="flex-1 py-2.5 text-gray-700 font-bold border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+                                    className="flex-1 py-2.5 text-gray-300 font-bold border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleUploadCroppedImage}
                                     disabled={uploading}
-                                    className="flex-1 py-2.5 bg-kh-purple text-white font-bold rounded-xl hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+                                    className="flex-1 py-2.5 bg-kh-purple text-white font-bold rounded-xl hover:bg-purple-600 transition-colors flex items-center justify-center gap-2"
                                 >
                                     {uploading ? "Uploading..." : (
                                         <>
