@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag, Bell, X, CheckCircle, AlertCircle, Info, Heart, Shield, BadgeCheck } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag, Bell, X, CheckCircle, AlertCircle, Info, Heart, Shield, BadgeCheck, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
 import { useUser } from '@/lib/hooks/useUser';
@@ -267,6 +267,15 @@ export default function Header() {
                 </div>
                 <span>Group Order</span>
               </Link>
+
+              {/* Chat Icon */}
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('open-chat'))}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors relative outline-none text-gray-700 hover:text-kh-purple"
+                title="Messages"
+              >
+                <MessageCircle className="h-6 w-6" />
+              </button>
 
               {/* Notification Bell */}
               <div className="relative">
