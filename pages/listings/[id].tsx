@@ -5,7 +5,7 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import OfferModal from '../../components/OfferModal';
 
-import { Heart, Share2, MapPin, ShieldCheck, Clock, User, Gavel, Check, X } from 'lucide-react';
+import { Heart, Share2, MapPin, ShieldCheck, Clock, User, Gavel, Check, X, MessageCircle } from 'lucide-react';
 
 // Mock Data (In real app, fetch based on ID)
 const MOCK_PRODUCT = {
@@ -529,18 +529,22 @@ export default function ProductDetailsPage() {
                                     >
                                         {listing.isAuction ? "Place Bid" : "Buy Now"}
                                     </button>
+
+                                    {listing.negotiable && !listing.isAuction && (
+                                        <button
+                                            onClick={() => setIsOfferModalOpen(true)}
+                                            className="flex-1 bg-white border-2 border-gray-200 hover:border-kh-purple text-gray-700 font-bold py-3.5 rounded-xl transition-all"
+                                        >
+                                            Make an Offer
+                                        </button>
+                                    )}
+
                                     <button
-                                        onClick={() => {
-                                            if (listing.negotiable) {
-                                                setIsOfferModalOpen(true);
-                                            } else {
-                                                // ✅ Chat Redirect
-                                                router.push(`/chat?userId=${listing.ownerId}`);
-                                            }
-                                        }}
-                                        className="flex-1 bg-white border-2 border-gray-200 hover:border-kh-purple text-gray-700 font-bold py-3.5 rounded-xl transition-all"
+                                        onClick={() => window.dispatchEvent(new CustomEvent('open-chat', { detail: { userId: listing.ownerId } }))}
+                                        className="px-4 bg-white border-2 border-gray-200 hover:border-kh-purple text-gray-700 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center"
+                                        title="Chat with Seller"
                                     >
-                                        {listing.negotiable ? "Make an Offer" : "Chat with Seller"}
+                                        <MessageCircle className="h-5 w-5" />
                                     </button>
                                 </div>
                             )}

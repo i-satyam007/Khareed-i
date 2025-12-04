@@ -3,8 +3,10 @@ import Head from "next/head";
 import Script from "next/script";
 import { useRouter } from "next/router";
 import { Toaster } from "react-hot-toast";
+import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag, Bell, X, CheckCircle, AlertCircle, Info, Heart, Shield, BadgeCheck, MessageCircle } from 'lucide-react';
 import "../styles/globals.css";
 import Header from "../components/Header";
+import ChatWidget from "../components/ChatWidget";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -38,6 +40,15 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <>
           <Header />
           <main className="py-8">
+            {/* Chat Icon */}
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('open-chat'))}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors relative outline-none text-gray-700 hover:text-kh-purple fixed bottom-20 right-4 md:hidden z-40 bg-white shadow-lg border border-gray-200"
+              title="Chats"
+            >
+              <MessageCircle className="h-6 w-6" />
+            </button>
+
             {/* Using container-responsive to match the Header alignment */}
             <div className="container-responsive">
               <Component {...pageProps} />
@@ -46,6 +57,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         </>
       )}
       <Toaster position="top-center" />
+      <ChatWidget />
     </>
   );
 }

@@ -33,7 +33,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             const listings = await prisma.listing.findMany({
-                where,
+                where: {
+                    ...where,
+                    OR: [
+                        { isAuction: false },
+                        { isAuction: true, auctionTo: { gt: new Date() } }
+                    ]
+                },
                 orderBy: {
                     createdAt: 'desc',
                 },
@@ -57,7 +63,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });
-            return res.status(405).json({ message: 'Method not allowed' });
         }
     } else if (req.method === 'POST') {
         if (!user) {
