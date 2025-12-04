@@ -120,8 +120,8 @@ export default function DashboardProfile() {
 
                     {/* Sidebar Navigation */}
                     <aside className="w-full lg:w-64 flex-shrink-0">
-                        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                            <div className="p-6 bg-kh-purple/5 border-b border-gray-100 text-center">
+                        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+                            <div className="p-6 bg-kh-purple/5 border-b border-gray-100 text-center rounded-t-2xl">
                                 <div className="w-20 h-20 bg-kh-purple/20 rounded-full flex items-center justify-center text-2xl font-bold text-kh-purple mx-auto mb-3 overflow-hidden">
                                     {user.avatar ? <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" /> : user.name?.[0]}
                                 </div>

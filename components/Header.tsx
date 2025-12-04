@@ -348,9 +348,9 @@ export default function Header() {
                         {(user.isVerifiedStudent || user.email?.endsWith('@iimidr.ac.in')) && (
                           <div className="relative group/verified">
                             <BadgeCheck className="h-3.5 w-3.5 text-blue-500 fill-blue-500 text-white" />
-                            <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/verified:block w-max px-2 py-1 bg-gray-800 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
+                            <div className="absolute right-0 bottom-full mb-2 hidden group-hover/verified:block w-max px-2 py-1 bg-gray-800 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
                               Verified IIM Indore Student
-                              <div className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-gray-800"></div>
+                              <div className="absolute right-1 top-full border-4 border-transparent border-t-gray-800"></div>
                             </div>
                           </div>
                         )}

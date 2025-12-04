@@ -11,9 +11,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
+      console.log("Forgot Password: User not found for email:", email);
       // Security: Don't reveal user doesn't exist, just fake success
       return res.json({ success: true });
     }
+    console.log("Forgot Password: User found:", user.email);
 
     // Generate 6 digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
