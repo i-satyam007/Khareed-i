@@ -21,12 +21,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins from now
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { resetOTP: otp, resetOTPExpiry: expiry }
-    });
+    console.log("Forgot Password: Updating user with OTP...");
+    try {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { resetOTP: otp, resetOTPExpiry: expiry }
+      });
+      console.log("Forgot Password: User updated successfully.");
+    } catch (dbError) {
+      console.error("Forgot Password: DB Update Failed:", dbError);
+      return res.status(500).json({ error: "Database error" });
+    }
 
+    console.log("Forgot Password: Sending email to", email);
     const sent = await sendOTP(email, otp);
+    console.log("Forgot Password: Email send result:", sent);
+
     if (!sent) {
       console.error("Failed to send password reset OTP to", email);
       return res.status(500).json({ error: "Failed to send email" });
