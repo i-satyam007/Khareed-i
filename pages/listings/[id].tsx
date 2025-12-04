@@ -134,6 +134,30 @@ export default function ProductDetailsPage() {
     const discount = Math.round(((listing.mrp - listing.price) / listing.mrp) * 100);
     const images = listing.imagePath ? [listing.imagePath] : []; // Handle single image for now, extendable to array
 
+    const handleShare = async () => {
+        const shareData = {
+            title: listing.title,
+            text: `Check out this ${listing.title} on Khareed-i!`,
+            url: window.location.href,
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.error('Error sharing:', err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy link');
+            }
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <Head>
@@ -507,11 +531,11 @@ export default function ProductDetailsPage() {
                                     </button>
                                     <button
                                         onClick={() => {
-                                            console.log('Make Offer clicked', listing.negotiable);
                                             if (listing.negotiable) {
                                                 setIsOfferModalOpen(true);
                                             } else {
-                                                alert("Chat feature coming soon!");
+                                                // ✅ Chat Redirect
+                                                router.push(`/chat?userId=${listing.ownerId}`);
                                             }
                                         }}
                                         className="flex-1 bg-white border-2 border-gray-200 hover:border-kh-purple text-gray-700 font-bold py-3.5 rounded-xl transition-all"
@@ -521,7 +545,10 @@ export default function ProductDetailsPage() {
                                 </div>
                             )}
 
-                            <button className="w-full flex items-center justify-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 py-2">
+                            <button
+                                onClick={handleShare}
+                                className="w-full flex items-center justify-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 py-2"
+                            >
                                 <Share2 className="h-4 w-4" /> Share this listing
                             </button>
                         </div>

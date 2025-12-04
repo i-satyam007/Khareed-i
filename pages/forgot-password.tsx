@@ -1,3 +1,4 @@
+```
 // pages/forgot-password.tsx
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -8,43 +9,64 @@ export default function ForgotPassword() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, formState: { isSubmitting } } = useForm();
   const router = useRouter();
 
   const onRequestOTP = async (data: any) => {
+    setError(null);
     setEmail(data.email);
-    const res = await fetch("/api/auth/forgot-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: data.email }),
-    });
-    if (res.ok) setStep(2);
-    else alert("Something went wrong (check email validity)");
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email }),
+      });
+      const j = await res.json();
+      if (res.ok) {
+        setStep(2);
+      } else {
+        setError(j.error || "Something went wrong (check email validity)");
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    }
   };
 
   const onReset = async (data: any) => {
-    const res = await fetch("/api/auth/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        otp: data.otp,
-        newPassword: data.newPassword
-      }),
-    });
+    setError(null);
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          otp: data.otp,
+          newPassword: data.newPassword
+        }),
+      });
 
-    const j = await res.json();
-    if (res.ok) {
-      alert("Password reset successful! Login now.");
-      router.push("/login");
-    } else {
-      alert(j.error || "Failed to reset");
+      const j = await res.json();
+      if (res.ok) {
+        alert("Password reset successful! Login now.");
+        router.push("/login");
+      } else {
+        setError(j.error || "Failed to reset");
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 px-4">
       <h1 className="text-2xl font-bold mb-4">Reset Password</h1>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+          {error}
+        </div>
+      )}
 
       {step === 1 ? (
         <form onSubmit={handleSubmit(onRequestOTP)} className="space-y-4">
@@ -91,3 +113,4 @@ export default function ForgotPassword() {
     </div>
   );
 }
+```
