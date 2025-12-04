@@ -4,7 +4,7 @@ import { sendOTP } from "../../../lib/mail";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
-  
+
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
 
@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       // Security: Don't reveal user doesn't exist, just fake success
-      return res.json({ success: true }); 
+      return res.json({ success: true });
     }
 
     // Generate 6 digit OTP
@@ -24,10 +24,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data: { resetOTP: otp, resetOTPExpiry: expiry }
     });
 
-    await sendOTP(email, otp);
+    const sent = await sendOTP(email, otp);
+    if (!sent) {
+      console.error("Failed to send password reset OTP to", email);
+      return res.status(500).json({ error: "Failed to send email" });
+    }
 
     return res.json({ success: true });
   } catch (error) {
+    console.error("Forgot Password Error:", error);
     return res.status(500).json({ error: "Server error" });
   }
 }
