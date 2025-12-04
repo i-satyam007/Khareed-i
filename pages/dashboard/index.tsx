@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import ImageCropper from '../../components/ImageCropper';
 import { useRouter } from 'next/router';
-import { User, MapPin, Phone, Mail, Package, ShoppingBag, LogOut, Camera, Heart, Shield } from 'lucide-react';
+import { User, MapPin, Phone, Mail, Package, ShoppingBag, LogOut, Camera, Heart, Shield, BadgeCheck } from 'lucide-react';
 import { useUser } from '@/lib/hooks/useUser';
 import useSWR from 'swr';
 import ListingCard from '@/components/ListingCard';
@@ -125,7 +125,18 @@ export default function DashboardProfile() {
                                 <div className="w-20 h-20 bg-kh-purple/20 rounded-full flex items-center justify-center text-2xl font-bold text-kh-purple mx-auto mb-3 overflow-hidden">
                                     {user.avatar ? <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" /> : user.name?.[0]}
                                 </div>
-                                <h2 className="font-bold text-gray-900">{user.name}</h2>
+                                <div className="flex items-center justify-center gap-1">
+                                    <h2 className="font-bold text-gray-900">{user.name}</h2>
+                                    {(user.isVerifiedStudent || user.email?.endsWith('@iimidr.ac.in')) && (
+                                        <div className="relative group/verified">
+                                            <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500 text-white" />
+                                            <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/verified:block w-max px-2 py-1 bg-gray-800 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
+                                                Verified IIM Indore Student
+                                                <div className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-gray-800"></div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                                 <p className="text-xs text-gray-500">@{user.username}</p>
                             </div>
 

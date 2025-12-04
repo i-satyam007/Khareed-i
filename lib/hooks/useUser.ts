@@ -8,6 +8,17 @@ export function useUser() {
     const loading = !data && !error;
     const loggedOut = error && error.status === 401;
 
+    // Ban Enforcement
+    if (data?.user?.blacklistUntil) {
+        const blacklistDate = new Date(data.user.blacklistUntil);
+        if (blacklistDate > new Date()) {
+            // Force Logout
+            fetch("/api/auth/logout", { method: "POST" }).then(() => {
+                window.location.href = "/login?error=banned";
+            });
+        }
+    }
+
     return {
         loading,
         loggedOut,

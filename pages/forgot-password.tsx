@@ -2,10 +2,12 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function ForgotPassword() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, formState: { isSubmitting } } = useForm();
   const router = useRouter();
 
@@ -24,10 +26,10 @@ export default function ForgotPassword() {
     const res = await fetch("/api/auth/reset-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        email, 
-        otp: data.otp, 
-        newPassword: data.newPassword 
+      body: JSON.stringify({
+        email,
+        otp: data.otp,
+        newPassword: data.newPassword
       }),
     });
 
@@ -43,7 +45,7 @@ export default function ForgotPassword() {
   return (
     <div className="max-w-md mx-auto mt-10 px-4">
       <h1 className="text-2xl font-bold mb-4">Reset Password</h1>
-      
+
       {step === 1 ? (
         <form onSubmit={handleSubmit(onRequestOTP)} className="space-y-4">
           <div>
@@ -64,7 +66,21 @@ export default function ForgotPassword() {
           </div>
           <div>
             <label className="block text-sm text-gray-600 mb-1">New Password</label>
-            <input {...register("newPassword", { required: true, minLength: 6 })} type="password" className="w-full border p-2 rounded" placeholder="New strong password" />
+            <div className="relative">
+              <input
+                {...register("newPassword", { required: true, minLength: 6 })}
+                type={showPassword ? "text" : "password"}
+                className="w-full border p-2 rounded pr-10"
+                placeholder="New strong password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
           {/* ✅ Orange Button */}
           <button disabled={isSubmitting} className="w-full bg-orange-600 hover:bg-orange-700 text-white p-2 rounded font-semibold">

@@ -20,7 +20,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       role: user.role,
       hostel: user.hostel,
       phone: user.phone,
-      avatar: user.avatar
+      avatar: user.avatar,
+      blacklistUntil: user.blacklistUntil
     }
   });
 }

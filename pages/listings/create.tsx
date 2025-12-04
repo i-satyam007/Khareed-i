@@ -257,6 +257,17 @@ export default function CreateListingPage() {
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
 
+                        {/* Price Validation Error */}
+                        {sellingPrice > 0 && watch("mrp") > 0 && Number(sellingPrice) > Number(watch("mrp")) && (
+                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2">
+                                <AlertCircle className="h-5 w-5 shrink-0" />
+                                <div>
+                                    <p className="font-bold text-sm">Invalid Pricing</p>
+                                    <p className="text-xs">Selling Price cannot be higher than MRP (₹{watch("mrp")}).</p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Basic Details */}
                         <section className="space-y-4">
                             <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Basic Details</h2>
@@ -342,10 +353,21 @@ export default function CreateListingPage() {
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price (₹)</label>
                                         <input
                                             type="number"
-                                            {...register("price", { required: !isAuction ? "Selling Price is required" : false, min: 0 })}
+                                            {...register("price", {
+                                                required: !isAuction ? "Selling Price is required" : false,
+                                                min: 0,
+                                                validate: (val) => {
+                                                    const mrp = watch("mrp");
+                                                    if (mrp && Number(val) > Number(mrp)) {
+                                                        return "Price cannot be > MRP";
+                                                    }
+                                                    return true;
+                                                }
+                                            })}
                                             className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
                                             placeholder="Your Price"
                                         />
+                                        {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
                                     </div>
                                 )}
                             </div>

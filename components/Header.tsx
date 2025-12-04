@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag, Bell, X, CheckCircle, AlertCircle, Info, Heart, Shield } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag, Bell, X, CheckCircle, AlertCircle, Info, Heart, Shield, BadgeCheck } from 'lucide-react';
 import { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
 import { useUser } from '@/lib/hooks/useUser';
@@ -343,7 +343,18 @@ export default function Header() {
                     </div>
                     <div className="hidden sm:block text-left">
                       <p className="text-[10px] text-gray-500 font-medium leading-tight">Hello,</p>
-                      <p className="text-xs font-bold text-gray-900 leading-tight">{user.name?.split(' ')[0] || user.username}</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs font-bold text-gray-900 leading-tight">{user.name?.split(' ')[0] || user.username}</p>
+                        {(user.isVerifiedStudent || user.email?.endsWith('@iimidr.ac.in')) && (
+                          <div className="relative group/verified">
+                            <BadgeCheck className="h-3.5 w-3.5 text-blue-500 fill-blue-500 text-white" />
+                            <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/verified:block w-max px-2 py-1 bg-gray-800 text-white text-[10px] rounded shadow-lg z-50 whitespace-nowrap">
+                              Verified IIM Indore Student
+                              <div className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-gray-800"></div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <ChevronDown className={`h-3 w-3 text-gray-400 hidden sm:block transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
