@@ -32,3 +32,18 @@ export async function sendUsername(email: string, username: string) {
     return false;
   }
 }
+
+export async function sendSignupOTP(email: string, otp: string) {
+  try {
+    await resend.emails.send({
+      from: 'onboarding@resend.dev',
+      to: email,
+      subject: 'Verify your Khareed-i Account',
+      html: `<p>Your verification code for signup is: <strong>${otp}</strong></p><p>This code expires in 10 minutes.</p>`
+    });
+    return true;
+  } catch (error) {
+    console.error("Resend Error:", error);
+    return false;
+  }
+}

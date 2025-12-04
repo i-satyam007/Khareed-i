@@ -35,7 +35,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: msg });
     }
 
-    const { email, username, password, name, phone, hostel, avatar } = parse.data;
+    const { email, username, password, name, phone, hostel, avatar, otp } = parse.data;
+
+    // 2.5) Verify OTP
+    if (!otp) {
+      return res.status(400).json({ error: "OTP is required" });
+    }
+
+    const verification = await prisma.verificationCode.findUnique({
+      where: { email }
+    });
+
+    if (!verification || verification.code !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    if (verification.expiresAt < new Date()) {
+      return res.status(400).json({ error: "OTP expired" });
+    }
 
     // 3) Weak/common password check
     const lower = password.toLowerCase();
@@ -57,9 +74,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // 5) Hash + create
     const hashed = await hashPwd(password);
+    const isVerifiedStudent = email.endsWith("@iimidr.ac.in");
+
     const user = await prisma.user.create({
-      data: { email, username, password: hashed, name, phone, hostel, avatar },
+      data: { email, username, password: hashed, name, phone, hostel, avatar, isVerifiedStudent },
     });
+
+    // Delete used OTP
+    await prisma.verificationCode.delete({ where: { email } });
 
     return res.status(201).json({ success: true, id: user.id });
   } catch (err: any) {

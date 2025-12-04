@@ -66,10 +66,22 @@ export default function SignupPage() {
   });
 
   const router = useRouter();
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(0);
   const [serverError, setServerError] = useState<string | null>(null);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (otpTimer > 0) {
+      interval = setInterval(() => {
+        setOtpTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [otpTimer]);
 
   const password = watch("password") || "";
   const strength = (typeof window !== "undefined" && zxcvbn) ? zxcvbn(password) : { score: 0 };
@@ -119,6 +131,40 @@ export default function SignupPage() {
       toast.error('Upload error');
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleSendOtp = async () => {
+    const email = watch("email");
+    if (!email) {
+      toast.error("Please enter your email first");
+      return;
+    }
+
+    // Basic email validation before sending
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setOtpSent(true);
+        setOtpTimer(60); // 1 minute cooldown
+        toast.success("OTP sent to your email!");
+      } else {
+        toast.error(data.error || "Failed to send OTP");
+      }
+    } catch (err) {
+      toast.error("Failed to send OTP");
     }
   };
 
@@ -239,16 +285,40 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {/* Email */}
+          {/* Email & OTP */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Email Address</label>
-            <input
-              {...register("email")}
-              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
-              placeholder="you@iimidr.ac.in"
-            />
+            <div className="flex gap-2">
+              <input
+                {...register("email")}
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
+                placeholder="you@iimidr.ac.in"
+              />
+              <button
+                type="button"
+                onClick={handleSendOtp}
+                disabled={otpTimer > 0}
+                className="px-4 py-2 bg-kh-red text-white text-xs font-bold rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap transition-colors"
+              >
+                {otpTimer > 0 ? `Wait ${otpTimer}s` : (otpSent ? "Resend OTP" : "Send OTP")}
+              </button>
+            </div>
             {errors.email && <p className="mt-1 text-xs text-red-500 font-medium">{errors.email.message}</p>}
           </div>
+
+          {/* OTP Input */}
+          {otpSent && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Verification Code</label>
+              <input
+                {...register("otp")}
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
+                placeholder="Enter 6-digit code"
+                maxLength={6}
+              />
+              {errors.otp && <p className="mt-1 text-xs text-red-500 font-medium">{errors.otp.message}</p>}
+            </div>
+          )}
 
           {/* Username */}
           <div>

@@ -27,7 +27,8 @@ export const signupSchema = z.object({
     .regex(passwordRegex, { message: "Password must include uppercase, lowercase, number and special character" }),
   phone: z.string().min(10, { message: "Phone number is required" }),
   hostel: z.string().min(3, { message: "Hostel address is required" }),
-  avatar: z.string().optional()
+  avatar: z.string().optional(),
+  otp: z.string().length(6, { message: "OTP must be 6 digits" })
 });
 
 export type SignupInput = z.infer<typeof signupSchema>;
