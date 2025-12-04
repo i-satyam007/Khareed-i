@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Logo from "../components/Logo";
 import ImageCropper from "../components/ImageCropper";
-import { Camera, User, MapPin, Phone } from "lucide-react";
+import { Camera, User, MapPin, Phone, Eye, EyeOff } from "lucide-react";
 
 declare global {
   interface Window {
@@ -72,6 +72,7 @@ export default function SignupPage() {
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -362,12 +363,21 @@ export default function SignupPage() {
           {/* Password */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Password</label>
-            <input
-              {...register("password")}
-              type="password"
-              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                {...register("password")}
+                type={showPassword ? "text" : "password"}
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple transition-all pr-10"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
             {errors.password && <p className="mt-1 text-xs text-red-500 font-medium">{errors.password.message}</p>}
 
             <div className="mt-3">
