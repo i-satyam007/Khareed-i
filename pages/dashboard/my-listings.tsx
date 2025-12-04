@@ -3,6 +3,9 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { User, Package, ShoppingBag, LogOut, Edit2, Trash2, Eye, Clock } from 'lucide-react';
 
+import { useUser } from '@/lib/hooks/useUser';
+import DashboardSidebar from '@/components/DashboardSidebar';
+
 // Mock Data
 const MY_LISTINGS = [
     { id: 1, title: "Scientific Calculator FX-991ES", price: 650, status: "Active", views: 45, posted: "2 days ago", image: null },
@@ -11,11 +14,15 @@ const MY_LISTINGS = [
 ];
 
 export default function MyListingsPage() {
+    const { user } = useUser();
+
     const handleDelete = (id: number) => {
         if (confirm("Are you sure you want to delete this listing?")) {
             alert(`Listing ${id} deleted (Simulation)`);
         }
     };
+
+    if (!user) return <div>Loading...</div>;
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
@@ -26,31 +33,8 @@ export default function MyListingsPage() {
             <div className="container mx-auto px-4 py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
 
-                    {/* Sidebar Navigation (Reused - ideally a component) */}
-                    <aside className="w-full lg:w-64 flex-shrink-0">
-                        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                            <div className="p-6 bg-kh-purple/5 border-b border-gray-100 text-center">
-                                <div className="w-20 h-20 bg-kh-purple/20 rounded-full flex items-center justify-center text-2xl font-bold text-kh-purple mx-auto mb-3">S</div>
-                                <h2 className="font-bold text-gray-900">Satyam Kumar</h2>
-                                <p className="text-xs text-gray-500">@satyam_k</p>
-                            </div>
-
-                            <nav className="p-2">
-                                <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium rounded-xl transition-colors">
-                                    <User className="h-5 w-5" /> My Profile
-                                </Link>
-                                <Link href="/dashboard/my-listings" className="flex items-center gap-3 px-4 py-3 bg-purple-50 text-kh-purple font-medium rounded-xl transition-colors">
-                                    <Package className="h-5 w-5" /> My Listings
-                                </Link>
-                                <Link href="/dashboard/my-orders" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium rounded-xl transition-colors">
-                                    <ShoppingBag className="h-5 w-5" /> My Orders
-                                </Link>
-                                <button className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 font-medium rounded-xl transition-colors mt-2">
-                                    <LogOut className="h-5 w-5" /> Sign Out
-                                </button>
-                            </nav>
-                        </div>
-                    </aside>
+                    {/* Sidebar Navigation */}
+                    <DashboardSidebar user={user} activeTab="my-listings" />
 
                     {/* Main Content */}
                     <main className="flex-1">

@@ -132,6 +132,7 @@ export default function ChatWidget() {
                             ) : (
                                 conversations?.map((conv: any) => {
                                     const otherUser = conv.senderId === user.id ? conv.receiver : conv.sender;
+                                    if (!otherUser) return null; // Skip if user data is missing
                                     return (
                                         <div
                                             key={conv.id}
@@ -142,7 +143,7 @@ export default function ChatWidget() {
                                                 {otherUser.avatar ? <img src={otherUser.avatar} className="w-full h-full rounded-full object-cover" /> : otherUser.name?.[0]}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-bold text-gray-900 truncate">{otherUser.name}</p>
+                                                <p className="text-sm font-bold text-gray-900 truncate">{otherUser.name || "Unknown User"}</p>
                                                 <p className="text-xs text-gray-500 truncate">{conv.content}</p>
                                             </div>
                                             <span className="text-[10px] text-gray-400">{new Date(conv.createdAt).toLocaleDateString()}</span>

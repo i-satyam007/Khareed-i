@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { User, Package, ShoppingBag, LogOut, ExternalLink, CheckCircle, Clock, Star, Heart } from 'lucide-react';
 import { useUser } from '@/lib/hooks/useUser';
 
+import DashboardSidebar from '@/components/DashboardSidebar';
+
 // Mock Data (Replace with API fetch later)
 const MY_ORDERS = [
     { id: 101, type: "Purchase", title: "Mattress Topper", price: 800, date: "20 Nov 2024", status: "Completed", seller: "Rohan", sellerId: 2 },
@@ -26,35 +28,7 @@ export default function MyOrdersPage() {
                 <div className="flex flex-col lg:flex-row gap-8">
 
                     {/* Sidebar Navigation */}
-                    <aside className="w-full lg:w-64 flex-shrink-0">
-                        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                            <div className="p-6 bg-kh-purple/5 border-b border-gray-100 text-center">
-                                <div className="w-20 h-20 bg-kh-purple/20 rounded-full flex items-center justify-center text-2xl font-bold text-kh-purple mx-auto mb-3 overflow-hidden">
-                                    {user.avatar ? <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" /> : user.name?.[0]}
-                                </div>
-                                <h2 className="font-bold text-gray-900">{user.name}</h2>
-                                <p className="text-xs text-gray-500">@{user.username}</p>
-                            </div>
-
-                            <nav className="p-2 space-y-1">
-                                <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium rounded-xl transition-colors">
-                                    <User className="h-5 w-5" /> My Profile
-                                </Link>
-                                <Link href="/dashboard?tab=watchlist" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium rounded-xl transition-colors">
-                                    <Heart className="h-5 w-5" /> My Watchlist
-                                </Link>
-                                <Link href="/dashboard/my-listings" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium rounded-xl transition-colors">
-                                    <Package className="h-5 w-5" /> My Listings
-                                </Link>
-                                <Link href="/dashboard/my-orders" className="flex items-center gap-3 px-4 py-3 bg-purple-50 text-kh-purple font-medium rounded-xl transition-colors">
-                                    <ShoppingBag className="h-5 w-5" /> My Orders
-                                </Link>
-                                <Link href="/api/auth/logout" className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 font-medium rounded-xl transition-colors mt-2">
-                                    <LogOut className="h-5 w-5" /> Sign Out
-                                </Link>
-                            </nav>
-                        </div>
-                    </aside>
+                    <DashboardSidebar user={user} activeTab="my-orders" />
 
                     {/* Main Content */}
                     <main className="flex-1">

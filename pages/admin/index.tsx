@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { LayoutDashboard, Users, Package, AlertTriangle, Shield, LogOut, Check, X, Search, Trash2, Eye } from 'lucide-react';
+import { LayoutDashboard, Users, Package, AlertTriangle, Shield, LogOut, Check, X, Search, Trash2, Eye, BadgeCheck } from 'lucide-react';
 import useSWR from 'swr';
 import { useUser } from '@/lib/hooks/useUser';
 
@@ -246,7 +246,12 @@ function UsersTab() {
                                             {u.avatar ? <img src={u.avatar} className="w-full h-full rounded-full object-cover" /> : u.name?.[0]}
                                         </div>
                                         <div>
-                                            <p>{u.name}</p>
+                                            <p className="flex items-center gap-1">
+                                                {u.name}
+                                                {(u.isVerifiedStudent || u.email?.endsWith('@iimidr.ac.in')) && (
+                                                    <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500 text-white" />
+                                                )}
+                                            </p>
                                             {isBanned && <span className="text-[10px] text-red-600 font-bold uppercase">Banned</span>}
                                         </div>
                                     </td>
