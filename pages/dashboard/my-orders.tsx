@@ -121,8 +121,8 @@ export default function MyOrdersPage() {
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.deliveryStatus === 'DELIVERED' ? 'bg-green-100 text-green-700' :
-                                                            order.deliveryStatus === 'SHIPPED' ? 'bg-blue-100 text-blue-700' :
-                                                                'bg-yellow-100 text-yellow-700'
+                                                        order.deliveryStatus === 'SHIPPED' ? 'bg-blue-100 text-blue-700' :
+                                                            'bg-yellow-100 text-yellow-700'
                                                         }`}>
                                                         {order.deliveryStatus || 'PENDING'}
                                                     </span>
@@ -141,7 +141,7 @@ export default function MyOrdersPage() {
                                                                     <div className="w-10 h-10 bg-gray-100 rounded-md flex-shrink-0">
                                                                         {/* Img placeholder */}
                                                                     </div>
-                                                                    <span className="font-medium text-gray-700">{item.listing.title}</span>
+                                                                    <span className="font-medium text-gray-700">{item.listing?.title || "Item Unavailable"}</span>
                                                                 </div>
                                                                 <span className="text-gray-900">x{item.quantity}</span>
                                                             </div>
@@ -217,7 +217,7 @@ export default function MyOrdersPage() {
 
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Rate your purchase</h2>
                         <p className="text-sm text-gray-500 mb-6">
-                            How was your experience with "{selectedOrderForReview?.items[0]?.listing.title}"?
+                            How was your experience with "{selectedOrderForReview?.items[0]?.listing?.title || "this item"}"?
                         </p>
 
                         <div className="flex justify-center gap-2 mb-6">

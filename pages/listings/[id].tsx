@@ -5,7 +5,7 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import OfferModal from '../../components/OfferModal';
 
-import { Heart, Share2, MapPin, ShieldCheck, Clock, User, Gavel, Check, X, MessageCircle } from 'lucide-react';
+import { Heart, Share2, MapPin, ShieldCheck, Clock, User, Gavel, Check, X, MessageCircle, Shield } from 'lucide-react';
 
 // Mock Data (In real app, fetch based on ID)
 const MOCK_PRODUCT = {
@@ -343,7 +343,7 @@ export default function ProductDetailsPage() {
                                 <div>
                                     <p className="text-sm font-bold text-gray-900">{listing.owner?.name || listing.owner?.username || "Unknown Seller"}</p>
                                     <p className="text-xs text-gray-500 flex items-center gap-1">
-                                        <MapPin className="h-3 w-3" /> {listing.owner?.hostel || "Campus"}
+                                        <MapPin className="h-3 w-3" /> {listing.owner?.hostel || "Hostel"}
                                     </p>
                                 </div>
                             </div>
@@ -549,11 +549,20 @@ export default function ProductDetailsPage() {
                                 </div>
                             )}
 
+                        </div>
+
+                        <div className="flex gap-2">
                             <button
                                 onClick={handleShare}
-                                className="w-full flex items-center justify-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 py-2"
+                                className="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 py-2"
                             >
                                 <Share2 className="h-4 w-4" /> Share this listing
+                            </button>
+                            <button
+                                onClick={() => alert("Reported to Admin for review.")}
+                                className="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-red-500 hover:text-red-700 py-2"
+                            >
+                                <Shield className="h-4 w-4" /> Report
                             </button>
                         </div>
 

@@ -168,7 +168,7 @@ export default function VerifyPaymentsPage() {
                                                 <p className="text-sm font-medium text-gray-700">Items:</p>
                                                 <ul className="text-sm text-gray-600 list-disc list-inside">
                                                     {order.items.map((item: any) => (
-                                                        <li key={item.id}>{item.listing.title} (x{item.quantity})</li>
+                                                        <li key={item.id}>{item.listing?.title || "Item Unavailable"} (x{item.quantity})</li>
                                                     ))}
                                                 </ul>
                                             </div>
@@ -252,7 +252,7 @@ export default function VerifyPaymentsPage() {
                                     <div className="bg-gray-50 p-3 rounded-lg mb-4">
                                         <ul className="text-sm text-gray-600 list-disc list-inside">
                                             {order.items.map((item: any) => (
-                                                <li key={item.id}>{item.listing.title} (x{item.quantity})</li>
+                                                <li key={item.id}>{item.listing?.title || "Item Unavailable"} (x{item.quantity})</li>
                                             ))}
                                         </ul>
                                     </div>

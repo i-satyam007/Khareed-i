@@ -25,7 +25,11 @@ type GroupOrderForm = {
 
 export default function CreateGroupOrderPage() {
     const router = useRouter();
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<GroupOrderForm>();
+    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<GroupOrderForm>({
+        defaultValues: {
+            paymentMethods: ['CASH']
+        }
+    });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Auth Check
@@ -221,7 +225,7 @@ export default function CreateGroupOrderPage() {
                                         type="checkbox"
                                         {...register("paymentMethods", { required: "Select at least one payment method" })}
                                         value="CASH"
-                                        defaultChecked
+
                                         className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple"
                                     />
                                     <div>
@@ -235,7 +239,7 @@ export default function CreateGroupOrderPage() {
                                         type="checkbox"
                                         {...register("paymentMethods")}
                                         value="UPI"
-                                        defaultChecked={false}
+
                                         className="w-4 h-4 text-kh-purple rounded focus:ring-kh-purple"
                                     />
                                     <div>
