@@ -19,17 +19,17 @@ model User {
   phone              String?
   avatar             String?
 
-  // ✅ ADDED: OTP Fields for Password Reset
+  // OTP Fields for Password Reset
   resetOTP           String?
   resetOTPExpiry     DateTime?
 
-  // ✅ ADDED: Payment & Trust Score Fields
+  // Payment & Trust Score Fields
   upiId              String?
   qrCode             String?        // Path to QR image
   failedPaymentCount Int            @default(0)
   blacklistUntil     DateTime?
 
-  // ✅ ADDED: Verified Student Status
+  // Verified Student Status
   isVerifiedStudent  Boolean        @default(false)
 
   // Relations
@@ -44,6 +44,8 @@ model User {
   watchlist          Listing[]      @relation("UserWatchlist")
   sentMessages       Message[]      @relation("SentMessages")
   receivedMessages   Message[]      @relation("ReceivedMessages")
+  reportsMade        Report[]       @relation("ReportsMade")
+  reportsReceived    Report[]       @relation("ReportsReceived")
 }
 
 model VerificationCode {
@@ -75,7 +77,7 @@ model Listing {
   expiryDate   DateTime?
   autoSell     Boolean     @default(true)
   
-  // ✅ ADDED: Payment Methods
+  // Payment Methods
   paymentMethods String[]    @default(["CASH"]) // ["UPI", "CASH"]
 
   owner        User        @relation("UserListings", fields: [ownerId], references: [id])
@@ -102,27 +104,35 @@ model Order {
   userId            Int
   totalAmount       Int         @default(0)
   status            String      @default("PENDING")
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt @default(now())
+  paymentStatus     String      @default("PENDING")
+  trackingId        String?     @unique
+  deliveryStatus    String      @default("PENDING")
+  
   paymentMethod     String?
   paymentComment    String?
   paymentScreenshot String?
-  groupOrderId      Int?
 
-  user       User        @relation("UserOrders", fields: [userId], references: [id])
-  items      OrderItem[] @relation("OrderItems")
-  groupOrder GroupOrder? @relation("GroupOrderOrders", fields: [groupOrderId], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @default(now()) @updatedAt
+
+  user              User        @relation("UserOrders", fields: [userId], references: [id])
+  items             OrderItem[] @relation("OrderItems")
+  
+  groupOrderId      Int?
+  groupOrder        GroupOrder? @relation("GroupOrderOrders", fields: [groupOrderId], references: [id])
+  
+  reports           Report[]    @relation("OrderReports")
 }
 
 model OrderItem {
   id        Int     @id @default(autoincrement())
   orderId   Int
   listingId Int
-  price     Int
   quantity  Int     @default(1)
+  price     Int
 
-  listing Listing @relation("ListingOrderItems", fields: [listingId], references: [id])
-  order   Order   @relation("OrderItems", fields: [orderId], references: [id])
+  order     Order   @relation("OrderItems", fields: [orderId], references: [id])
+  listing   Listing @relation("ListingOrderItems", fields: [listingId], references: [id])
 }
 
 model GroupOrder {
@@ -135,7 +145,7 @@ model GroupOrder {
   status       String           @default("open")
   createdAt    DateTime         @default(now())
 
-  // ✅ ADDED: Payment Methods
+  // Payment Methods
   paymentMethods String[]       @default(["CASH"]) // ["UPI", "CASH"]
 
   creator      User             @relation("CreatorGroupOrders", fields: [creatorId], references: [id])
@@ -202,4 +212,19 @@ model Message {
 
   sender    User     @relation("SentMessages", fields: [senderId], references: [id])
   receiver  User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
+
+model Report {
+  id          Int      @id @default(autoincrement())
+  reporterId  Int
+  reportedId  Int
+  orderId     Int
+  reason      String
+  status      String   @default("PENDING") // PENDING, RESOLVED_APPROVE, RESOLVED_REJECT
+  adminComment String?
+  createdAt   DateTime @default(now())
+
+  reporter    User     @relation("ReportsMade", fields: [reporterId], references: [id])
+  reported    User     @relation("ReportsReceived", fields: [reportedId], references: [id])
+  order       Order    @relation("OrderReports", fields: [orderId], references: [id])
 }

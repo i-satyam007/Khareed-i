@@ -16,6 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     avatar: true,
                     hostel: true,
                     createdAt: true,
+                    failedPaymentCount: true,
                     listings: {
                         where: { status: 'active' },
                         include: {
@@ -23,9 +24,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             bids: { orderBy: { amount: 'desc' }, take: 1 }
                         }
                     },
-                    reviews: true,
+                    reviews: {
+                        orderBy: { createdAt: 'desc' },
+                        include: {
+                            user: { select: { name: true, avatar: true } }
+                        }
+                    },
                     orders: {
-                        where: { status: 'COMPLETED' } // Assuming completed orders count as sales for now, though technically it's orders *made* by user. For sales count we need to check listings sold.
+                        where: { status: 'completed' }
                     }
                 }
             });
@@ -43,15 +49,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
 
             // Calculate rating
-            const rating = user.reviews.length > 0
-                ? (user.reviews.reduce((acc, review) => acc + review.rating, 0) / user.reviews.length).toFixed(1)
-                : null;
+            const averageRating = user.reviews.length > 0
+                ? (user.reviews.reduce((acc, review) => acc + review.rating, 0) / user.reviews.length)
+                : 0;
+
+            // Calculate Trust Score
+            // Base: 100
+            // Penalty: -10 per failed payment
+            // Bonus: +2 per star in average rating (max +10)
+            // Cap: 100
+            let trustScore = 100 - (user.failedPaymentCount * 10) + (averageRating * 2);
+            if (trustScore > 100) trustScore = 100;
+            if (trustScore < 0) trustScore = 0;
 
             return res.status(200).json({
                 ...user,
                 salesCount,
-                rating,
-                reviewCount: user.reviews.length
+                rating: averageRating.toFixed(1),
+                reviewCount: user.reviews.length,
+                trustScore: Math.round(trustScore),
+                reviews: user.reviews.map(r => ({
+                    id: r.id,
+                    rating: r.rating,
+                    comment: r.comment,
+                    createdAt: r.createdAt,
+                    reviewerName: r.user.name,
+                    reviewerAvatar: r.user.avatar
+                }))
             });
         } catch (error) {
             console.error(error);

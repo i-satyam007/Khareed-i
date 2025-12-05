@@ -1,183 +1,88 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu, ChevronDown, Users, ShoppingBag, Bell, X, CheckCircle, AlertCircle, Info, Heart, Shield, BadgeCheck, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/router';
-import useSWR, { mutate } from 'swr';
-import { useUser } from '@/lib/hooks/useUser';
+import { Search, Bell, User, ShoppingBag, LogOut, ChevronDown, Menu, X, Heart, Shield, Users, MessageCircle, CheckCircle, BadgeCheck } from 'lucide-react';
+import { useUser } from '../lib/hooks/useUser';
+import useSWR from 'swr';
+import UnreadChatBadge from './UnreadChatBadge';
 
 const CATEGORIES = [
   "All Categories",
+  "Books & Notes",
   "Electronics",
-  "Books",
-  "Hostel Essentials",
+  "Furniture",
   "Clothing",
   "Sports Gear",
   "Stationery",
-  "Food",
-  "Grocery",
-  "Other"
+  "Others"
 ];
 
-// Toast Component
-const Toast = ({ message, type, onClose }: { message: string, type: 'success' | 'error' | 'info', onClose: () => void }) => {
-  const bgColors = {
-    success: 'bg-green-50 border-green-200 text-green-800',
-    error: 'bg-red-50 border-red-200 text-red-800',
-    info: 'bg-blue-50 border-blue-200 text-blue-800'
-  };
-  const icons = {
-    success: <CheckCircle className="h-5 w-5 text-green-500" />,
-    error: <AlertCircle className="h-5 w-5 text-red-500" />,
-    info: <Info className="h-5 w-5 text-blue-500" />
-  };
-
+const Toast = ({ message, type, onClose }: { message: string, type: 'success' | 'error', onClose: () => void }) => {
   useEffect(() => {
-    const timer = setTimeout(onClose, 5000);
+    const timer = setTimeout(onClose, 3000);
     return () => clearTimeout(timer);
   }, [onClose]);
 
   return (
-    <div className={`flex items-start gap-3 p-4 rounded-lg border shadow-lg animate-in slide-in-from-right-5 fade-in duration-300 ${bgColors[type]} max-w-sm bg-white`}>
-      <div className="flex-shrink-0 mt-0.5">{icons[type]}</div>
-      <div className="flex-1 text-sm font-medium">{message}</div>
-      <button onClick={onClose} className="flex-shrink-0 text-gray-400 hover:text-gray-600">
-        <X className="h-4 w-4" />
-      </button>
+    <div className={`fixed top-4 right-4 z-[100] px-6 py-3 rounded-xl shadow-lg transform transition-all duration-300 animate-in fade-in slide-in-from-top-2 flex items-center gap-2 ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+      }`}>
+      {type === 'success' ? <CheckCircle className="h-5 w-5" /> : <X className="h-5 w-5" />}
+      <span className="font-bold">{message}</span>
     </div>
   );
 };
 
 export default function Header() {
-  const [category, setCategory] = useState(CATEGORIES[0]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { user, logout } = useUser();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [category, setCategory] = useState("All Categories");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [toasts, setToasts] = useState<{ id: number, message: string, type: 'success' | 'error' | 'info' }[]>([]);
-  const router = useRouter();
+  const [toasts, setToasts] = useState<{ id: number, message: string, type: 'success' | 'error' }[]>([]);
 
-  // Auth Check using custom hook
-  const { user } = useUser();
+  const fetcher = (url: string) => fetch(url).then(res => res.json());
+  const { data: notifications, mutate: mutateNotifications } = useSWR(user ? '/api/notifications' : null, fetcher);
 
-  // Local fetcher for notifications
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const unreadCount = notifications?.filter((n: any) => !n.read).length || 0;
+  const generalNotifications = notifications?.filter((n: any) => n.type !== 'chat') || [];
 
-  // Notifications
-  const { data: notifications = [], mutate: mutateNotifications } = useSWR(user ? "/api/notifications" : null, fetcher);
-
-  // Filter notifications - Ensure it's an array to prevent crashes
-  const safeNotifications = Array.isArray(notifications) ? notifications : [];
-  const generalNotifications = safeNotifications; // Show all notifications in the list
-  const alertNotifications = safeNotifications.filter((n: any) => n.type === 'alert' && !n.read);
-  const unreadCount = generalNotifications.filter((n: any) => !n.read).length;
+  const addToast = (message: string, type: 'success' | 'error') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
 
   const removeToast = (id: number) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
-  // Handle Alerts
+  // Expose toast function globally
   useEffect(() => {
-    if (alertNotifications.length > 0) {
-      const processAlerts = async () => {
-        const newToasts: { id: number, message: string, type: 'success' | 'error' | 'info' }[] = [];
-        const markReadPromises: Promise<any>[] = [];
-
-        alertNotifications.forEach((alert: any) => {
-          // Prevent duplicate toasts if already visible (basic check)
-          if (toasts.some(t => t.message === `${alert.title}: ${alert.body}`)) return;
-
-          // Determine type based on content
-          let type: 'success' | 'error' | 'info' = 'info';
-          const title = alert.title || "";
-          if (title.toLowerCase().includes('created') || title.toLowerCase().includes('success')) type = 'success';
-          if (title.toLowerCase().includes('deleted') || title.toLowerCase().includes('error')) type = 'error';
-          if (title.toLowerCase().includes('updated') || title.toLowerCase().includes('edited')) type = 'info';
-
-          newToasts.push({ id: Date.now() + Math.random(), message: `${alert.title}: ${alert.body}`, type });
-
-          // Queue mark as read
-          markReadPromises.push(
-            fetch('/api/notifications', {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id: alert.id })
-            })
-          );
-        });
-
-        if (newToasts.length > 0) {
-          setToasts(prev => [...prev, ...newToasts]);
-
-          // Wait for all to be marked as read BEFORE mutating
-          await Promise.all(markReadPromises);
-          mutateNotifications();
-        }
-      };
-
-      processAlerts();
-    }
-  }, [alertNotifications, mutateNotifications]);
-
-  // Handle URL Query Alerts (Created, Updated, Deleted)
-  useEffect(() => {
-    if (router.query.alert) {
-      const alertType = router.query.alert as string;
-      let message = "";
-      let type: 'success' | 'error' | 'info' = 'info';
-
-      if (alertType === 'created') {
-        message = "Listing created successfully!";
-        type = 'success';
-      } else if (alertType === 'updated') {
-        message = "Listing updated successfully!";
-        type = 'info';
-      } else if (alertType === 'deleted') {
-        message = "Listing deleted successfully!";
-        type = 'error';
-      } else if (alertType === 'order_placed') {
-        message = "Order placed successfully!";
-        type = 'success';
-      } else if (alertType === 'payment_submitted') {
-        message = "Payment screenshot submitted!";
-        type = 'success';
-      }
-
-      if (message) {
-        setToasts(prev => [...prev, { id: Date.now(), message, type }]);
-
-        // Clear query param without reload
-        const newQuery = { ...router.query };
-        delete newQuery.alert;
-        router.replace({ pathname: router.pathname, query: newQuery }, undefined, { shallow: true });
-      }
-    }
-  }, [router.query]);
+    (window as any).showToast = addToast;
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/listings?search=${encodeURIComponent(searchQuery)}&category=${encodeURIComponent(category === "All Categories" ? "" : category)}`);
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}&category=${encodeURIComponent(category)}`);
     }
   };
 
   const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST", cache: "no-store" });
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
-    // Force full reload to clear all states and cache
-    window.location.href = "/";
+    await logout();
+    setIsMenuOpen(false);
+    router.push('/login');
   };
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest('.notification-dropdown') && !target.closest('.notification-btn')) {
-        setIsNotifOpen(false);
-      }
       if (!target.closest('.user-dropdown') && !target.closest('.user-btn')) {
         setIsMenuOpen(false);
+      }
+      if (!target.closest('.notification-dropdown') && !target.closest('.notification-btn')) {
+        setIsNotifOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -275,6 +180,7 @@ export default function Header() {
                 title="Messages"
               >
                 <MessageCircle className="h-6 w-6" />
+                <UnreadChatBadge />
               </button>
 
               {/* Notification Bell */}
@@ -354,6 +260,9 @@ export default function Header() {
                       <p className="text-[10px] text-gray-500 font-medium leading-tight">Hello,</p>
                       <div className="flex items-center gap-1">
                         <p className="text-xs font-bold text-gray-900 leading-tight">{user.name?.split(' ')[0] || user.username}</p>
+                        {user.role === 'admin' && (
+                          <Shield className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
+                        )}
                         {(user.isVerifiedStudent || user.email?.endsWith('@iimidr.ac.in')) && (
                           <div className="relative group/verified">
                             <BadgeCheck className="h-3.5 w-3.5 text-blue-500 fill-blue-500 text-white" />
@@ -372,7 +281,12 @@ export default function Header() {
                   {isMenuOpen && (
                     <div className="user-dropdown absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2">
                       <div className="px-4 py-2 border-b border-gray-50 mb-1">
-                        <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+                        <div className="flex items-center gap-1">
+                          <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+                          {user.role === 'admin' && (
+                            <Shield className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
+                          )}
+                        </div>
                         <p className="text-xs text-gray-500 truncate">{user.email}</p>
                       </div>
 
@@ -396,15 +310,19 @@ export default function Header() {
                         My Orders
                       </Link>
 
+                      {/* Verify Payments Link */}
+                      <Link href="/dashboard/verify-payments" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors relative">
+                        <CheckCircle className="h-4 w-4 text-gray-400" />
+                        Verify Payments
+                      </Link>
+
                       <div className="h-px bg-gray-100 my-1" />
 
                       <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-2 text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-medium transition-colors"
                       >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
+                        <LogOut className="h-4 w-4" />
                         Sign out
                       </button>
                     </div>

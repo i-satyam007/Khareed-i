@@ -47,8 +47,8 @@ export default function BuyPage() {
             console.log("Selected Payment Method:", selectedPaymentMethod);
 
             if (selectedPaymentMethod === 'UPI') {
-                console.log("Redirecting to UPI payment page...");
-                router.push(`/orders/${newOrder.id}/pay`);
+                console.log("Redirecting to Order Details for UPI payment...");
+                router.push(`/orders/${newOrder.id}`);
             } else {
                 router.push(`/orders/${newOrder.id}?alert=order_placed`);
             }

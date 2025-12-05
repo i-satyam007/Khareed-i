@@ -11,6 +11,28 @@ export default function OrderDetailsPage() {
     const [verifying, setVerifying] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
     const [showRejectModal, setShowRejectModal] = useState(false);
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [reportReason, setReportReason] = useState('');
+
+    const handleReport = async () => {
+        if (!reportReason) return alert("Please provide a reason");
+        try {
+            const res = await fetch('/api/reports/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: order.id, reason: reportReason }),
+            });
+            if (res.ok) {
+                alert("Report submitted to Admin!");
+                setShowReportModal(false);
+            } else {
+                alert("Failed to submit report");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Error submitting report");
+        }
+    };
 
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
     const { data: order, isLoading, mutate, error } = useSWR(id ? `/api/orders/${id}` : null, fetcher);
@@ -223,6 +245,22 @@ export default function OrderDetailsPage() {
                         </div>
                     )}
 
+                    {/* Buyer Report Option for Rejected Payments */}
+                    {isBuyer && order.paymentStatus === 'REJECTED' && (
+                        <div className="mt-6 bg-red-50 p-4 rounded-xl border border-red-100">
+                            <p className="text-sm font-bold text-red-800 mb-2">Payment Rejected</p>
+                            <p className="text-sm text-red-600 mb-4">
+                                The seller rejected your payment. Reason: <span className="font-semibold">{order.paymentComment || "No reason provided"}</span>
+                            </p>
+                            <button
+                                onClick={() => setShowReportModal(true)}
+                                className="w-full py-2.5 bg-white border border-red-200 text-red-600 font-bold rounded-xl hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
+                            >
+                                <AlertTriangle className="h-4 w-4" /> Report Issue to Admin
+                            </button>
+                        </div>
+                    )}
+
                     {/* Seller View */}
                     {isSeller && (
                         <div className="space-y-6">
@@ -254,6 +292,40 @@ export default function OrderDetailsPage() {
                                 </div>
                             ) : (
                                 <p className="text-gray-500 text-center py-4">Buyer hasn't uploaded a screenshot yet.</p>
+                            )}
+
+                            {/* Report Modal */}
+                            {showReportModal && (
+                                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                                    <div className="bg-white rounded-2xl w-full max-w-md p-6">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-4">Report Invalid Rejection</h3>
+                                        <p className="text-sm text-gray-500 mb-4">If you believe your payment was correctly made but rejected, please explain below. The admin will review your proof.</p>
+
+                                        <textarea
+                                            value={reportReason}
+                                            onChange={(e) => setReportReason(e.target.value)}
+                                            className="w-full p-3 border border-gray-200 rounded-xl mb-4 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none"
+                                            placeholder="Explain why the rejection is invalid..."
+                                            rows={4}
+                                        />
+
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => setShowReportModal(false)}
+                                                className="flex-1 py-2.5 text-gray-700 font-bold hover:bg-gray-50 rounded-xl transition-colors"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={handleReport}
+                                                disabled={!reportReason}
+                                                className="flex-1 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors"
+                                            >
+                                                Submit Report
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     )}

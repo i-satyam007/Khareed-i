@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+// Force TS re-check
 import { prisma } from '../../../lib/prisma';
 import { getUser } from '../../../lib/getUser';
 
@@ -71,12 +72,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             price = highestBid.amount;
         }
 
+        // Generate Tracking ID (Short Hash)
+        const trackingId = Math.random().toString(36).substring(2, 10).toUpperCase();
+
         // Create Order
         const order = await prisma.order.create({
             data: {
                 userId: user.id,
                 totalAmount: price,
                 status: 'completed', // Assuming instant completion for now
+                trackingId,
+                deliveryStatus: 'PENDING',
                 items: {
                     create: {
                         listingId,
@@ -84,7 +90,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         quantity: 1,
                     },
                 },
-            },
+            } as any,
         });
 
         // Notify seller
@@ -94,6 +100,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 title: 'New Order Placed',
                 body: `You have a new order for "${listing.title}" from ${user.name || user.username}. Waiting for payment.`,
                 type: 'alert',
+                link: `/orders/${order.id}`,
+            },
+        });
+
+        // Notify Buyer
+        await prisma.notification.create({
+            data: {
+                userId: user.id,
+                title: 'Order Placed Successfully',
+                body: `Your order for "${listing.title}" has been placed. Waiting for seller confirmation.`,
+                type: 'success',
                 link: `/orders/${order.id}`,
             },
         });

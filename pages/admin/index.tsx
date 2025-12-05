@@ -284,33 +284,144 @@ function UsersTab() {
 }
 
 function SuspiciousTab() {
-    const { data: users } = useSWR('/api/admin/users', fetcher);
-    const suspiciousUsers = users?.filter((u: any) => u.failedPaymentCount > 0) || [];
+    const { data: reports, mutate } = useSWR('/api/admin/reports/pending', fetcher);
+    const [processing, setProcessing] = useState<number | null>(null);
+    const [adminComment, setAdminComment] = useState('');
+    const [selectedReport, setSelectedReport] = useState<number | null>(null);
+
+    const handleResolve = async (reportId: number, decision: 'APPROVE' | 'REJECT') => {
+        if (!adminComment) {
+            alert("Please provide a comment explaining your decision.");
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to ${decision} this report? This will affect Trust Scores.`)) return;
+
+        setProcessing(reportId);
+        try {
+            const res = await fetch(`/api/admin/reports/${reportId}/resolve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ decision, comment: adminComment }),
+            });
+
+            if (res.ok) {
+                alert("Report resolved successfully!");
+                setAdminComment('');
+                setSelectedReport(null);
+                mutate();
+            } else {
+                alert("Failed to resolve report");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("An error occurred");
+        } finally {
+            setProcessing(null);
+        }
+    };
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Suspicious Activity Monitor</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Dispute Resolution & Suspicious Activity</h2>
 
-            {suspiciousUsers.length === 0 ? (
+            {!reports || reports.length === 0 ? (
                 <div className="p-8 text-center bg-white rounded-xl border border-gray-200 text-gray-500">
                     <Shield className="h-12 w-12 mx-auto text-green-500 mb-3" />
                     <h3 className="font-bold text-gray-900">All Clear!</h3>
-                    <p>No suspicious activity detected recently.</p>
+                    <p>No pending disputes or suspicious activity reports.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-4">
-                    {suspiciousUsers.map((u: any) => (
-                        <div key={u.id} className="bg-red-50 border border-red-100 p-4 rounded-xl flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <AlertTriangle className="h-6 w-6 text-red-500" />
+                <div className="space-y-4">
+                    {reports.map((report: any) => (
+                        <div key={report.id} className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+                            <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <h3 className="font-bold text-gray-900">{u.name} (@{u.username})</h3>
-                                    <p className="text-sm text-red-700">Flagged for {u.failedPaymentCount} failed payments/reports.</p>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded uppercase">Dispute</span>
+                                        <span className="text-sm text-gray-500">#{report.id} • {new Date(report.createdAt).toLocaleDateString()}</span>
+                                    </div>
+                                    <h3 className="font-bold text-gray-900">Payment Rejection Dispute</h3>
+                                </div>
+                                <a href={`/orders/${report.orderId}`} target="_blank" className="text-sm text-kh-purple font-bold hover:underline">
+                                    View Order #{report.orderId}
+                                </a>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div className="bg-gray-50 p-4 rounded-lg">
+                                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Reporter (Buyer)</p>
+                                    <p className="font-bold text-gray-900">{report.reporter.name}</p>
+                                    <p className="text-sm text-gray-600">{report.reporter.email}</p>
+                                    <div className="mt-3 pt-3 border-t border-gray-200">
+                                        <p className="text-xs font-bold text-gray-500 mb-1">Claim:</p>
+                                        <p className="text-sm text-gray-800 italic">"{report.reason}"</p>
+                                    </div>
+                                </div>
+                                <div className="bg-gray-50 p-4 rounded-lg">
+                                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Reported (Seller)</p>
+                                    <p className="font-bold text-gray-900">{report.reported.name}</p>
+                                    <p className="text-sm text-gray-600">{report.reported.email}</p>
+                                    <div className="mt-3 pt-3 border-t border-gray-200">
+                                        <p className="text-xs font-bold text-gray-500 mb-1">Rejection Reason:</p>
+                                        <p className="text-sm text-gray-800 italic">"{report.order.paymentComment}"</p>
+                                    </div>
                                 </div>
                             </div>
-                            <button className="px-4 py-2 bg-white border border-red-200 text-red-600 font-bold rounded-lg hover:bg-red-50 text-sm">
-                                Review Profile
-                            </button>
+
+                            {/* Proof */}
+                            <div className="mb-6">
+                                <p className="text-sm font-bold text-gray-700 mb-2">Payment Proof</p>
+                                <div className="bg-gray-100 rounded-lg p-2 inline-block">
+                                    <img src={report.order.paymentScreenshot} alt="Proof" className="h-48 object-contain" />
+                                </div>
+                            </div>
+
+                            {/* Action Area */}
+                            {selectedReport === report.id ? (
+                                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 animate-in fade-in">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Admin Decision Comment (Required)</label>
+                                    <textarea
+                                        value={adminComment}
+                                        onChange={(e) => setAdminComment(e.target.value)}
+                                        className="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-kh-purple/20"
+                                        placeholder="Explain your decision to both parties..."
+                                        rows={2}
+                                    />
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => setSelectedReport(null)}
+                                            className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-200 rounded-lg transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={() => handleResolve(report.id, 'APPROVE')}
+                                            disabled={processing === report.id || !adminComment}
+                                            className="px-4 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors"
+                                        >
+                                            Approve (Buyer Correct)
+                                        </button>
+                                        <button
+                                            onClick={() => handleResolve(report.id, 'REJECT')}
+                                            disabled={processing === report.id || !adminComment}
+                                            className="px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors"
+                                        >
+                                            Reject (Seller Correct)
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        * Approving penalizes the Seller. Rejecting penalizes the Buyer. Trust scores will be updated automatically.
+                                    </p>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => setSelectedReport(report.id)}
+                                    className="bg-kh-purple text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-700 transition-colors"
+                                >
+                                    Resolve Dispute
+                                </button>
+                            )}
                         </div>
                     ))}
                 </div>
