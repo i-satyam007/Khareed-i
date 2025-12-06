@@ -32,6 +32,18 @@ export default function Home() {
         {/* Hero Section */}
         <HeroBanner groupOrderCount={activeGroupOrders.length} />
 
+        {/* Categories Grid */}
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Browse by Category</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+            {["Electronics", "Books", "Hostel Essentials", "Clothing", "Sports Gear", "Stationery"].map((cat) => (
+              <Link href={`/listings?category=${encodeURIComponent(cat)}`} key={cat} className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-kh-purple hover:shadow-md transition-all group">
+                <div className="text-sm font-medium text-gray-700 group-hover:text-kh-purple">{cat}</div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         {/* Trending Listings */}
         <section>
           <div className="flex items-end justify-between mb-6">
@@ -102,17 +114,7 @@ export default function Home() {
           )}
         </section>
 
-        {/* Categories Grid */}
-        <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Browse by Category</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {["Electronics", "Books", "Hostel Essentials", "Clothing", "Sports Gear", "Stationery"].map((cat) => (
-              <Link href={`/listings?category=${encodeURIComponent(cat)}`} key={cat} className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-kh-purple hover:shadow-md transition-all group">
-                <div className="text-sm font-medium text-gray-700 group-hover:text-kh-purple">{cat}</div>
-              </Link>
-            ))}
-          </div>
-        </section>
+
 
       </main>
     </div>

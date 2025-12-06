@@ -116,7 +116,7 @@ export default function MyOrdersPage() {
                                                     </div>
                                                     <div>
                                                         <h3 className="font-bold text-gray-900">Order #{order.trackingId || order.id}</h3>
-                                                        <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()} • ₹{order.totalAmount}</p>
+                                                        <p className="text-sm text-gray-500">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'Date Unknown'} • ₹{order.totalAmount}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-3">
@@ -217,7 +217,7 @@ export default function MyOrdersPage() {
 
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Rate your purchase</h2>
                         <p className="text-sm text-gray-500 mb-6">
-                            How was your experience with "{selectedOrderForReview?.items[0]?.listing?.title || "this item"}"?
+                            How was your experience with "{selectedOrderForReview?.items?.[0]?.listing?.title || "this item"}"?
                         </p>
 
                         <div className="flex justify-center gap-2 mb-6">

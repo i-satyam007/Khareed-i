@@ -19,6 +19,7 @@ type GroupOrderForm = {
     cutoffTime: string;
     minOrderValue?: number;
     description?: string;
+    deliveryFee: number;
     paymentMethods: string[];
     qrCode?: string;
 };
@@ -201,7 +202,24 @@ export default function CreateGroupOrderPage() {
                                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
                                         placeholder="₹"
                                     />
+                                    <input
+                                        type="number"
+                                        {...register("minOrderValue")}
+                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
+                                        placeholder="₹"
+                                    />
                                 </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Fee (Compulsory)</label>
+                                <input
+                                    type="number"
+                                    {...register("deliveryFee", { required: "Delivery fee is required", min: 0, valueAsNumber: true })}
+                                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
+                                    placeholder="₹ 0"
+                                />
+                                {errors.deliveryFee && <p className="text-red-500 text-xs mt-1">{errors.deliveryFee.message}</p>}
                             </div>
 
                             <div>

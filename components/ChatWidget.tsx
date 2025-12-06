@@ -45,6 +45,20 @@ export default function ChatWidget() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+    // Mark as read when opening chat
+    useEffect(() => {
+        if (selectedUser && isOpen) {
+            fetch('/api/chat/read', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ senderId: selectedUser.id }),
+            }).then(() => {
+                // Trigger global revalidation for unread counts
+                mutate('/api/chat/unread');
+            });
+        }
+    }, [selectedUser, isOpen]);
+
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!message.trim() || !selectedUser) return;

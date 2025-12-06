@@ -155,8 +155,8 @@ export default function VerifyPaymentsPage() {
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
                                                     <h3 className="font-bold text-lg text-gray-900">Order #{order.id}</h3>
-                                                    <p className="text-sm text-gray-500">Buyer: {order.user.name} ({order.user.email})</p>
-                                                    <p className="text-sm text-gray-500">Date: {new Date(order.updatedAt).toLocaleDateString()}</p>
+                                                    <p className="text-sm text-gray-500">Buyer: {order.user?.name || "Unknown"} ({order.user?.email || "No Email"})</p>
+                                                    <p className="text-sm text-gray-500">Date: {order.updatedAt ? new Date(order.updatedAt).toLocaleDateString() : 'Date Unknown'}</p>
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="text-2xl font-bold text-kh-purple">₹{order.amount}</p>
@@ -167,7 +167,7 @@ export default function VerifyPaymentsPage() {
                                             <div className="bg-gray-50 p-3 rounded-lg mb-4">
                                                 <p className="text-sm font-medium text-gray-700">Items:</p>
                                                 <ul className="text-sm text-gray-600 list-disc list-inside">
-                                                    {order.items.map((item: any) => (
+                                                    {order.items?.map((item: any) => (
                                                         <li key={item.id}>{item.listing?.title || "Item Unavailable"} (x{item.quantity})</li>
                                                     ))}
                                                 </ul>
@@ -242,7 +242,7 @@ export default function VerifyPaymentsPage() {
                                                 <span className="text-sm text-gray-500">#{order.trackingId || order.id}</span>
                                             </div>
                                             <h3 className="font-bold text-lg text-gray-900">Order #{order.id}</h3>
-                                            <p className="text-sm text-gray-500">Buyer: {order.user.name}</p>
+                                            <p className="text-sm text-gray-500">Buyer: {order.user?.name || "Unknown"}</p>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-2xl font-bold text-kh-purple">₹{order.amount}</p>
@@ -251,7 +251,7 @@ export default function VerifyPaymentsPage() {
 
                                     <div className="bg-gray-50 p-3 rounded-lg mb-4">
                                         <ul className="text-sm text-gray-600 list-disc list-inside">
-                                            {order.items.map((item: any) => (
+                                            {order.items?.map((item: any) => (
                                                 <li key={item.id}>{item.listing?.title || "Item Unavailable"} (x{item.quantity})</li>
                                             ))}
                                         </ul>

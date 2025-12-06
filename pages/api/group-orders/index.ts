@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === 'POST') {
-        const { title, platform, cutoffTime, description, minOrderValue } = req.body;
+        const { title, platform, cutoffTime, description, minOrderValue, deliveryFee } = req.body;
 
         if (!title || !platform || !cutoffTime) {
             return res.status(400).json({ message: 'Missing required fields' });
@@ -70,6 +70,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     cutoff: cutoffDate,
                     creatorId: user.id,
                     status: 'open',
+                    deliveryFee: Number(deliveryFee) || 0,
                     paymentMethods: req.body.paymentMethods || ["CASH"],
                 },
             });
