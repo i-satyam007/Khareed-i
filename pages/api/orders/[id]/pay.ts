@@ -44,9 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
 
             // Notify Seller
-            const sellerId = updatedOrder.items.length > 0
-                ? updatedOrder.items[0].listing.ownerId
-                : updatedOrder.groupOrder?.creatorId;
+            const sellerId = updatedOrder.items[0]?.listing?.ownerId || updatedOrder.groupOrder?.creatorId;
 
             if (sellerId) {
                 await prisma.notification.create({

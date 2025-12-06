@@ -7,24 +7,7 @@ import OfferModal from '../../components/OfferModal';
 
 import { Heart, Share2, MapPin, ShieldCheck, Clock, User, Gavel, Check, X, MessageCircle, Shield } from 'lucide-react';
 
-// Mock Data (In real app, fetch based on ID)
-const MOCK_PRODUCT = {
-    id: 1,
-    title: "Scientific Calculator FX-991ES (Barely used)",
-    price: 650,
-    mrp: 950,
-    description: "Bought 6 months ago for exams, barely used since then. Condition is like new. Comes with original cover. Perfect for IPM quant courses.",
-    category: "Stationery",
-    negotiable: true,
-    isAuction: false,
-    seller: {
-        name: "Aman Gupta",
-        hostel: "BH-3, Room 204",
-        joined: "Aug 2023",
-        rating: 4.8
-    },
-    images: ["/placeholder.jpg"]
-};
+
 
 export default function ProductDetailsPage() {
     const router = useRouter();

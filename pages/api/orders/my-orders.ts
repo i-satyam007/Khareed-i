@@ -55,10 +55,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 seller = order.groupOrder.creator.name || order.groupOrder.creator.username;
                 sellerId = order.groupOrder.creator.id;
             } else if (order.items.length > 0) {
-                title = order.items[0].listing.title;
-                if (order.items.length > 1) title += ` + ${order.items.length - 1} more`;
-                seller = order.items[0].listing.owner.name || order.items[0].listing.owner.username;
-                sellerId = order.items[0].listing.owner.id;
+                // Handle Regular Orders or Ad-hoc items
+                const firstItem = order.items[0];
+                if (firstItem.listing) {
+                    title = firstItem.listing.title;
+                    if (order.items.length > 1) title += ` + ${order.items.length - 1} more`;
+                    seller = firstItem.listing.owner.name || firstItem.listing.owner.username;
+                    sellerId = firstItem.listing.owner.id;
+                } else {
+                    // Ad-hoc item without listing (fallback)
+                    title = firstItem.itemName || "Item";
+                    if (order.items.length > 1) title += ` + ${order.items.length - 1} more`;
+                    seller = "Group Order"; // Should ideally be covered by groupOrder check above
+                }
             }
 
             let amount = order.totalAmount;

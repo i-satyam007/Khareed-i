@@ -65,6 +65,25 @@ export default function GroupOrderDetailsPage() {
         }
     };
 
+    const handleFinalize = async () => {
+        if (!confirm('This will close the order and request payments from all participants. Continue?')) return;
+        try {
+            const res = await fetch(`/api/group-orders/${id}/finalize`, {
+                method: 'POST',
+            });
+
+            if (res.ok) {
+                alert('Order finalized! Participants have been notified to pay.');
+                mutateOrder();
+            } else {
+                const error = await res.json();
+                alert(error.message || 'Failed to finalize order');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const handlePay = async () => {
         if (!confirm('Proceed to pay for your share?')) return;
         try {
@@ -90,7 +109,7 @@ export default function GroupOrderDetailsPage() {
 
     // Calculations
     const totalCartValue = order.participants.reduce((acc: number, p: any) => acc + p.items.reduce((sum: number, i: any) => sum + i.price, 0), 0);
-    const deliveryFee = 50; // Fixed for mock
+    const deliveryFee = order.deliveryFee || 0;
     const handlingFee = 10;
     const totalFees = deliveryFee + handlingFee;
     const finalTotal = totalCartValue + totalFees;
@@ -245,9 +264,16 @@ export default function GroupOrderDetailsPage() {
                             </div>
                         )}
 
-                        <button onClick={handlePay} disabled={userTotal === 0} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button onClick={handlePay} disabled={!userTotal || order.status !== 'open'} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mb-3">
                             Proceed to Pay <ArrowRight className="h-4 w-4" />
                         </button>
+
+                        {user?.id === order.creatorId && order.status === 'open' && (
+                            <button onClick={handleFinalize} className="w-full bg-gray-800 hover:bg-black text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+                                End Order & Request Payments
+                            </button>
+                        )}
+
 
                         <p className="text-xs text-center text-gray-400 mt-3">
                             Payments are held in escrow until the order is placed.

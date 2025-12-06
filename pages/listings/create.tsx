@@ -345,6 +345,7 @@ export default function CreateListingPage() {
                                         {...register("mrp", { required: "MRP is required", min: 0 })}
                                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
                                         placeholder="Original Price"
+                                        min="0"
                                     />
                                 </div>
 
@@ -366,6 +367,7 @@ export default function CreateListingPage() {
                                             })}
                                             className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
                                             placeholder="Your Price"
+                                            min="0"
                                         />
                                         {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
                                     </div>
@@ -416,6 +418,7 @@ export default function CreateListingPage() {
                                                 type="number"
                                                 {...register("auctionStartPrice", { required: isAuction ? "Start Price is required" : false, min: 0 })}
                                                 className="w-full px-3 py-2 bg-white border border-purple-200 rounded-md text-sm focus:outline-none focus:border-purple-400"
+                                                min="0"
                                             />
                                         </div>
                                         <div>

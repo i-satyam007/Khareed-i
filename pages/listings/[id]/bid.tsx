@@ -11,11 +11,35 @@ export default function BidPage() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const [timeLeft, setTimeLeft] = useState<string>('');
 
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
     const { data: listing, isLoading } = useSWR(id ? `/api/listings/${id}` : null, fetcher);
     const { data: authData } = useSWR("/api/auth/me", fetcher);
     const user = authData?.user;
+
+    React.useEffect(() => {
+        if (!listing?.auctionTo) return;
+
+        const updateTimer = () => {
+            const now = new Date().getTime();
+            const end = new Date(listing.auctionTo).getTime();
+            const diff = end - now;
+
+            if (diff <= 0) {
+                setTimeLeft('Ended');
+            } else {
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                setTimeLeft(`${hours}h ${minutes}m`);
+            }
+        };
+
+        const timerId = setInterval(updateTimer, 60000); // Update every minute
+        updateTimer(); // Initial call
+
+        return () => clearInterval(timerId);
+    }, [listing?.auctionTo]);
 
     if (isLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
     if (!listing) return <div className="min-h-screen flex items-center justify-center">Listing not found</div>;
@@ -121,7 +145,7 @@ export default function BidPage() {
                             <div className="text-right">
                                 <p className="text-xs text-purple-600 font-bold uppercase tracking-wider">Ends In</p>
                                 <p className="text-sm font-bold text-purple-900 flex items-center justify-end gap-1">
-                                    <Clock className="h-3 w-3" /> 2h 15m
+                                    <Clock className="h-3 w-3" /> {timeLeft || '...'}
                                 </p>
                             </div>
                         </div>
@@ -163,7 +187,7 @@ export default function BidPage() {
                             </button>
                         </form>
 
-                        {/* Recent Bids (Mock for now, would need API support to fetch real bids) */}
+                        {/* Recent Bids */}
                         <div className="pt-6 border-t border-gray-100">
                             <h4 className="text-sm font-bold text-gray-900 mb-3">Recent Bids</h4>
                             <div className="space-y-3">

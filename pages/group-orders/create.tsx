@@ -198,15 +198,10 @@ export default function CreateGroupOrderPage() {
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Min. Order Value (Optional)</label>
                                     <input
                                         type="number"
-                                        {...register("minOrderValue")}
+                                        {...register("minOrderValue", { min: 0, valueAsNumber: true })}
                                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
                                         placeholder="₹"
-                                    />
-                                    <input
-                                        type="number"
-                                        {...register("minOrderValue")}
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-kh-purple/20 focus:border-kh-purple outline-none transition-all"
-                                        placeholder="₹"
+                                        min="0"
                                     />
                                 </div>
                             </div>

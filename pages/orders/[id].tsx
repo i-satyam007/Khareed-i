@@ -187,7 +187,7 @@ export default function OrderDetailsPage() {
                     {order.items?.map((item: any) => (
                         <div key={item.id} className="flex justify-between items-center py-2 border-b last:border-0">
                             <div>
-                                <p className="font-medium text-gray-900">{item.listing.title}</p>
+                                <p className="font-medium text-gray-900">{item.listing?.title || item.itemName || "Unknown Item"}</p>
                                 <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                             </div>
                             <p className="font-bold text-gray-900">₹{item.price * item.quantity}</p>

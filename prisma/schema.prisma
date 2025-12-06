@@ -127,12 +127,13 @@ model Order {
 model OrderItem {
   id        Int     @id @default(autoincrement())
   orderId   Int
-  listingId Int
+  listingId Int?
   quantity  Int     @default(1)
   price     Int
+  itemName  String? // For Group Order items that don't have a Listing
 
-  order     Order   @relation("OrderItems", fields: [orderId], references: [id])
-  listing   Listing @relation("ListingOrderItems", fields: [listingId], references: [id])
+  order     Order   @relation("OrderItems", fields: [orderId], references: [id], onDelete: Cascade)
+  listing   Listing? @relation("ListingOrderItems", fields: [listingId], references: [id])
 }
 
 model GroupOrder {

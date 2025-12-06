@@ -38,11 +38,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ message: 'Order must be delivered before reviewing' });
         }
 
+        if (!order.items.length || !order.items[0].listingId) {
+            return res.status(400).json({ message: 'Cannot review this item (no associated listing found)' });
+        }
+
+        const listingId = order.items[0].listingId;
+
         // Check if already reviewed
         const existingReview = await prisma.review.findFirst({
             where: {
                 userId: user.id,
-                listingId: order.items[0].listingId
+                listingId: listingId
             }
         });
 
@@ -54,23 +60,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const review = await prisma.review.create({
             data: {
                 userId: user.id,
-                listingId: order.items[0].listingId,
+                listingId: listingId,
                 rating: Number(rating),
                 comment: comment || ''
             }
         });
 
         // Notify Seller
-        const sellerId = order.items[0].listing.ownerId;
-        await prisma.notification.create({
-            data: {
-                userId: sellerId,
-                title: 'New Review Received',
-                body: `${user.name} gave you a ${rating}-star review for "${order.items[0].listing.title}".`,
-                type: 'success',
-                link: `/users/${sellerId}` // Link to profile where reviews are shown
-            }
-        });
+        if (order.items[0].listing) {
+            const sellerId = order.items[0].listing.ownerId;
+            await prisma.notification.create({
+                data: {
+                    userId: sellerId,
+                    title: 'New Review Received',
+                    body: `${user.name} gave you a ${rating}-star review for "${order.items[0].listing.title}".`,
+                    type: 'success',
+                    link: `/users/${sellerId}` // Link to profile where reviews are shown
+                }
+            });
+        }
 
         return res.status(201).json(review);
     } catch (error) {

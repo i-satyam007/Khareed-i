@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             let isOwner = false;
             if (order.groupOrder) {
                 isOwner = order.groupOrder.creatorId === user.id;
-            } else if (order.items.length > 0) {
+            } else if (order.items.length > 0 && order.items[0].listing) {
                 isOwner = order.items[0].listing.ownerId === user.id;
             }
 
@@ -52,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 });
 
                 // Mark listing as sold
-                if (order.items.length > 0) {
+                if (order.items.length > 0 && order.items[0].listingId) {
                     await prisma.listing.update({
                         where: { id: order.items[0].listingId },
                         data: { status: 'sold' },

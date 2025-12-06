@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // AND status is VERIFICATION_PENDING
         const orders = await prisma.order.findMany({
             where: {
-                status: 'VERIFICATION_PENDING',
+                paymentStatus: 'VERIFICATION_PENDING',
                 OR: [
                     {
                         items: {
