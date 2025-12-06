@@ -59,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Calculate total amount for each order (if not already stored correctly)
         const formattedOrders = orders.map(order => {
             let amount = order.totalAmount;
-            if (amount === 0) {
+            if (amount === 0 && order.items) {
                 amount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             }
             return { ...order, amount };
@@ -68,6 +68,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json(formattedOrders);
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error', error: error instanceof Error ? error.message : String(error) });
     }
 }

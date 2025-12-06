@@ -94,6 +94,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json(formattedOrders);
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error', error: error instanceof Error ? error.message : String(error) });
     }
 }

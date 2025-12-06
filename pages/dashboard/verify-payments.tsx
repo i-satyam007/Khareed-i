@@ -11,7 +11,8 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export default function VerifyPaymentsPage() {
     const { user, loading } = useUser();
     const router = useRouter();
-    const { data: orders, mutate } = useSWR(user ? '/api/orders/pending-verification' : null, fetcher);
+    const { user, loading } = useUser();
+    const router = useRouter();
 
     // New SWR for orders pending delivery (Verified but not Shipped)
     // For simplicity, we might need a new API or filter client-side if the API returns all. 
@@ -35,7 +36,16 @@ export default function VerifyPaymentsPage() {
 
     // We need a way to fetch "To Deliver" orders.
     // Let's use a new endpoint or query param.
-    const { data: deliveryOrders, mutate: mutateDelivery } = useSWR(user ? '/api/orders/pending-delivery' : null, fetcher);
+    const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+    // Safety check function
+    const safeOrders = (data: any) => Array.isArray(data) ? data : [];
+
+    const { data: rawOrders, error: verifyError, mutate } = useSWR(user ? '/api/orders/pending-verification' : null, fetcher);
+    const orders = safeOrders(rawOrders);
+
+    const { data: rawDeliveryOrders, error: deliveryError, mutate: mutateDelivery } = useSWR(user ? '/api/orders/pending-delivery' : null, fetcher);
+    const deliveryOrders = safeOrders(rawDeliveryOrders);
 
     if (loading) return <div>Loading...</div>;
     if (!user) {
@@ -128,7 +138,12 @@ export default function VerifyPaymentsPage() {
                 </div>
 
                 {activeTab === 'verify' ? (
-                    !orders || orders.length === 0 ? (
+                    verifyError ? (
+                        <div className="bg-red-50 p-8 rounded-xl text-center text-red-500">
+                            <h3 className="font-bold">Error loading orders</h3>
+                            <p className="text-sm font-mono mt-2">{verifyError.message || JSON.stringify(verifyError)}</p>
+                        </div>
+                    ) : !orders || orders.length === 0 ? (
                         <div className="bg-white p-8 rounded-xl shadow-sm text-center text-gray-500">
                             <Check className="h-12 w-12 mx-auto text-green-500 mb-3" />
                             <h3 className="font-bold text-gray-900">All Caught Up!</h3>
@@ -225,7 +240,12 @@ export default function VerifyPaymentsPage() {
                     )
                 ) : (
                     // Delivery Tab
-                    !deliveryOrders || deliveryOrders.length === 0 ? (
+                    deliveryError ? (
+                        <div className="bg-red-50 p-8 rounded-xl text-center text-red-500">
+                            <h3 className="font-bold">Error loading deliveries</h3>
+                            <p className="text-sm font-mono mt-2">{deliveryError.message || JSON.stringify(deliveryError)}</p>
+                        </div>
+                    ) : !deliveryOrders || deliveryOrders.length === 0 ? (
                         <div className="bg-white p-8 rounded-xl shadow-sm text-center text-gray-500">
                             <Package className="h-12 w-12 mx-auto text-orange-500 mb-3" />
                             <h3 className="font-bold text-gray-900">No Pending Deliveries</h3>
