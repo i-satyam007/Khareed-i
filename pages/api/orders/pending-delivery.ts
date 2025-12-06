@@ -84,7 +84,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 amount: amount,
                 status: order.paymentStatus,
                 items: order.items ? order.items.map((item: any) => ({
-                    name: item.listing.title,
+                    name: item.listing?.title || "Unknown Item",
                     quantity: item.quantity,
                     price: item.price
                 })) : []

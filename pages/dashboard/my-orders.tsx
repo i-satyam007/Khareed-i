@@ -9,7 +9,7 @@ import DashboardSidebar from '@/components/DashboardSidebar';
 export default function MyOrdersPage() {
     const { user } = useUser();
     const fetcher = (url: string) => fetch(url).then(res => res.json());
-    const { data: orders, mutate } = useSWR(user ? '/api/orders/my-orders' : null, fetcher);
+    const { data: orders, error, mutate } = useSWR(user ? '/api/orders/my-orders' : null, fetcher);
 
     const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
     const [reviewModalOpen, setReviewModalOpen] = useState(false);
@@ -95,9 +95,11 @@ export default function MyOrdersPage() {
                         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8">
                             <h1 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h1>
 
-                            {!orders ? (
+                            {!orders && !error ? (
                                 <div className="text-center py-12">Loading orders...</div>
-                            ) : orders.length === 0 ? (
+                            ) : error ? (
+                                <div className="text-center py-12 text-red-500">Failed to load orders.</div>
+                            ) : !Array.isArray(orders) || orders.length === 0 ? (
                                 <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
                                     <p className="text-gray-500 mb-4">You haven't placed any orders yet.</p>
                                     <Link href="/" className="text-kh-purple font-bold hover:underline">
