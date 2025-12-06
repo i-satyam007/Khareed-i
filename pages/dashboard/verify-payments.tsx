@@ -11,8 +11,6 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export default function VerifyPaymentsPage() {
     const { user, loading } = useUser();
     const router = useRouter();
-    const { user, loading } = useUser();
-    const router = useRouter();
 
     // New SWR for orders pending delivery (Verified but not Shipped)
     // For simplicity, we might need a new API or filter client-side if the API returns all. 
