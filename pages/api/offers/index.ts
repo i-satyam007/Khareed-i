@@ -35,6 +35,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ message: 'Offer amount cannot be greater than the listing price' });
         }
 
+        // 60% Validation Limit
+        if (Number(amount) < (listing.price * 0.6)) {
+            const minAmount = Math.ceil(listing.price * 0.6);
+            return res.status(400).json({ message: `Offer must be at least 60% of the listing price (₹${minAmount})` });
+        }
+
         // Check daily limit (3 offers per day)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
