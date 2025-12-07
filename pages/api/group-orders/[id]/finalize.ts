@@ -41,8 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Use 'amount' from GroupOrderItem
         const totalItemsValue = groupOrder.participants.reduce((sum, item) => sum + item.amount, 0);
         const deliveryFee = groupOrder.deliveryFee || 0;
-        const handlingFee = 10;
-        const totalFees = deliveryFee + handlingFee;
+        const totalFees = deliveryFee;
 
         // 2. Group items by User
         // participants is actually GroupOrderItem[]

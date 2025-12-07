@@ -110,8 +110,7 @@ export default function GroupOrderDetailsPage() {
     // Calculations
     const totalCartValue = order.participants.reduce((acc: number, p: any) => acc + p.items.reduce((sum: number, i: any) => sum + i.price, 0), 0);
     const deliveryFee = order.deliveryFee || 0;
-    const handlingFee = 10;
-    const totalFees = deliveryFee + handlingFee;
+    const totalFees = deliveryFee;
     const finalTotal = totalCartValue + totalFees;
 
     // Current User's Share
@@ -242,10 +241,6 @@ export default function GroupOrderDetailsPage() {
                             <div className="flex justify-between text-gray-600">
                                 <span>Delivery Fee</span>
                                 <span>₹{deliveryFee}</span>
-                            </div>
-                            <div className="flex justify-between text-gray-600">
-                                <span>Handling Fee</span>
-                                <span>₹{handlingFee}</span>
                             </div>
                         </div>
 
