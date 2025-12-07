@@ -17,9 +17,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     hostel: true,
                     createdAt: true,
                     failedPaymentCount: true,
+                    // @ts-ignore
                     trustScorePenalty: true,
                     listings: {
-                        where: { status: 'active' },
+                        where: {
+                            status: 'active',
+                            OR: [
+                                { isAuction: false },
+                                {
+                                    isAuction: true,
+                                    auctionTo: { gt: new Date() }
+                                }
+                            ]
+                        },
                         include: {
                             owner: { select: { name: true, hostel: true } },
                             bids: { orderBy: { amount: 'desc' }, take: 1 }
@@ -49,9 +59,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
             });
 
+            // Cast to any to avoid complex Select type definition issues
+            const apiUser = user as any;
+
             // Calculate rating
-            const averageRating = user.reviews.length > 0
-                ? (user.reviews.reduce((acc, review) => acc + review.rating, 0) / user.reviews.length)
+            const averageRating = apiUser.reviews.length > 0
+                ? (apiUser.reviews.reduce((acc: number, review: any) => acc + review.rating, 0) / apiUser.reviews.length)
                 : 0;
 
             // Calculate Trust Score
@@ -60,17 +73,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             // Penalty: Admin penalties (suspicious activity)
             // Bonus: +2 per star in average rating (max +10)
             // Cap: 100
-            let trustScore = 100 - (user.failedPaymentCount * 10) - (user.trustScorePenalty || 0) + (averageRating * 2);
+            let trustScore = 100 - (apiUser.failedPaymentCount * 10) - (apiUser.trustScorePenalty || 0) + (averageRating * 2);
             if (trustScore > 100) trustScore = 100;
             if (trustScore < 0) trustScore = 0;
 
             return res.status(200).json({
-                ...user,
+                ...apiUser,
                 salesCount,
                 rating: averageRating.toFixed(1),
-                reviewCount: user.reviews.length,
+                reviewCount: apiUser.reviews.length,
                 trustScore: Math.round(trustScore),
-                reviews: user.reviews.map(r => ({
+                reviews: apiUser.reviews.map((r: any) => ({
                     id: r.id,
                     rating: r.rating,
                     comment: r.comment,

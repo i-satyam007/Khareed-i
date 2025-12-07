@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Clock, ShoppingBag } from 'lucide-react';
+import { Clock, ShoppingBag, Banknote, QrCode } from 'lucide-react';
 
 type GroupOrderProps = {
     id: number;
@@ -10,6 +10,7 @@ type GroupOrderProps = {
     minCart: string;
     host: string;
     hostAvatar?: string;
+    paymentMethods?: string[];
 };
 
 function platformColor(platform: GroupOrderProps["platform"]) {
@@ -23,7 +24,7 @@ function platformColor(platform: GroupOrderProps["platform"]) {
     }
 }
 
-export default function GroupOrderCard({ id, platform, title, cutoff, minCart, host, hostAvatar }: GroupOrderProps) {
+export default function GroupOrderCard({ id, platform, title, cutoff, minCart, host, hostAvatar, paymentMethods }: GroupOrderProps) {
     return (
         <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full">
             <div className="flex items-center justify-between mb-3">
@@ -46,14 +47,31 @@ export default function GroupOrderCard({ id, platform, title, cutoff, minCart, h
 
             <h3 className="font-semibold text-gray-900 text-sm mb-2 line-clamp-1">{title}</h3>
 
-            <div className="mt-auto space-y-1.5 border-t border-dashed border-gray-100 pt-3">
-                <div className="flex items-center text-xs text-gray-500 gap-2">
-                    <Clock className="h-3.5 w-3.5" />
-                    <span>{cutoff}</span>
-                </div>
-                <div className="flex items-center text-xs text-gray-500 gap-2">
-                    <ShoppingBag className="h-3.5 w-3.5" />
-                    <span>{minCart}</span>
+            <div className={`mt-auto space-y-1.5 border-t border-dashed border-gray-100 pt-3`}>
+                <div className="flex items-center justify-between">
+                    <div className="space-y-1.5">
+                        <div className="flex items-center text-xs text-gray-500 gap-2">
+                            <Clock className="h-3.5 w-3.5" />
+                            <span>{cutoff}</span>
+                        </div>
+                        <div className="flex items-center text-xs text-gray-500 gap-2">
+                            <ShoppingBag className="h-3.5 w-3.5" />
+                            <span>{minCart}</span>
+                        </div>
+                    </div>
+                    {/* Payment Icons */}
+                    <div className="flex gap-1">
+                        {paymentMethods?.includes('CASH') && (
+                            <div className="p-1 bg-green-50 rounded text-green-700 border border-green-100" title="Cash on Delivery">
+                                <Banknote className="h-3.5 w-3.5" />
+                            </div>
+                        )}
+                        {paymentMethods?.includes('UPI') && (
+                            <div className="p-1 bg-purple-50 rounded text-purple-700 border border-purple-100" title="UPI / QR Code">
+                                <QrCode className="h-3.5 w-3.5" />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

@@ -291,7 +291,20 @@ export default function OrderDetailsPage() {
                                     )}
                                 </div>
                             ) : (
-                                <p className="text-gray-500 text-center py-4">Buyer hasn't uploaded a screenshot yet.</p>
+                                <div className="text-center py-6 bg-gray-50 rounded-xl border border-gray-100">
+                                    <p className="font-bold text-gray-700 mb-1">Cash on Delivery Order</p>
+                                    <p className="text-sm text-gray-500 mb-4">No payment screenshot is expected.</p>
+
+                                    {(order.paymentStatus === 'PENDING' || order.paymentStatus === 'VERIFICATION_PENDING') && (
+                                        <button
+                                            onClick={() => handleVerify('APPROVE')}
+                                            disabled={verifying}
+                                            className="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded-xl transition-colors inline-flex items-center gap-2"
+                                        >
+                                            <Check className="h-5 w-5" /> Mark Payment Received
+                                        </button>
+                                    )}
+                                </div>
                             )}
 
                             {/* Report Modal */}

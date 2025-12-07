@@ -75,19 +75,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             return {
-                id: order.id,
-                trackingId: order.trackingId,
+                ...order,
+                amount,
+                // Add helper fields if needed by frontend but preserve original structure too
                 title: order.groupOrder ? order.groupOrder.title : (order.items && order.items[0]?.listing?.title || 'Order'),
-                type: order.groupOrder ? 'Group Order' : 'Direct Order',
-                buyer: order.user ? (order.user.name || order.user.email) : 'Unknown',
-                date: new Date(order.createdAt).toLocaleDateString(),
-                amount: amount,
-                status: order.paymentStatus,
-                items: order.items ? order.items.map((item: any) => ({
-                    name: item.listing?.title || item.itemName || "Unknown Item",
-                    quantity: item.quantity,
-                    price: item.price
-                })) : []
             };
         });
 

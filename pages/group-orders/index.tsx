@@ -70,6 +70,7 @@ export default function GroupOrdersPage() {
                                 minCart={order.minOrderValue ? `Min ₹${order.minOrderValue}` : "No min"}
                                 host={`${order.creator?.name} (${order.creator?.hostel || 'Unknown'})`}
                                 hostAvatar={order.creator?.avatar}
+                                paymentMethods={order.paymentMethods}
                             />
                         ))}
                     </div>

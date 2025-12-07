@@ -249,11 +249,14 @@ export default function Header() {
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     className="user-btn flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1.5 rounded-lg transition-colors outline-none"
                   >
-                    <div className="w-8 h-8 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold text-xs overflow-hidden">
+                    <div className="w-8 h-8 bg-kh-purple/10 rounded-full flex items-center justify-center text-kh-purple font-bold text-xs overflow-hidden relative">
                       {user.avatar ? (
                         <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                       ) : (
                         user.name ? user.name[0].toUpperCase() : <User className="h-4 w-4" />
+                      )}
+                      {(user.pendingDeliveryCount > 0) && (
+                        <span className="absolute top-0 right-0 block w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white transform translate-x-1/4 -translate-y-1/4"></span>
                       )}
                     </div>
                     <div className="hidden sm:block text-left">
@@ -311,9 +314,14 @@ export default function Header() {
                       </Link>
 
                       {/* Verify Payments Link */}
-                      <Link href="/dashboard/verify-payments" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors relative">
-                        <CheckCircle className="h-4 w-4 text-gray-400" />
-                        Verify Payments
+                      <Link href="/dashboard/verify-payments" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors relative justify-between">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-gray-400" />
+                          Verify Payments
+                        </div>
+                        {(user.pendingDeliveryCount > 0) && (
+                          <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{user.pendingDeliveryCount}</span>
+                        )}
                       </Link>
 
                       <div className="h-px bg-gray-100 my-1" />

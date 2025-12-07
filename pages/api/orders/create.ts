@@ -118,7 +118,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Mark listing as reserved to hide from fresh listings
         await prisma.listing.update({
             where: { id: listingId },
-            data: { status: 'reserved' }
+            data: { status: 'sold' }
         });
 
         return res.status(201).json(order);

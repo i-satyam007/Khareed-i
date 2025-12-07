@@ -154,13 +154,23 @@ export default function VerifyPaymentsPage() {
                                     <div className="flex flex-col md:flex-row gap-6">
                                         {/* Screenshot */}
                                         <div className="w-full md:w-1/3">
-                                            <p className="text-sm font-bold text-gray-700 mb-2">Payment Screenshot</p>
-                                            <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50 aspect-video flex items-center justify-center relative group">
-                                                <img src={order.paymentScreenshot} alt="Proof" className="max-h-full max-w-full object-contain" />
-                                                <a href={order.paymentScreenshot} target="_blank" rel="noreferrer" className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold gap-2">
-                                                    <Eye className="h-5 w-5" /> View Full
-                                                </a>
-                                            </div>
+                                            <p className="text-sm font-bold text-gray-700 mb-2">Payment Proof</p>
+                                            {order.paymentScreenshot ? (
+                                                <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50 aspect-video flex items-center justify-center relative group">
+                                                    <img src={order.paymentScreenshot} alt="Proof" className="max-h-full max-w-full object-contain" />
+                                                    <a href={order.paymentScreenshot} target="_blank" rel="noreferrer" className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold gap-2">
+                                                        <Eye className="h-5 w-5" /> View Full
+                                                    </a>
+                                                </div>
+                                            ) : (
+                                                <div className="rounded-lg overflow-hidden border border-gray-200 bg-yellow-50 aspect-video flex flex-col items-center justify-center p-4 text-center">
+                                                    <div className="bg-yellow-100 p-3 rounded-full mb-2">
+                                                        <Package className="h-6 w-6 text-yellow-600" />
+                                                    </div>
+                                                    <p className="font-bold text-yellow-800 text-sm">Cash on Delivery</p>
+                                                    <p className="text-xs text-yellow-700 mt-1">Verify payment upon receipt</p>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Details */}

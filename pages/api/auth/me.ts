@@ -1,5 +1,6 @@
 // pages/api/auth/me.ts
 import type { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "../../../lib/prisma";
 import { getUser } from "../../../lib/getUser";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -21,7 +22,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       hostel: user.hostel,
       phone: user.phone,
       avatar: user.avatar,
-      blacklistUntil: user.blacklistUntil
+      blacklistUntil: user.blacklistUntil,
+      pendingDeliveryCount: await prisma.order.count({
+        where: {
+          AND: [
+            { OR: [{ paymentStatus: 'VERIFIED' }, { status: 'COMPLETED' }, { status: 'completed' }] },
+            { deliveryStatus: 'PENDING' },
+            {
+              OR: [
+                { items: { some: { listing: { ownerId: user.id } } } },
+                { groupOrder: { creatorId: user.id } }
+              ]
+            }
+          ]
+        }
+      })
     }
   });
 }

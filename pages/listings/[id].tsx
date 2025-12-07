@@ -204,7 +204,7 @@ export default function ProductDetailsPage() {
                                 <span className="text-3xl font-bold text-gray-900">₹{listing.price}</span>
                                 <span className="text-lg text-gray-400 line-through">₹{listing.mrp}</span>
                             </div>
-                            <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-md">{discount}% OFF</span>
+                            {!listing.isAuction && <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-md">{discount}% OFF</span>}
                             {listing.negotiable && (
                                 <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-1 rounded-md border border-blue-100">Negotiable</span>
                             )}
@@ -326,7 +326,11 @@ export default function ProductDetailsPage() {
                                 <div>
                                     <p className="text-sm font-bold text-gray-900">{listing.owner?.name || listing.owner?.username || "Unknown Seller"}</p>
                                     <p className="text-xs text-gray-500 flex items-center gap-1">
-                                        <MapPin className="h-3 w-3" /> {listing.owner?.hostel || "Hostel"}
+                                        {listing.owner?.hostel && (
+                                            <>
+                                                <MapPin className="h-3 w-3" /> {listing.owner.hostel}
+                                            </>
+                                        )}
                                     </p>
                                 </div>
                             </div>
@@ -534,16 +538,16 @@ export default function ProductDetailsPage() {
 
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex justify-center gap-6 mt-4">
                             <button
                                 onClick={handleShare}
-                                className="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 py-2"
+                                className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 py-2 transition-colors"
                             >
-                                <Share2 className="h-4 w-4" /> Share this listing
+                                <Share2 className="h-4 w-4" /> Share
                             </button>
                             <button
                                 onClick={() => alert("Reported to Admin for review.")}
-                                className="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-red-500 hover:text-red-700 py-2"
+                                className="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-700 py-2 transition-colors"
                             >
                                 <Shield className="h-4 w-4" /> Report
                             </button>

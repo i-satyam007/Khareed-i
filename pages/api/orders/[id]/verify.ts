@@ -48,6 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     where: { id: orderId },
                     data: {
                         status: 'COMPLETED',
+                        paymentStatus: 'VERIFIED',
                     },
                 });
 

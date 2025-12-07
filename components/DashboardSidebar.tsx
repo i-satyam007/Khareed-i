@@ -61,8 +61,13 @@ export default function DashboardSidebar({ user, activeTab }: DashboardSidebarPr
                         </Link>
                     )}
 
-                    <Link href="/dashboard/verify-payments" className={`flex items-center gap-3 px-4 py-3 font-medium rounded-xl transition-colors ${activeTab === 'verify-payments' ? 'bg-purple-50 text-kh-purple' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
-                        <BadgeCheck className="h-5 w-5" /> Verify Payments
+                    <Link href="/dashboard/verify-payments" className={`flex items-center justify-between px-4 py-3 font-medium rounded-xl transition-colors ${activeTab === 'verify-payments' ? 'bg-purple-50 text-kh-purple' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+                        <div className="flex items-center gap-3">
+                            <BadgeCheck className="h-5 w-5" /> Verify Payments
+                        </div>
+                        {(user.pendingDeliveryCount > 0) && (
+                            <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{user.pendingDeliveryCount}</span>
+                        )}
                     </Link>
 
                     <Link href="/dashboard/my-listings" className={`flex items-center gap-3 px-4 py-3 font-medium rounded-xl transition-colors ${activeTab === 'my-listings' ? 'bg-purple-50 text-kh-purple' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>

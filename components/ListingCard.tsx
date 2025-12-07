@@ -87,7 +87,7 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
             {/* Image Placeholder */}
             <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
                 {displayImage ? (
-                    <img src={displayImage} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={displayImage} alt={title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">
                         <span className="text-xs">No Image</span>

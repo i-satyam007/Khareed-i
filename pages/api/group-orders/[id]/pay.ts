@@ -33,6 +33,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const { paymentMethod } = req.body;
 
+            // Check if an order already exists for this user and group order
+            const existingOrder = await prisma.order.findFirst({
+                where: {
+                    userId: user.id,
+                    groupOrderId: groupOrderId,
+                }
+            });
+
+            if (existingOrder) {
+                // If order exists but method changed, update it
+                if (paymentMethod && existingOrder.paymentMethod !== paymentMethod) {
+                    await prisma.order.update({
+                        where: { id: existingOrder.id },
+                        data: { paymentMethod }
+                    });
+                }
+                return res.status(200).json(existingOrder);
+            }
+
             const totalAmount = userItems.reduce((sum, item) => sum + (item.amount * item.quantity), 0);
 
             // Create an Order linked to this Group Order

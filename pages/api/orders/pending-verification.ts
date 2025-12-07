@@ -17,21 +17,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // AND status is VERIFICATION_PENDING
         const orders = await prisma.order.findMany({
             where: {
-                paymentStatus: 'VERIFICATION_PENDING',
-                OR: [
+                AND: [
                     {
-                        items: {
-                            some: {
-                                listing: {
-                                    ownerId: user.id
-                                }
+                        OR: [
+                            { paymentStatus: 'VERIFICATION_PENDING' },
+                            {
+                                AND: [
+                                    { paymentStatus: 'PENDING' },
+                                    {
+                                        OR: [
+                                            { items: { some: { listing: { paymentMethods: { has: 'CASH' } } } } },
+                                            { groupOrder: { paymentMethods: { has: 'CASH' } } }
+                                        ]
+                                    }
+                                ]
                             }
-                        }
+                        ]
                     },
                     {
-                        groupOrder: {
-                            creatorId: user.id
-                        }
+                        OR: [
+                            {
+                                items: {
+                                    some: {
+                                        listing: {
+                                            ownerId: user.id
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                groupOrder: {
+                                    creatorId: user.id
+                                }
+                            }
+                        ]
                     }
                 ]
             },
