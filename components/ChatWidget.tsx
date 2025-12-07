@@ -63,17 +63,37 @@ export default function ChatWidget() {
         e.preventDefault();
         if (!message.trim() || !selectedUser) return;
 
-        try {
-            await fetch('/api/chat/send', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ receiverId: selectedUser.id, content: message }),
-            });
-            setMessage("");
-            mutateMessages();
-        } catch (error) {
-            console.error("Failed to send message", error);
-        }
+        const newMessage = {
+            id: Date.now(), // Temp ID
+            senderId: user.id,
+            receiverId: selectedUser.id,
+            content: message,
+            createdAt: new Date().toISOString(),
+        };
+
+        const optimisticMessages = messages ? [...messages, newMessage] : [newMessage];
+
+        setMessage(""); // Clear input immediately for responsiveness
+
+        // Mutate immediately with optimistic data, keep validating in background
+        mutateMessages(
+            async () => {
+                await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ receiverId: selectedUser.id, content: newMessage.content }),
+                });
+                // After send, fetch latest to get real ID and ensure sync
+                const res = await fetch(`/api/chat/messages?userId=${selectedUser.id}`);
+                return res.json();
+            },
+            {
+                optimisticData: optimisticMessages,
+                rollbackOnError: true,
+                revalidate: false,
+                populateCache: true
+            }
+        );
     };
 
     if (!user) return null;

@@ -61,14 +61,24 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
     const toggleWatchlist = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+
+        const previousState = inWatchlist;
+        setInWatchlist(!previousState); // Optimistic Update
+
         try {
             const res = await fetch(`/api/listings/${id}/watchlist`, { method: 'POST' });
-            if (res.ok) {
+            if (!res.ok) {
+                // Revert on error
+                setInWatchlist(previousState);
+                console.error("Failed to update watchlist");
+            } else {
                 const data = await res.json();
+                // Ensure sync with server response (optional, usually matches optimistic)
                 setInWatchlist(data.inWatchlist);
             }
         } catch (error) {
             console.error(error);
+            setInWatchlist(previousState); // Revert on network error
         }
     };
 
