@@ -32,6 +32,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(404).json({ message: 'Listing not found' });
         }
 
+        // IDEMPOTENCY CHECK: Check if user already has a pending order for this listing
+        const existingOrder = await prisma.order.findFirst({
+            where: {
+                userId: user.id,
+                items: { some: { listingId: listingId } },
+                status: 'PENDING_PAYMENT',
+            },
+        });
+
+        if (existingOrder) {
+            return res.status(200).json(existingOrder);
+        }
+
         if (listing.status !== 'active') {
             return res.status(400).json({ message: 'Listing is not active' });
         }

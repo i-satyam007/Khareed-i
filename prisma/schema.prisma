@@ -147,6 +147,7 @@ model GroupOrder {
   status       String           @default("open")
   createdAt    DateTime         @default(now())
   deliveryFee  Int              @default(0)
+  minOrderValue Int             @default(0)
 
   // Payment Methods
   paymentMethods String[]       @default(["CASH"]) // ["UPI", "CASH"]

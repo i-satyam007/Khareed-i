@@ -19,6 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             where: {
                 AND: [
                     {
+                        paymentStatus: {
+                            notIn: ['VERIFIED', 'REJECTED', 'COMPLETED']
+                        }
+                    },
+                    {
                         OR: [
                             { paymentStatus: 'VERIFICATION_PENDING' },
                             {

@@ -128,7 +128,7 @@ export default function BuyPage() {
                                 <MapPin className="h-5 w-5 text-gray-500" /> Pickup Location
                             </h3>
                             <div className="pl-7">
-                                <p className="text-sm text-gray-700 font-medium">Seller's Hostel: {listing.owner?.hostel || "Campus"}</p>
+                                <p className="text-sm text-gray-700 font-medium">Seller's Hostel: {listing.owner?.hostel || "Not Provided"}</p>
                                 <p className="text-xs text-gray-500 mt-1">
                                     Meet the seller at a public place (e.g., Common Room, Mess) to inspect the item and collect it.
                                 </p>

@@ -123,12 +123,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 where: { id: listingId },
                 include: {
                     owner: {
+                        // @ts-ignore
                         select: {
                             id: true,
                             name: true,
                             username: true,
                             email: true,
                             avatar: true,
+                            hostel: true,
                         },
                     },
                     bids: {

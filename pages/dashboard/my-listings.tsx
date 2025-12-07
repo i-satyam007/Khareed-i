@@ -53,7 +53,48 @@ export default function MyListingsPage() {
         }
     };
 
-    if (!user) return <div>Loading...</div>;
+    if (!user) {
+        return (
+            <div className="min-h-screen bg-gray-50 font-sans">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        {/* Sidebar Skeleton */}
+                        <div className="w-full lg:w-64 space-y-4">
+                            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
+                                <Skeleton className="w-12 h-12 rounded-full" />
+                                <div>
+                                    <Skeleton className="h-4 w-24 mb-2" />
+                                    <Skeleton className="h-3 w-16" />
+                                </div>
+                            </div>
+                            <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-2">
+                                {[...Array(5)].map((_, i) => (
+                                    <Skeleton key={i} className="h-10 w-full rounded-lg" />
+                                ))}
+                            </div>
+                        </div>
+                        {/* Main Content Skeleton */}
+                        <div className="flex-1">
+                            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8 space-y-6">
+                                <div className="flex justify-between items-center">
+                                    <Skeleton className="h-8 w-48" />
+                                    <div className="flex gap-2">
+                                        <Skeleton className="h-9 w-24 rounded-lg" />
+                                        <Skeleton className="h-9 w-32 rounded-lg" />
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    {[...Array(3)].map((_, i) => (
+                                        <Skeleton key={i} className="h-24 w-full rounded-xl" />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans">

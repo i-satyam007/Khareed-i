@@ -57,7 +57,27 @@ export default function GroupOrdersPage() {
 
                 {/* Grid */}
                 {isLoading ? (
-                    <div className="text-center py-20">Loading...</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[...Array(6)].map((_, i) => (
+                            <div key={i} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm space-y-4">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="h-6 w-16 bg-gray-200 rounded animate-pulse" />
+                                    <div className="flex items-center gap-2 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
+                                        <div className="w-4 h-4 rounded-full bg-gray-200 animate-pulse" />
+                                        <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+                                    </div>
+                                </div>
+                                <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse mb-2" />
+                                <div className="border-t border-dashed border-gray-100 pt-3 flex justify-between">
+                                    <div className="space-y-2">
+                                        <div className="h-3 w-20 bg-gray-200 rounded animate-pulse" />
+                                        <div className="h-3 w-20 bg-gray-200 rounded animate-pulse" />
+                                    </div>
+                                </div>
+                                <div className="h-8 w-full bg-gray-200 rounded animate-pulse mt-4" />
+                            </div>
+                        ))}
+                    </div>
                 ) : filteredOrders.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredOrders.map((order: any) => (

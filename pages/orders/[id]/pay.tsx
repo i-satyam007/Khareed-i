@@ -17,16 +17,41 @@ export default function UpiPaymentPage() {
 
     // Timer Logic
     useEffect(() => {
-        if (!timerActive || timeLeft <= 0) return;
+        if (!order || !timerActive) return;
 
-        const timer = setInterval(() => {
-            setTimeLeft((prev) => prev - 1);
-        }, 1000);
+        const checkTimer = () => {
+            const createdAt = new Date(order.createdAt).getTime();
+            const expiresAt = createdAt + 10 * 60 * 1000; // 10 minutes
+            const now = Date.now();
+            const diff = Math.floor((expiresAt - now) / 1000);
+
+            if (diff <= 0) {
+                setTimeLeft(0);
+                handleExpire();
+            } else {
+                setTimeLeft(diff);
+            }
+        };
+
+        const handleExpire = async () => {
+            setTimerActive(false);
+            try {
+                await fetch(`/api/orders/${id}/expire`, { method: 'POST' });
+                alert("Payment time expired. The order has been cancelled.");
+                router.push('/');
+            } catch (error) {
+                console.error("Expiration failed", error);
+            }
+        };
+
+        checkTimer(); // Initial check
+        const timer = setInterval(checkTimer, 1000);
 
         return () => clearInterval(timer);
-    }, [timerActive, timeLeft]);
+    }, [order, timerActive]);
 
     const formatTime = (seconds: number) => {
+        if (seconds <= 0) return "0:00";
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}:${secs < 10 ? '0' : ''}${secs}`;

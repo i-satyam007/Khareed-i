@@ -71,6 +71,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     creatorId: user.id,
                     status: 'open',
                     deliveryFee: deliveryFee ? Math.round(Number(deliveryFee)) : 0,
+                    // @ts-ignore
+                    minOrderValue: minOrderValue ? Math.round(Number(minOrderValue)) : 0,
                     paymentMethods: req.body.paymentMethods || ["CASH"],
                 },
             });
