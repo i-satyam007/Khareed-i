@@ -23,9 +23,10 @@ type ListingProps = {
         name: string;
         avatar?: string;
     };
+    inWatchlist?: boolean;
 };
 
-export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt, updatedAt, condition, category, bids, paymentMethods, owner }: ListingProps) {
+export default function ListingCard({ id, title, price, mrp, image, imagePath, negotiable, isAuction, endTime, postedAt, createdAt, updatedAt, condition, category, bids, paymentMethods, owner, inWatchlist: inWatchlistProp }: ListingProps) {
     const discount = Math.round(((mrp - price) / mrp) * 100);
     const displayImage = image || imagePath;
 
@@ -55,7 +56,7 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
 
     const editedText = isEdited() ? ` • Edited ${timeAgo(updatedAt!)}` : "";
 
-    const [inWatchlist, setInWatchlist] = React.useState(false);
+    const [inWatchlist, setInWatchlist] = React.useState(inWatchlistProp || false);
     // Check if user has this item in watchlist (requires user context, skipping for now or fetching separately)
 
     const toggleWatchlist = async (e: React.MouseEvent) => {
