@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { LayoutDashboard, Users, Package, AlertTriangle, Shield, LogOut, Check, X, Search, Trash2, Eye, BadgeCheck } from 'lucide-react';
 import useSWR from 'swr';
 import { useUser } from '@/lib/hooks/useUser';
+import Skeleton from '@/components/Skeleton';
 
 // Fetcher
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -20,7 +21,22 @@ export default function AdminDashboard() {
     }, [user, loading, loggedOut]);
 
     if (loading || !user || user.role !== 'admin') {
-        return <div className="min-h-screen flex items-center justify-center">Loading Admin Dashboard...</div>;
+        return (
+            <div className="min-h-screen bg-gray-100 font-sans flex">
+                <aside className="w-64 bg-gray-900 text-white flex-shrink-0 hidden md:flex flex-col p-6 space-y-6">
+                    <Skeleton className="h-8 w-3/4 bg-gray-800" />
+                    <div className="space-y-3">
+                        {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-full bg-gray-800 rounded-xl" />)}
+                    </div>
+                </aside>
+                <main className="flex-1 p-8 space-y-6">
+                    <Skeleton className="h-8 w-1/4 mb-6" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+                    </div>
+                </main>
+            </div>
+        );
     }
 
     return (

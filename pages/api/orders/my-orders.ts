@@ -86,7 +86,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 paymentStatus: order.paymentStatus,
                 deliveryStatus: order.deliveryStatus,
                 seller,
-                sellerId
+                sellerId,
+                totalAmount: amount,
+                createdAt: order.createdAt,
+                items: order.items.map(item => ({
+                    id: item.id,
+                    quantity: item.quantity,
+                    price: item.price,
+                    itemName: item.itemName,
+                    listing: item.listing ? {
+                        id: item.listing.id,
+                        title: item.listing.title,
+                        imagePath: item.listing.imagePath
+                    } : null
+                }))
             };
         });
 

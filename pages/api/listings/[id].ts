@@ -22,14 +22,99 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         try {
             const user = await getUser(req);
 
-            // First fetch the listing to check ownership
-            const listingCheck = await prisma.listing.findUnique({
+            // First fetch the listing to check ownership and basic details
+            let listingCheck = await prisma.listing.findUnique({
                 where: { id: listingId },
-                select: { ownerId: true }
+                select: {
+                    id: true,
+                    ownerId: true,
+                    isAuction: true,
+                    status: true,
+                    auctionTo: true,
+                    title: true,
+                    price: true
+                }
             });
 
             if (!listingCheck) {
                 return res.status(404).json({ message: "Listing not found" });
+            }
+
+            // Lazy Finalization Check
+            if (listingCheck.isAuction && listingCheck.status === 'active' && listingCheck.auctionTo && new Date(listingCheck.auctionTo) < new Date()) {
+                await prisma.$transaction(async (tx) => {
+                    // Find highest bidder
+                    const winningBid = await tx.bid.findFirst({
+                        where: { listingId },
+                        orderBy: { amount: 'desc' },
+                        include: { bidder: true }
+                    });
+
+                    if (winningBid) {
+                        // Mark sold and create order
+                        await tx.listing.update({
+                            where: { id: listingId },
+                            data: { status: 'sold' } // Or 'reserved' until paid? "sold" is safer to stop updates
+                        });
+
+                        // Create Order
+                        const order = await tx.order.create({
+                            data: {
+                                userId: winningBid.bidderId,
+                                totalAmount: winningBid.amount,
+                                status: 'PENDING_PAYMENT',
+                                deliveryStatus: 'PENDING',
+                                items: {
+                                    create: {
+                                        listingId: listingId,
+                                        price: winningBid.amount,
+                                        quantity: 1
+                                    }
+                                }
+                            }
+                        });
+
+                        // Notify Winner
+                        await tx.notification.create({
+                            data: {
+                                userId: winningBid.bidderId,
+                                title: "Auction Won!",
+                                body: `You won the auction for "${listingCheck!.title}"! Please make the payment of ₹${winningBid.amount}.`,
+                                type: "alert",
+                                link: `/orders/${order.id}/pay`
+                            }
+                        });
+
+                        // Notify Seller
+                        await tx.notification.create({
+                            data: {
+                                userId: listingCheck!.ownerId,
+                                title: "Auction Ended",
+                                body: `Your auction for "${listingCheck!.title}" has ended. Waiting for payment from ${winningBid.bidder.name}.`,
+                                type: "info",
+                                link: `/orders/${order.id}`
+                            }
+                        });
+
+                    } else {
+                        // No bids -> Expired
+                        await tx.listing.update({
+                            where: { id: listingId },
+                            data: { status: 'expired' }
+                        });
+
+                        // Notify Seller
+                        await tx.notification.create({
+                            data: {
+                                userId: listingCheck!.ownerId,
+                                title: "Auction Expired",
+                                body: `Your auction for "${listingCheck!.title}" ended with no bids.`,
+                                type: "info",
+                                link: `/listings/${listingCheck!.id}`
+                            }
+                        });
+                    }
+                });
             }
 
             const isOwner = user?.id === listingCheck.ownerId;

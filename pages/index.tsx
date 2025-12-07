@@ -4,7 +4,8 @@ import useSWR from 'swr';
 import HeroBanner from "../components/HeroBanner";
 import ListingCard from "../components/ListingCard";
 import GroupOrderCard from "../components/GroupOrderCard";
-import { ArrowRight, ShoppingBag, Loader2 } from "lucide-react";
+import Skeleton, { SkeletonCircle } from "../components/Skeleton";
+import { ArrowRight, ShoppingBag } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -60,8 +61,19 @@ export default function Home() {
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center py-10">
-              <Loader2 className="h-8 w-8 text-kh-purple animate-spin" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-white border border-gray-100 rounded-xl overflow-hidden h-full">
+                  <Skeleton className="aspect-[4/3] w-full" />
+                  <div className="p-4 space-y-3">
+                    <Skeleton className="h-4 w-3/4" />
+                    <div className="flex justify-between items-center pt-2">
+                      <Skeleton className="h-6 w-1/3" />
+                      <Skeleton className="h-4 w-1/4" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : error ? (
             <div className="text-center py-10 text-red-500">Failed to load listings.</div>
@@ -89,8 +101,23 @@ export default function Home() {
           </div>
 
           {isGroupOrdersLoading ? (
-            <div className="flex justify-center py-10">
-              <Loader2 className="h-8 w-8 text-kh-purple animate-spin" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <SkeletonCircle className="w-10 h-10" />
+                    <div className="space-y-1 flex-1">
+                      <Skeleton className="h-4 w-1/2" />
+                      <Skeleton className="h-3 w-1/3" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-20 w-full" />
+                  <div className="flex justify-between">
+                    <Skeleton className="h-8 w-1/3 rounded-full" />
+                    <Skeleton className="h-8 w-1/3 rounded-full" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : activeGroupOrders.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

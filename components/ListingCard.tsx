@@ -130,7 +130,7 @@ export default function ListingCard({ id, title, price, mrp, image, imagePath, n
                     <div className="flex items-baseline gap-2">
                         <span className="text-lg font-bold text-gray-900">₹{price}</span>
                         <span className="text-xs text-gray-400 line-through">₹{mrp}</span>
-                        <span className="text-xs font-bold text-green-600">{discount}% OFF</span>
+                        {!isAuction && <span className="text-xs font-bold text-green-600">{discount}% OFF</span>}
                     </div>
 
                     {/* Auction Timer or Posted Time */}

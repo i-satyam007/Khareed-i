@@ -11,10 +11,14 @@ const CATEGORIES = ["All Categories", "Electronics", "Books", "Hostel Essentials
 
 export default function ListingsPage() {
     const router = useRouter();
-    const { search } = router.query;
+    const { search, category } = router.query;
 
     const [showFilters, setShowFilters] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("All Categories");
+
+    React.useEffect(() => {
+        if (category) setSelectedCategory(category as string);
+    }, [category]);
     const [priceRange, setPriceRange] = useState(10000);
     const [onlyNegotiable, setOnlyNegotiable] = useState(false);
 

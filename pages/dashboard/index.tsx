@@ -9,6 +9,7 @@ import { useUser } from '@/lib/hooks/useUser';
 import useSWR from 'swr';
 import ListingCard from '@/components/ListingCard';
 import DashboardSidebar from '@/components/DashboardSidebar';
+import Skeleton from '@/components/Skeleton';
 
 export default function DashboardProfile() {
     const { user, mutate } = useUser();
@@ -26,7 +27,7 @@ export default function DashboardProfile() {
 
     // Fetch Watchlist
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
-    const { data: watchlist = [] } = useSWR(user ? `/api/users/watchlist` : null, fetcher);
+    const { data: watchlist } = useSWR(user ? `/api/users/watchlist` : null, fetcher);
 
     useEffect(() => {
         if (user) {
@@ -247,7 +248,22 @@ export default function DashboardProfile() {
                         {activeTab === 'watchlist' && (
                             <div className="space-y-6">
                                 <h1 className="text-2xl font-bold text-gray-900">My Watchlist</h1>
-                                {watchlist.length > 0 ? (
+                                {!watchlist ? (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {[...Array(6)].map((_, i) => (
+                                            <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                                                <Skeleton className="h-48 w-full" />
+                                                <div className="p-4 space-y-3">
+                                                    <Skeleton className="h-6 w-3/4" />
+                                                    <div className="flex justify-between">
+                                                        <Skeleton className="h-4 w-1/4" />
+                                                        <Skeleton className="h-4 w-1/4" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : watchlist.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                         {watchlist.map((listing: any) => (
                                             <ListingCard key={listing.id} {...listing} />

@@ -12,10 +12,9 @@ export function useUser() {
     if (data?.user?.blacklistUntil) {
         const blacklistDate = new Date(data.user.blacklistUntil);
         if (blacklistDate > new Date()) {
-            // Force Logout
-            fetch("/api/auth/logout", { method: "POST" }).then(() => {
-                window.location.href = "/login?error=banned";
-            });
+            if (typeof window !== 'undefined' && window.location.pathname !== '/suspended') {
+                window.location.href = '/suspended';
+            }
         }
     }
 

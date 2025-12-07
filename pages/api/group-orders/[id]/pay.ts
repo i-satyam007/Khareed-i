@@ -31,6 +31,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(400).json({ message: 'No items to pay for' });
             }
 
+            const { paymentMethod } = req.body;
+
             const totalAmount = userItems.reduce((sum, item) => sum + (item.amount * item.quantity), 0);
 
             // Create an Order linked to this Group Order
@@ -40,6 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     totalAmount: totalAmount,
                     status: 'pending', // Simulating Escrow
                     groupOrderId: groupOrderId,
+                    paymentMethod: paymentMethod || 'CASH',
                 },
             });
 

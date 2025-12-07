@@ -14,13 +14,18 @@ export default function GroupOrderDetailsPage() {
     const [newItemName, setNewItemName] = useState("");
     const [newItemPrice, setNewItemPrice] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
 
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
     const { data: order, isLoading, mutate: mutateOrder } = useSWR(id ? `/api/group-orders/${id}` : null, fetcher);
 
     const handleAddItem = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newItemName || !newItemPrice) return;
+
+        if (!newItemName || !newItemPrice || Number(newItemPrice) <= 0) {
+            alert("Please enter a valid name and positive price");
+            return;
+        }
 
         setIsSubmitting(true);
         try {
@@ -85,15 +90,27 @@ export default function GroupOrderDetailsPage() {
     };
 
     const handlePay = async () => {
-        if (!confirm('Proceed to pay for your share?')) return;
+        if (!selectedPaymentMethod) {
+            alert('Please select a payment method');
+            return;
+        }
+
+        if (!confirm(`Proceed to pay via ${selectedPaymentMethod === 'CASH' ? 'Cash' : 'UPI'}?`)) return;
+
         try {
             const res = await fetch(`/api/group-orders/${id}/pay`, {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentMethod: selectedPaymentMethod }),
             });
 
             if (res.ok) {
-                alert('Payment initiated! (Escrow)');
-                router.push('/orders'); // Redirect to orders page
+                const data = await res.json();
+                if (selectedPaymentMethod === 'UPI') {
+                    router.push(`/orders/${data.id}/pay`);
+                } else {
+                    router.push('/orders?alert=order_placed');
+                }
             } else {
                 const error = await res.json();
                 alert(error.message || 'Failed to initiate payment');
@@ -166,6 +183,7 @@ export default function GroupOrderDetailsPage() {
                                 placeholder="Price (₹)"
                                 value={newItemPrice}
                                 onChange={(e) => setNewItemPrice(e.target.value)}
+                                min="1"
                                 className="w-24 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-kh-purple"
                             />
                             <button type="submit" disabled={isSubmitting} className="bg-kh-purple hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-colors disabled:opacity-50">
@@ -256,10 +274,47 @@ export default function GroupOrderDetailsPage() {
                                     <span>Payable Now</span>
                                     <span>₹{Math.round(userFinal)}</span>
                                 </div>
+
+
                             </div>
                         )}
 
-                        <button onClick={handlePay} disabled={!userTotal || order.status !== 'open'} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mb-3">
+                        {/* Payment Method Selection */}
+                        {userTotal > 0 && order.status === 'open' && (
+                            <div className="mb-4">
+                                <p className="text-xs font-bold text-gray-900 mb-2 uppercase">Payment Method</p>
+                                <div className="space-y-2">
+                                    {order.paymentMethods?.includes('CASH') && (
+                                        <label className={`flex items-center gap-2 p-2.5 border rounded-lg cursor-pointer transition-all ${selectedPaymentMethod === 'CASH' ? 'border-kh-purple bg-purple-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <input
+                                                type="radio"
+                                                name="paymentMethod"
+                                                value="CASH"
+                                                checked={selectedPaymentMethod === 'CASH'}
+                                                onChange={() => setSelectedPaymentMethod('CASH')}
+                                                className="w-4 h-4 text-kh-purple focus:ring-kh-purple"
+                                            />
+                                            <span className={`text-sm font-bold ${selectedPaymentMethod === 'CASH' ? 'text-purple-900' : 'text-gray-700'}`}>Cash on Delivery</span>
+                                        </label>
+                                    )}
+                                    {order.paymentMethods?.includes('UPI') && (
+                                        <label className={`flex items-center gap-2 p-2.5 border rounded-lg cursor-pointer transition-all ${selectedPaymentMethod === 'UPI' ? 'border-kh-purple bg-purple-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <input
+                                                type="radio"
+                                                name="paymentMethod"
+                                                value="UPI"
+                                                checked={selectedPaymentMethod === 'UPI'}
+                                                onChange={() => setSelectedPaymentMethod('UPI')}
+                                                className="w-4 h-4 text-kh-purple focus:ring-kh-purple"
+                                            />
+                                            <span className={`text-sm font-bold ${selectedPaymentMethod === 'UPI' ? 'text-purple-900' : 'text-gray-700'}`}>UPI / QR Code</span>
+                                        </label>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        <button onClick={handlePay} disabled={!userTotal || order.status !== 'open' || !selectedPaymentMethod} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mb-3">
                             Proceed to Pay <ArrowRight className="h-4 w-4" />
                         </button>
 

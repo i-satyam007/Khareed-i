@@ -180,7 +180,7 @@ export default function Header() {
                 title="Messages"
               >
                 <MessageCircle className="h-6 w-6" />
-                <UnreadChatBadge />
+                {user && <UnreadChatBadge />}
               </button>
 
               {/* Notification Bell */}
