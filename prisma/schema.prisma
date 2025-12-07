@@ -27,6 +27,7 @@ model User {
   upiId              String?
   qrCode             String?        // Path to QR image
   failedPaymentCount Int            @default(0)
+  trustScorePenalty  Int            @default(0)
   blacklistUntil     DateTime?
 
   // Verified Student Status

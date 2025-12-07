@@ -17,6 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     hostel: true,
                     createdAt: true,
                     failedPaymentCount: true,
+                    trustScorePenalty: true,
                     listings: {
                         where: { status: 'active' },
                         include: {
@@ -56,9 +57,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             // Calculate Trust Score
             // Base: 100
             // Penalty: -10 per failed payment
+            // Penalty: Admin penalties (suspicious activity)
             // Bonus: +2 per star in average rating (max +10)
             // Cap: 100
-            let trustScore = 100 - (user.failedPaymentCount * 10) + (averageRating * 2);
+            let trustScore = 100 - (user.failedPaymentCount * 10) - (user.trustScorePenalty || 0) + (averageRating * 2);
             if (trustScore > 100) trustScore = 100;
             if (trustScore < 0) trustScore = 0;
 

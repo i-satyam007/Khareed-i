@@ -70,7 +70,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     cutoff: cutoffDate,
                     creatorId: user.id,
                     status: 'open',
-                    deliveryFee: Number(deliveryFee) || 0,
+                    deliveryFee: deliveryFee ? Math.round(Number(deliveryFee)) : 0,
                     paymentMethods: req.body.paymentMethods || ["CASH"],
                 },
             });

@@ -30,6 +30,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(403).json({ message: 'Forbidden' });
             }
 
+            if (order.status === 'CANCELLED') {
+                return res.status(400).json({ message: 'Order has expired and is cancelled.' });
+            }
+
+            const createdAt = new Date(order.createdAt);
+            const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+            if (order.status === 'PENDING_PAYMENT' && createdAt < tenMinutesAgo) {
+                await prisma.order.update({
+                    where: { id: orderId },
+                    data: { status: 'CANCELLED' }
+                });
+                return res.status(400).json({ message: 'Order has expired.' });
+            }
+
             const updatedOrder = await prisma.order.update({
                 where: { id: orderId },
                 data: {

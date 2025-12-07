@@ -8,111 +8,77 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const user = await getUser(req);
-    if (!user || user.role !== 'admin') {
+    // Assuming we have an admin role logic, for now anyone "can" hit this if we don't strict check
+    // But let's check basic auth
+    if (!user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const { id } = req.query;
-    const { decision, comment } = req.body; // decision: 'APPROVE' (Buyer correct) or 'REJECT' (Seller correct)
+    // Ideally check if user.role === 'admin'. Assuming schema has role, it does (default 'user')
+    if (user.role !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+    }
 
-    if (!id || !decision || !comment) {
-        return res.status(400).json({ message: 'Missing fields' });
+    const { id } = req.query;
+    const reportId = Number(id);
+    const { action, adminComment } = req.body; // 'SUSPICIOUS' | 'FALSE_ALARM'
+
+    if (!['SUSPICIOUS', 'FALSE_ALARM'].includes(action)) {
+        return res.status(400).json({ message: 'Invalid action' });
     }
 
     try {
         const report = await prisma.report.findUnique({
-            where: { id: Number(id) },
-            include: { order: { include: { items: { include: { listing: true } } } } }
+            where: { id: reportId }
         });
 
         if (!report) {
             return res.status(404).json({ message: 'Report not found' });
         }
 
-        // Transaction to ensure atomicity
+        if (report.status !== 'PENDING') {
+            return res.status(400).json({ message: 'Report already resolved' });
+        }
+
+        // Transaction to update Report and User Penalty
         await prisma.$transaction(async (tx) => {
-            // 1. Update Report Status
-            await tx.report.update({
-                where: { id: Number(id) },
-                data: {
-                    status: decision === 'APPROVE' ? 'RESOLVED_APPROVE' : 'RESOLVED_REJECT',
-                    adminComment: comment
-                }
-            });
-
-            if (decision === 'APPROVE') {
-                // Buyer was correct. Seller wrongly rejected payment.
-                // Action: Penalize Seller, Verify Payment, Notify Both.
-
-                // Penalize Seller
+            if (action === 'SUSPICIOUS') {
+                // Penalize Seller (Reported User)
                 await tx.user.update({
                     where: { id: report.reportedId },
-                    data: { failedPaymentCount: { increment: 1 } }
-                });
-
-                // Verify Payment (Force Approve)
-                await tx.order.update({
-                    where: { id: report.orderId },
-                    data: { status: 'completed', paymentStatus: 'VERIFIED' } // Assuming 'completed' is the verified state based on previous context
-                });
-
-                // Notify Seller (Penalty)
-                await tx.notification.create({
                     data: {
-                        userId: report.reportedId,
-                        title: 'Admin Resolved Dispute: Penalty Applied',
-                        body: `Admin approved buyer's report for Order #${report.orderId}. You wrongly rejected a valid payment. Your Trust Score has been reduced. Admin Comment: ${comment}`,
-                        type: 'alert',
-                        link: `/orders/${report.orderId}`
+                        trustScorePenalty: { increment: 10 }
                     }
                 });
 
-                // Notify Buyer (Success)
-                await tx.notification.create({
+                await tx.report.update({
+                    where: { id: reportId },
                     data: {
-                        userId: report.reporterId,
-                        title: 'Dispute Resolved in Your Favor',
-                        body: `Admin approved your report for Order #${report.orderId}. Payment is now verified. Admin Comment: ${comment}`,
-                        type: 'success',
-                        link: `/orders/${report.orderId}`
+                        status: 'RESOLVED_SUSPICIOUS',
+                        adminComment: adminComment || "Marked as suspicious activity."
                     }
                 });
-
             } else {
-                // Seller was correct. Buyer made a false report.
-                // Action: Penalize Buyer, Keep Payment Rejected, Notify Both.
-
-                // Penalize Buyer
+                // False Alarm -> Penalize Reporter (Buyer)
                 await tx.user.update({
                     where: { id: report.reporterId },
-                    data: { failedPaymentCount: { increment: 1 } }
-                });
-
-                // Notify Buyer (Penalty)
-                await tx.notification.create({
                     data: {
-                        userId: report.reporterId,
-                        title: 'Dispute Rejected: Penalty Applied',
-                        body: `Admin rejected your report for Order #${report.orderId}. Your Trust Score has been reduced. Admin Comment: ${comment}`,
-                        type: 'alert',
-                        link: `/orders/${report.orderId}`
+                        trustScorePenalty: { increment: 10 }
                     }
                 });
 
-                // Notify Seller (Success)
-                await tx.notification.create({
+                await tx.report.update({
+                    where: { id: reportId },
                     data: {
-                        userId: report.reportedId,
-                        title: 'Dispute Resolved in Your Favor',
-                        body: `Admin rejected the buyer's false report for Order #${report.orderId}. No action needed. Admin Comment: ${comment}`,
-                        type: 'success',
-                        link: `/orders/${report.orderId}`
+                        status: 'RESOLVED_FALSE',
+                        adminComment: adminComment || "Marked as false alarm."
                     }
                 });
             }
         });
 
-        return res.status(200).json({ message: 'Resolved successfully' });
+        return res.status(200).json({ message: 'Report resolved successfully' });
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal server error' });

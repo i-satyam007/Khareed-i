@@ -41,6 +41,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(404).json({ message: 'Order not found' });
             }
 
+            // Lazy Expiry Logic
+            if (order.status === 'PENDING_PAYMENT') {
+                const createdAt = new Date(order.createdAt);
+                const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+
+                if (createdAt < tenMinutesAgo) {
+                    // Order has expired
+                    await prisma.order.update({
+                        where: { id: orderId },
+                        data: { status: 'CANCELLED' }
+                    });
+                    order.status = 'CANCELLED'; // Update local object
+                }
+            }
+
             // Access control: User must be buyer or seller
             const isBuyer = order.userId === user.id;
             const isSeller = (order.items.length > 0 && order.items[0].listing?.ownerId === user.id) ||
