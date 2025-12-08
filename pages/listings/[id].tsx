@@ -25,6 +25,11 @@ export default function ProductDetailsPage() {
 
     const { data: myOffer } = useSWR(user && !isOwner && listing ? `/api/listings/${id}/my-offer` : null, fetcher);
 
+    // Moved hooks to top level to avoid React error #310
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportReason, setReportReason] = useState("");
+
     const handleMakeOffer = async (amount: number) => {
         try {
             const res = await fetch('/api/offers', {
@@ -64,7 +69,7 @@ export default function ProductDetailsPage() {
         }
     };
 
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+
 
     const handleConfirmOrder = async () => {
         // Allow if myOffer exists OR if it's an auction win
@@ -142,8 +147,7 @@ export default function ProductDetailsPage() {
         }
     };
 
-    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-    const [reportReason, setReportReason] = useState("");
+
 
     const handleReport = async () => {
         if (!reportReason.trim()) return alert("Please provide a reason.");
