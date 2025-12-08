@@ -21,6 +21,7 @@ export default function ListingsPage() {
     }, [category]);
     const [priceRange, setPriceRange] = useState(10000);
     const [onlyNegotiable, setOnlyNegotiable] = useState(false);
+    const [sortBy, setSortBy] = useState("newest");
 
     // Construct API URL based on category and search
     // Note: We fetch based on category/search from server, and filter price/negotiable on client for now.
@@ -34,6 +35,10 @@ export default function ListingsPage() {
         const priceMatch = item.price <= priceRange;
         const negMatch = !onlyNegotiable || item.negotiable;
         return priceMatch && negMatch;
+    }).sort((a: any, b: any) => {
+        if (sortBy === 'price_asc') return a.price - b.price;
+        if (sortBy === 'price_desc') return b.price - a.price;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Default newest
     }) : [];
 
     return (
@@ -131,10 +136,14 @@ export default function ListingsPage() {
 
                             <div className="flex items-center gap-2">
                                 <span className="text-sm text-gray-500 hidden sm:inline">Sort by:</span>
-                                <select className="bg-white border border-gray-200 text-sm rounded-lg p-2 focus:outline-none focus:border-kh-purple">
-                                    <option>Newest First</option>
-                                    <option>Price: Low to High</option>
-                                    <option>Price: High to Low</option>
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value)}
+                                    className="bg-white border border-gray-200 text-sm rounded-lg p-2 focus:outline-none focus:border-kh-purple"
+                                >
+                                    <option value="newest">Newest First</option>
+                                    <option value="price_asc">Price: Low to High</option>
+                                    <option value="price_desc">Price: High to Low</option>
                                 </select>
                             </div>
                         </div>
