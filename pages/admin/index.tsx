@@ -300,7 +300,7 @@ function UsersTab() {
 }
 
 function SuspiciousTab() {
-    const { data: reports, mutate } = useSWR('/api/admin/reports', fetcher);
+    const { data: reports, error, isLoading, mutate } = useSWR('/api/admin/reports', fetcher);
     const [processing, setProcessing] = useState<number | null>(null);
     const [adminComment, setAdminComment] = useState('');
     const [selectedReport, setSelectedReport] = useState<number | null>(null);
@@ -337,6 +337,15 @@ function SuspiciousTab() {
             setProcessing(null);
         }
     };
+
+    if (isLoading) return <div className="p-8 text-center text-gray-500">Loading reports...</div>;
+    if (error) return (
+        <div className="p-8 text-center text-red-500 bg-red-50 rounded-xl border border-red-200">
+            <AlertTriangle className="h-12 w-12 mx-auto mb-3" />
+            <p className="font-bold">Failed to load reports</p>
+            <p className="text-sm mt-1">{error.message || "Please try again later"}</p>
+        </div>
+    );
 
     return (
         <div className="space-y-6">

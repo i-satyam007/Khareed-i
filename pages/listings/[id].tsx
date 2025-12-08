@@ -112,7 +112,8 @@ export default function ProductDetailsPage() {
 
 
     if (listingLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-    if (listingError || !listing) return <div className="min-h-screen flex items-center justify-center">Listing not found</div>;
+    // Defensive: Check for listing.id to ensure we have a valid listing object, not an error message
+    if (listingError || !listing || !listing.id) return <div className="min-h-screen flex items-center justify-center">Listing not found</div>;
 
     const discount = Math.round(((listing.mrp - listing.price) / listing.mrp) * 100);
     const images = listing.imagePath ? [listing.imagePath] : []; // Handle single image for now, extendable to array
