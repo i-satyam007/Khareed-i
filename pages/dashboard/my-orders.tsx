@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Package, Truck, CheckCircle, Clock, ChevronDown, ChevronUp, Star, X, AlertTriangle, MapPin } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, ChevronDown, ChevronUp, Star, X, AlertTriangle, MapPin, Circle } from 'lucide-react';
 import useSWR from 'swr';
 import { useUser } from '@/lib/hooks/useUser';
 import DashboardSidebar from '@/components/DashboardSidebar';
@@ -17,6 +17,11 @@ export default function MyOrdersPage() {
     const [selectedOrderForReview, setSelectedOrderForReview] = useState<any>(null);
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
+
+    // Report Modal State
+    const [reportModalOpen, setReportModalOpen] = useState(false);
+    const [selectedOrderForReport, setSelectedOrderForReport] = useState<any>(null);
+    const [reportReason, setReportReason] = useState("");
 
     const toggleOrder = (id: number) => {
         setExpandedOrder(expandedOrder === id ? null : id);
@@ -80,10 +85,34 @@ export default function MyOrdersPage() {
         }
     };
 
-    const handleReport = (orderId: number) => {
-        // Placeholder for report functionality - redirect to report page or open modal
-        // For now, simple alert or redirect
-        window.location.href = `/report?orderId=${orderId}`;
+    // Open Report Modal
+    const handleReport = (order: any) => {
+        setSelectedOrderForReport(order);
+        setReportReason("");
+        setReportModalOpen(true);
+    };
+
+    // Submit Report
+    const submitReport = async () => {
+        if (!selectedOrderForReport || !reportReason.trim()) return;
+        try {
+            const res = await fetch('/api/reports/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: selectedOrderForReport.id, reason: reportReason }),
+            });
+            if (res.ok) {
+                alert("Report submitted successfully.");
+                setReportModalOpen(false);
+                setReportReason("");
+            } else {
+                const data = await res.json();
+                alert(data.message || "Failed to submit report");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("An error occurred");
+        }
     };
 
     if (!user) return <div>Loading...</div>;
@@ -191,25 +220,41 @@ export default function MyOrdersPage() {
                                                         Tracking Status
                                                     </h4>
 
-                                                    {/* Progress Bar */}
-                                                    <div className="relative mb-12 mx-4">
-                                                        <div className="absolute top-[14px] left-0 w-full h-1 bg-gray-200 -z-10 rounded-full"></div>
+                                                    {/* Stepper Progress Bar */}
+                                                    <div className="relative mb-12 mx-4 flex justify-between items-center z-0">
+                                                        {/* Line Background */}
+                                                        <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -z-10 -translate-y-1/2"></div>
+                                                        {/* Active Line */}
+                                                        <div className="absolute top-1/2 left-0 h-1 bg-green-500 -z-10 -translate-y-1/2 transition-all duration-500"
+                                                            style={{
+                                                                width: order.deliveryStatus === 'DELIVERED' ? '100%' :
+                                                                    order.deliveryStatus === 'SHIPPED' ? '50%' : '0%'
+                                                            }}
+                                                        ></div>
 
-                                                        {/* Step 1: Payment Made */}
-                                                        <div className="flex flex-col items-center gap-2 w-1/3">
-                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors duration-500 z-10 ${order.paymentStatus !== 'PENDING' || order.status === 'COMPLETED' ? 'bg-green-500 border-green-500 text-white' : 'bg-white border-gray-300 text-gray-300'
-                                                                }`}>
-                                                                <CheckCircle className="h-5 w-5" />
+                                                        {/* Step 1: Placed */}
+                                                        <div className="flex flex-col items-center gap-2 bg-gray-50 px-2">
+                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 z-10 bg-white ${true ? 'border-green-500 text-green-500' : 'border-gray-300 text-gray-300'}`}>
+                                                                <CheckCircle className="h-5 w-5 fill-current bg-white rounded-full" />
                                                             </div>
-                                                            {order.deliveryStatus === 'DELIVERED' ? (
-                                                                <Package className="h-5 w-5" />
-                                                            ) : (
-                                                                <Truck className="h-5 w-5" />
-                                                            )}
+                                                            <span className="text-xs font-bold text-gray-900">Placed</span>
                                                         </div>
-                                                        <span className={`text-xs sm:text-sm font-bold text-center ${order.deliveryStatus === 'DELIVERED' ? 'text-gray-900' : 'text-gray-400'}`}>
-                                                            Order Delivered
-                                                        </span>
+
+                                                        {/* Step 2: Shipped */}
+                                                        <div className="flex flex-col items-center gap-2 bg-gray-50 px-2">
+                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 z-10 bg-white ${order.deliveryStatus === 'SHIPPED' || order.deliveryStatus === 'DELIVERED' ? 'border-green-500 text-green-500' : 'border-gray-300 text-gray-300'}`}>
+                                                                {order.deliveryStatus === 'SHIPPED' || order.deliveryStatus === 'DELIVERED' ? <Truck className="h-4 w-4" /> : <Circle className="h-4 w-4" />}
+                                                            </div>
+                                                            <span className={`text-xs font-bold ${order.deliveryStatus === 'SHIPPED' || order.deliveryStatus === 'DELIVERED' ? 'text-gray-900' : 'text-gray-400'}`}>Shipped</span>
+                                                        </div>
+
+                                                        {/* Step 3: Delivered */}
+                                                        <div className="flex flex-col items-center gap-2 bg-gray-50 px-2">
+                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 z-10 bg-white ${order.deliveryStatus === 'DELIVERED' ? 'border-green-500 text-green-500' : 'border-gray-300 text-gray-300'}`}>
+                                                                {order.deliveryStatus === 'DELIVERED' ? <Package className="h-4 w-4" /> : <Circle className="h-4 w-4" />}
+                                                            </div>
+                                                            <span className={`text-xs font-bold ${order.deliveryStatus === 'DELIVERED' ? 'text-gray-900' : 'text-gray-400'}`}>Delivered</span>
+                                                        </div>
                                                     </div>
 
 
@@ -236,10 +281,54 @@ export default function MyOrdersPage() {
                                                         </div>
                                                     </div>
 
+                                                    {/* Inline Rate & Review */}
+                                                    {(order.status === 'COMPLETED' || order.deliveryStatus === 'DELIVERED') && (
+                                                        <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-100 mb-6">
+                                                            <h5 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                                                <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                                                                Rate this Order
+                                                            </h5>
+                                                            <div className="flex flex-col gap-3">
+                                                                <div className="flex gap-2">
+                                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                                        <button
+                                                                            key={star}
+                                                                            onClick={() => {
+                                                                                setSelectedOrderForReview(order);
+                                                                                setRating(star);
+                                                                            }}
+                                                                            className={`p-1 transition-transform hover:scale-110 ${selectedOrderForReview?.id === order.id && rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}
+                                                                        >
+                                                                            <Star className={`h-8 w-8 ${selectedOrderForReview?.id === order.id && rating >= star ? 'fill-current' : 'fill-gray-100'}`} />
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+
+                                                                {selectedOrderForReview?.id === order.id && (
+                                                                    <div className="animate-in fade-in slide-in-from-top-2">
+                                                                        <textarea
+                                                                            className="w-full border border-yellow-200 rounded-lg p-3 mb-2 focus:ring-2 focus:ring-yellow-400 focus:border-transparent outline-none resize-none bg-white text-sm"
+                                                                            rows={3}
+                                                                            placeholder="Write a review (optional)..."
+                                                                            value={comment}
+                                                                            onChange={(e) => setComment(e.target.value)}
+                                                                        ></textarea>
+                                                                        <button
+                                                                            onClick={submitReview}
+                                                                            className="bg-yellow-400 text-gray-900 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition-colors text-sm shadow-sm"
+                                                                        >
+                                                                            Submit Review
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
                                                     {/* Action Buttons */}
                                                     <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
                                                         <button
-                                                            onClick={() => handleReport(order.id)}
+                                                            onClick={() => handleReport(order)}
                                                             className="px-4 py-2 bg-white border border-red-200 text-red-600 font-bold rounded-lg hover:bg-red-50 transition-colors flex items-center gap-2 text-sm"
                                                         >
                                                             <AlertTriangle className="h-4 w-4" />
@@ -253,15 +342,6 @@ export default function MyOrdersPage() {
                                                             >
                                                                 <CheckCircle className="h-4 w-4" />
                                                                 Mark Received
-                                                            </button>
-                                                        )}
-                                                        {order.deliveryStatus === 'DELIVERED' && (
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); openReviewModal(order); }}
-                                                                className="px-4 py-2 bg-yellow-400 text-gray-900 font-bold rounded-lg hover:bg-yellow-500 transition-colors flex items-center gap-2 text-sm"
-                                                            >
-                                                                <Star className="h-4 w-4 fill-current" />
-                                                                Rate & Review
                                                             </button>
                                                         )}
                                                     </div>
@@ -319,6 +399,43 @@ export default function MyOrdersPage() {
                                 className="w-full bg-kh-purple text-white font-bold py-3 rounded-xl hover:bg-purple-700 transition-colors"
                             >
                                 Submit Review
+                            </button>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* Report Modal */}
+            {
+                reportModalOpen && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in">
+                        <div className="bg-white rounded-2xl w-full max-w-md p-6 relative">
+                            <button
+                                onClick={() => setReportModalOpen(false)}
+                                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                            >
+                                <X className="h-6 w-6" />
+                            </button>
+
+                            <h2 className="text-xl font-bold text-gray-900 mb-2">Report Issue</h2>
+                            <p className="text-sm text-gray-500 mb-4">
+                                Having trouble with Order #{selectedOrderForReport?.id}? Describe the issue below and an admin will assist you.
+                            </p>
+
+                            <textarea
+                                className="w-full border border-gray-300 rounded-xl p-3 mb-4 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none resize-none"
+                                rows={4}
+                                placeholder="e.g. Item not received, Damaged item..."
+                                value={reportReason}
+                                onChange={(e) => setReportReason(e.target.value)}
+                            ></textarea>
+
+                            <button
+                                onClick={submitReport}
+                                disabled={!reportReason.trim()}
+                                className="w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50"
+                            >
+                                Submit Report
                             </button>
                         </div>
                     </div>

@@ -275,8 +275,8 @@ function UsersTab() {
                                     <td className="px-6 py-4 text-gray-600 capitalize">{u.role}</td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-1">
-                                            <div className={`h-2 w-2 rounded-full ${u.failedPaymentCount > 2 ? 'bg-red-500' : 'bg-green-500'}`} />
-                                            <span className="text-gray-700">{Math.max(0, 100 - (u.failedPaymentCount * 10))}%</span>
+                                            <div className={`h-2 w-2 rounded-full ${u.failedPaymentCount > 2 || (u.trustScorePenalty || 0) > 20 ? 'bg-red-500' : 'bg-green-500'}`} />
+                                            <span className="text-gray-700">{Math.max(0, 100 - (u.failedPaymentCount * 10) - (u.trustScorePenalty || 0))}%</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">

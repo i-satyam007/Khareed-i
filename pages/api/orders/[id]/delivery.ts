@@ -70,6 +70,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 data: { deliveryStatus: 'DELIVERED' } as any
             });
 
+            // Trust Score Logic: Reward Seller for successful delivery
+            // We reduce penalty (improve score) by 5 points, capped at 0 (can't have negative penalty to boost > 100)
+            // Or if we want to allow bonus, we'd need a different field. Given schema, reducing penalty is best effort.
+            if (sellerId) {
+                // @ts-ignore
+                const seller = await prisma.user.findUnique({ where: { id: sellerId }, select: { trustScorePenalty: true } });
+                // @ts-ignore
+                if (seller && seller.trustScorePenalty > 0) {
+                    // @ts-ignore
+                    const newPenalty = Math.max(0, seller.trustScorePenalty - 5);
+                    // @ts-ignore
+                    await prisma.user.update({
+                        where: { id: sellerId },
+                        data: { trustScorePenalty: newPenalty }
+                    });
+                }
+            }
+
             // Notify Seller
             await prisma.notification.create({
                 data: {

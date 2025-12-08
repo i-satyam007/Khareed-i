@@ -25,6 +25,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     role: true,
                     avatar: true,
                     failedPaymentCount: true,
+                    // @ts-ignore
+                    trustScorePenalty: true,
                     blacklistUntil: true,
                     createdAt: true
                 },
