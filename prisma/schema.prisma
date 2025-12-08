@@ -87,6 +87,7 @@ model Listing {
   orderItems   OrderItem[] @relation("ListingOrderItems")
   reviews      Review[]    @relation("ListingReviews")
   favoritedBy  User[]      @relation("UserWatchlist")
+  reports      Report[]    @relation("ListingReports")
 }
 
 model Bid {
@@ -222,7 +223,8 @@ model Report {
   id          Int      @id @default(autoincrement())
   reporterId  Int
   reportedId  Int
-  orderId     Int
+  orderId     Int?
+  listingId   Int?
   reason      String
   status      String   @default("PENDING") // PENDING, RESOLVED_APPROVE, RESOLVED_REJECT
   adminComment String?
@@ -230,5 +232,6 @@ model Report {
 
   reporter    User     @relation("ReportsMade", fields: [reporterId], references: [id])
   reported    User     @relation("ReportsReceived", fields: [reportedId], references: [id])
-  order       Order    @relation("OrderReports", fields: [orderId], references: [id])
+  order       Order?   @relation("OrderReports", fields: [orderId], references: [id])
+  listing     Listing? @relation("ListingReports", fields: [listingId], references: [id])
 }

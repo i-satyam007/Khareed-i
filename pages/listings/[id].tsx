@@ -141,6 +141,31 @@ export default function ProductDetailsPage() {
         }
     };
 
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportReason, setReportReason] = useState("");
+
+    const handleReport = async () => {
+        if (!reportReason.trim()) return alert("Please provide a reason.");
+        try {
+            const res = await fetch('/api/reports/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ listingId: listing.id, reason: reportReason }),
+            });
+            if (res.ok) {
+                alert("Report submitted successfully. Admins will review it shortly.");
+                setIsReportModalOpen(false);
+                setReportReason("");
+            } else {
+                const data = await res.json();
+                alert(data.message || "Failed to submit report");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("An error occurred");
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <Head>
@@ -546,7 +571,7 @@ export default function ProductDetailsPage() {
                                 <Share2 className="h-4 w-4" /> Share
                             </button>
                             <button
-                                onClick={() => alert("Reported to Admin for review.")}
+                                onClick={() => setIsReportModalOpen(true)}
                                 className="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-700 py-2 transition-colors"
                             >
                                 <Shield className="h-4 w-4" /> Report
@@ -576,6 +601,37 @@ export default function ProductDetailsPage() {
                 listingTitle={listing.title}
                 price={listing.price}
             />
+
+            {/* Report Modal */}
+            {isReportModalOpen && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-in fade-in">
+                    <div className="bg-white rounded-2xl w-full max-w-md p-6">
+                        <h2 className="text-xl font-bold text-gray-900 mb-2">Report Listing</h2>
+                        <p className="text-sm text-gray-500 mb-4">Please provide a valid reason for reporting this listing.</p>
+                        <textarea
+                            value={reportReason}
+                            onChange={(e) => setReportReason(e.target.value)}
+                            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none mb-4 h-32 resize-none"
+                            placeholder="Reason for reporting..."
+                        />
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setIsReportModalOpen(false)}
+                                className="flex-1 py-2.5 rounded-xl font-bold border border-gray-200 text-gray-700 hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleReport}
+                                disabled={!reportReason.trim()}
+                                className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 disabled:opacity-50"
+                            >
+                                Submit Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div >
     );
 }

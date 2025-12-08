@@ -300,7 +300,7 @@ function UsersTab() {
 }
 
 function SuspiciousTab() {
-    const { data: reports, mutate } = useSWR('/api/admin/reports/pending', fetcher);
+    const { data: reports, mutate } = useSWR('/api/admin/reports', fetcher);
     const [processing, setProcessing] = useState<number | null>(null);
     const [adminComment, setAdminComment] = useState('');
     const [selectedReport, setSelectedReport] = useState<number | null>(null);
@@ -318,7 +318,7 @@ function SuspiciousTab() {
             const res = await fetch(`/api/admin/reports/${reportId}/resolve`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ decision, comment: adminComment }),
+                body: JSON.stringify({ action: decision, adminComment }),
             });
 
             if (res.ok) {
@@ -327,7 +327,8 @@ function SuspiciousTab() {
                 setSelectedReport(null);
                 mutate();
             } else {
-                alert("Failed to resolve report");
+                const data = await res.json();
+                alert(data.message || "Failed to resolve report");
             }
         } catch (error) {
             console.error(error);
@@ -354,44 +355,93 @@ function SuspiciousTab() {
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
-                                        <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded uppercase">Dispute</span>
+                                        {report.listingId ? (
+                                            <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-bold rounded uppercase">Listing Report</span>
+                                        ) : (
+                                            <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded uppercase">Order Dispute</span>
+                                        )}
                                         <span className="text-sm text-gray-500">#{report.id} • {new Date(report.createdAt).toLocaleDateString()}</span>
                                     </div>
-                                    <h3 className="font-bold text-gray-900">Payment Rejection Dispute</h3>
+                                    <h3 className="font-bold text-gray-900">
+                                        {report.listingId ? `Report: ${report.listing?.title}` : "Payment Rejection Dispute"}
+                                    </h3>
                                 </div>
-                                <a href={`/orders/${report.orderId}`} target="_blank" className="text-sm text-kh-purple font-bold hover:underline">
-                                    View Order #{report.orderId}
-                                </a>
+                                {report.listingId ? (
+                                    <a href={`/listings/${report.listingId}`} target="_blank" className="text-sm text-kh-purple font-bold hover:underline bg-purple-50 px-3 py-1 rounded-lg">
+                                        View Listing
+                                    </a>
+                                ) : (
+                                    <a href={`/orders/${report.orderId}`} target="_blank" className="text-sm text-kh-purple font-bold hover:underline bg-purple-50 px-3 py-1 rounded-lg">
+                                        View Order #{report.orderId}
+                                    </a>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                {/* Reporter Side */}
                                 <div className="bg-gray-50 p-4 rounded-lg">
-                                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Reporter (Buyer)</p>
-                                    <p className="font-bold text-gray-900">{report.reporter.name}</p>
-                                    <p className="text-sm text-gray-600">{report.reporter.email}</p>
+                                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Reporter ({report.listingId ? "User" : "Buyer"})</p>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-500 text-xs">
+                                            {report.reporter?.name?.[0]}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-gray-900 text-sm">{report.reporter?.name}</p>
+                                            <p className="text-xs text-gray-600">{report.reporter?.email}</p>
+                                        </div>
+                                    </div>
                                     <div className="mt-3 pt-3 border-t border-gray-200">
-                                        <p className="text-xs font-bold text-gray-500 mb-1">Claim:</p>
+                                        <p className="text-xs font-bold text-gray-500 mb-1">Reason/Claim:</p>
                                         <p className="text-sm text-gray-800 italic">"{report.reason}"</p>
                                     </div>
                                 </div>
+
+                                {/* Reported Side */}
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <p className="text-xs font-bold text-gray-500 uppercase mb-2">Reported (Seller)</p>
-                                    <p className="font-bold text-gray-900">{report.reported.name}</p>
-                                    <p className="text-sm text-gray-600">{report.reported.email}</p>
-                                    <div className="mt-3 pt-3 border-t border-gray-200">
-                                        <p className="text-xs font-bold text-gray-500 mb-1">Rejection Reason:</p>
-                                        <p className="text-sm text-gray-800 italic">"{report.order.paymentComment}"</p>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-500 text-xs">
+                                            {report.reported?.name?.[0]}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-gray-900 text-sm">{report.reported?.name}</p>
+                                            <p className="text-xs text-gray-600">{report.reported?.email}</p>
+                                            <p className="text-[10px] text-red-500 font-bold">Current Penalty: {report.reported?.trustScorePenalty}%</p>
+                                        </div>
                                     </div>
+                                    {!report.listingId && report.order?.paymentComment && (
+                                        <div className="mt-3 pt-3 border-t border-gray-200">
+                                            <p className="text-xs font-bold text-gray-500 mb-1">Rejection Reason:</p>
+                                            <p className="text-sm text-gray-800 italic">"{report.order.paymentComment}"</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            {/* Proof */}
-                            <div className="mb-6">
-                                <p className="text-sm font-bold text-gray-700 mb-2">Payment Proof</p>
-                                <div className="bg-gray-100 rounded-lg p-2 inline-block">
-                                    <img src={report.order.paymentScreenshot} alt="Proof" className="h-48 object-contain" />
+                            {/* Proof (Only for Orders) */}
+                            {!report.listingId && report.order?.paymentScreenshot && (
+                                <div className="mb-6">
+                                    <p className="text-sm font-bold text-gray-700 mb-2">Payment Proof</p>
+                                    <div className="bg-gray-100 rounded-lg p-2 inline-block">
+                                        <img src={report.order.paymentScreenshot} alt="Proof" className="h-48 object-contain" />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+
+                            {/* Listing Validation (Only for Listings) */}
+                            {report.listingId && report.listing && (
+                                <div className="mb-6 border border-gray-100 rounded-lg p-3">
+                                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Listing Snapshot</p>
+                                    <div className="flex gap-4">
+                                        {report.listing.imagePath && <img src={report.listing.imagePath} className="w-16 h-16 object-cover rounded-lg bg-gray-100" />}
+                                        <div>
+                                            <p className="font-bold text-gray-900">{report.listing.title}</p>
+                                            <p className="text-gray-600 text-sm">₹{report.listing.price}</p>
+                                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">{report.listing.description}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Action Area */}
                             {selectedReport === report.id ? (
@@ -416,18 +466,19 @@ function SuspiciousTab() {
                                             disabled={processing === report.id || !adminComment}
                                             className="px-4 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors"
                                         >
-                                            Approve (Buyer Correct)
+                                            Approve Report (Penalty to Seller)
                                         </button>
                                         <button
                                             onClick={() => handleResolve(report.id, 'REJECT')}
                                             disabled={processing === report.id || !adminComment}
                                             className="px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors"
                                         >
-                                            Reject (Seller Correct)
+                                            Reject Report (Penalty to Reporter)
                                         </button>
                                     </div>
                                     <p className="text-xs text-gray-500 mt-2">
-                                        * Approving penalizes the Seller. Rejecting penalizes the Buyer. Trust scores will be updated automatically.
+                                        * <strong>Approve:</strong> Confirms the report is valid. Listing deleted. Seller trust score -10%. <br />
+                                        * <strong>Reject:</strong> Marks report as false/spam. Reporter trust score -10%.
                                     </p>
                                 </div>
                             ) : (
@@ -435,7 +486,7 @@ function SuspiciousTab() {
                                     onClick={() => setSelectedReport(report.id)}
                                     className="bg-kh-purple text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-700 transition-colors"
                                 >
-                                    Resolve Dispute
+                                    Resolve Report
                                 </button>
                             )}
                         </div>

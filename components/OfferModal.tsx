@@ -47,7 +47,7 @@ export default function OfferModal({ isOpen, onClose, onSubmit, listingTitle, pr
                             min="1"
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition-all ${Number(amount) > price
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none transition-all ${(Number(amount) > price || (amount && Number(amount) < price * 0.6))
                                 ? 'border-red-500 focus:ring-red-200 focus:border-red-500'
                                 : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
                                 }`}
@@ -61,11 +61,19 @@ export default function OfferModal({ isOpen, onClose, onSubmit, listingTitle, pr
                                 </p>
                             </div>
                         )}
+                        {amount && Number(amount) < price * 0.6 && (
+                            <div className="flex items-center gap-2 mt-2 text-red-600 bg-red-50 p-2 rounded-lg animate-in slide-in-from-top-1">
+                                <AlertCircle className="h-4 w-4 shrink-0" />
+                                <p className="text-xs font-bold">
+                                    Offer must be at least 60% of the listing price (₹{Math.ceil(price * 0.6)}).
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     <button
                         type="submit"
-                        disabled={!amount || Number(amount) > price}
+                        disabled={!amount || Number(amount) > price || Number(amount) < price * 0.6}
                         className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Submit Offer

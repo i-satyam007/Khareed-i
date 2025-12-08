@@ -294,24 +294,8 @@ export default function Header() {
                       </div>
 
                       {user.role === 'admin' && (
-                        <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors font-bold">
-                          <Shield className="h-4 w-4" />
-                          Admin Dashboard
-                        </Link>
+                        <AdminDashboardLink setIsMenuOpen={setIsMenuOpen} />
                       )}
-
-                      <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                        <User className="h-4 w-4 text-gray-400" />
-                        My Profile
-                      </Link>
-                      <Link href="/dashboard?tab=watchlist" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                        <Heart className="h-4 w-4 text-gray-400" />
-                        My Watchlist
-                      </Link>
-                      <Link href="/dashboard/my-orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                        <ShoppingBag className="h-4 w-4 text-gray-400" />
-                        My Orders
-                      </Link>
 
                       {/* Verify Payments Link */}
                       <Link href="/dashboard/verify-payments" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors relative justify-between">
@@ -367,5 +351,23 @@ export default function Header() {
         </div>
       </header>
     </>
+  );
+}
+
+function AdminDashboardLink({ setIsMenuOpen }: { setIsMenuOpen: (o: boolean) => void }) {
+  const fetcher = (url: string) => fetch(url).then(res => res.json());
+  const { data: reports } = useSWR('/api/admin/reports', fetcher);
+  const pendingCount = reports?.length || 0;
+
+  return (
+    <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors font-bold justify-between">
+      <div className="flex items-center gap-2">
+        <Shield className="h-4 w-4" />
+        Admin Dashboard
+      </div>
+      {pendingCount > 0 && (
+        <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{pendingCount}</span>
+      )}
+    </Link>
   );
 }

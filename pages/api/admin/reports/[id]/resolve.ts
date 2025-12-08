@@ -8,28 +8,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const user = await getUser(req);
-    // Assuming we have an admin role logic, for now anyone "can" hit this if we don't strict check
-    // But let's check basic auth
-    if (!user) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    // Ideally check if user.role === 'admin'. Assuming schema has role, it does (default 'user')
-    if (user.role !== 'admin') {
-        return res.status(403).json({ message: 'Admin access required' });
+    if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
     }
 
     const { id } = req.query;
-    const reportId = Number(id);
-    const { action, adminComment } = req.body; // 'SUSPICIOUS' | 'FALSE_ALARM'
+    const { action, adminComment } = req.body; // action: 'APPROVE' or 'REJECT'
 
-    if (!['SUSPICIOUS', 'FALSE_ALARM'].includes(action)) {
-        return res.status(400).json({ message: 'Invalid action' });
+    if (!id || !action) {
+        return res.status(400).json({ message: 'Missing required fields' });
     }
 
     try {
+        const reportId = Number(id);
         const report = await prisma.report.findUnique({
-            where: { id: reportId }
+            where: { id: reportId },
+            include: { listing: true }
         });
 
         if (!report) {
@@ -40,10 +34,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ message: 'Report already resolved' });
         }
 
-        // Transaction to update Report and User Penalty
         await prisma.$transaction(async (tx) => {
-            if (action === 'SUSPICIOUS') {
-                // Penalize Seller (Reported User)
+            if (action === 'APPROVE') {
+                // Report is VALID. Punish the Reported User (Seller).
+                // 1. Delete Listing if applicable
+                if (report.listingId) {
+                    await tx.listing.update({
+                        where: { id: report.listingId },
+                        data: { status: 'deleted' }
+                    });
+                }
+
+                // 2. Reduce Trust Score of Reported User by 10% (add 10 to penalty)
+                // Note: Trust Score is usually calculated as 100 - penalties. So we add to penalty.
+                // Assuming penalty is an integer representing percentage points lost.
                 await tx.user.update({
                     where: { id: report.reportedId },
                     data: {
@@ -51,15 +55,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     }
                 });
 
+                // 3. Mark Report as Resolved
                 await tx.report.update({
                     where: { id: reportId },
                     data: {
-                        status: 'RESOLVED_SUSPICIOUS',
-                        adminComment: adminComment || "Marked as suspicious activity."
+                        status: 'RESOLVED_APPROVE',
+                        adminComment
                     }
                 });
-            } else {
-                // False Alarm -> Penalize Reporter (Buyer)
+
+                // Notify Reporter
+                await tx.notification.create({
+                    data: {
+                        userId: report.reporterId,
+                        title: 'Report Update',
+                        body: 'Your report has been approved. Thank you for keeping the community safe.',
+                        type: 'system'
+                    }
+                });
+
+                // Notify Reported User
+                await tx.notification.create({
+                    data: {
+                        userId: report.reportedId,
+                        title: 'Listing Removed',
+                        body: 'Your listing was removed due to a community report. Your trust score has been affected.',
+                        type: 'system'
+                    }
+                });
+
+            } else if (action === 'REJECT') {
+                // Report is INVALID/FALSE. Punish the Reporter.
+
+                // 1. Reduce Trust Score of Reporter by 10%
                 await tx.user.update({
                     where: { id: report.reporterId },
                     data: {
@@ -67,11 +95,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     }
                 });
 
+                // 2. Mark Report as Resolved
                 await tx.report.update({
                     where: { id: reportId },
                     data: {
-                        status: 'RESOLVED_FALSE',
-                        adminComment: adminComment || "Marked as false alarm."
+                        status: 'RESOLVED_REJECT',
+                        adminComment
+                    }
+                });
+
+                // Notify Reporter
+                await tx.notification.create({
+                    data: {
+                        userId: report.reporterId,
+                        title: 'Report Rejected',
+                        body: 'Your report was reviewed and found to be invalid. Your trust score has been affected for false reporting.',
+                        type: 'system'
                     }
                 });
             }
@@ -80,7 +119,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ message: 'Report resolved successfully' });
 
     } catch (error) {
-        console.error(error);
+        console.error('Resolve error:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
